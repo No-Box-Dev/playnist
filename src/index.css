@@ -1,0 +1,313 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=DM+Sans&family=Inter:wght@400;700&family=Inter+Tight:wght@400;500&family=Figtree&display=swap');
+
+/* Custom Fonts */
+@font-face {
+  font-family: 'HF Gesco Bold';
+  src: url('/fonts/HFGesco-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HF Gesco Regular';
+  src: url('/fonts/HFGesco-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HF Gesco Light';
+  src: url('/fonts/HFGesco-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'GT America Mono';
+  src: url('/fonts/GTAmericaMono-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* Typography Scale */
+:root {
+  --font-heading: 'HF Gesco Bold', Georgia, serif;
+  --font-heading-regular: 'HF Gesco Regular', Georgia, serif;
+  --font-heading-light: 'HF Gesco Light', Georgia, serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'GT America Mono', 'Courier New', monospace;
+  --font-logo: 'HF Gesco Bold', Georgia, serif;
+
+  /* Primary Brand */
+  --color-red: #C62E07;
+  --color-red-bright: #EF2F15;
+  --color-red-dark: #B0200C;
+
+  /* Warm Accents */
+  --color-terra-cotta: #DD8167;
+  --color-terra-cotta-light: #F9B3A9;
+  --color-terra-cotta-lighter: #FBD0CB;
+  --color-terra-cotta-lightest: #FDEAE7;
+  --color-orange: #FA9B18;
+  --color-orange-dark: #E89320;
+  --color-yellow: #F4CF03;
+  --color-yellow-light: #FFDC8A;
+  --color-gold: #FFB505;
+  --color-gold-dark: #B88100;
+  --color-amber: #EBA500;
+  --color-peach: #FDE9C3;
+  --color-cream: #FFFDEB;
+
+  /* Greens */
+  --color-green: #79BC90;
+  --color-green-dark: #1E6C30;
+  --color-green-medium: #2EA84A;
+  --color-green-bright: #268838;
+  --color-green-success: #17DB4E;
+  --color-green-soft: #B7DCC0;
+  --color-green-light: #CFE8D5;
+  --color-green-lighter: #EAF5ED;
+  --color-green-lightest: #F5FAF6;
+
+  /* Blues */
+  --color-blue-primary: #0205D3;
+  --color-blue-royal: #0947D7;
+  --color-blue-bright: #1E6DF6;
+  --color-blue-purple: #401FC1;
+  --color-blue-soft: #AFCEF8;
+  --color-blue-light: #D5E5FB;
+  --color-blue-lighter: #EBF3FF;
+  --color-blue-lightest: #F5FAFF;
+
+  /* Purples */
+  --color-purple: #513EDF;
+  --color-purple-light: #625DFE;
+  --color-purple-deep: #341A9E;
+  --color-purple-navy: #0C29AB;
+  --color-purple-soft: #BDC3F4;
+  --color-purple-lighter: #D8DBF9;
+  --color-purple-lightest: #E9EBFB;
+
+  /* Neutrals */
+  --color-black: #000000;
+  --color-dark-gray: #252525;
+  --color-navy-text: #091747;
+  --color-gray-dark: #1A1A1A;
+  --color-gray-medium: #525252;
+  --color-gray: #8A8A8A;
+  --color-gray-cool: #9597A1;
+  --color-gray-light: #A6A6A6;
+  --color-gray-lighter: #C7C7C7;
+  --color-gray-border: #E3E3E5;
+  --color-gray-bg: #F2F2F2;
+  --color-gray-bg-light: #F7F7F7;
+  --color-white: #FFFFFF;
+
+  /* Semantic */
+  --color-success: #17DB4E;
+  --color-alert: #FAB515;
+  --color-danger: #B0200C;
+  --color-destructive: #FF0000;
+}
+
+/* Reset */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'HF Gesco Regular', Georgia, serif;
+  background: var(--color-cream);
+  color: var(--color-gray-dark);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'HF Gesco Regular', Georgia, serif;
+  letter-spacing: 0.3px;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* Layout */
+.app-layout { display: flex; min-height: 100vh; }
+
+/* Buttons */
+.btn {
+  font-family: 'HF Gesco Regular', Georgia, serif;
+  font-size: 14px;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+}
+.btn-primary { background: var(--color-red); color: var(--color-white); border-color: var(--color-red); }
+.btn-primary:hover { background: #B22400; }
+.btn-outline { background: var(--color-cream); color: var(--color-red); border: 2px solid var(--color-red); }
+.btn-outline:hover { background: var(--color-peach); }
+.btn-green { background: var(--color-green); color: var(--color-white); border-color: var(--color-green); }
+.btn-orange { background: var(--color-orange); color: var(--color-white); border-color: var(--color-orange); }
+
+/* Filter Pills */
+.pill {
+  font-family: 'HF Gesco Regular', Georgia, serif;
+  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: 2px solid;
+  background: var(--color-cream);
+  transition: all 0.2s;
+}
+.pill-played { border-color: var(--color-green); color: var(--color-green); }
+.pill-played.active { background: var(--color-green); color: var(--color-white); }
+.pill-playing { border-color: var(--color-orange); color: var(--color-orange); }
+.pill-playing.active { background: var(--color-orange); color: var(--color-white); }
+.pill-want { border-color: var(--color-red); color: var(--color-red); }
+.pill-want.active { background: var(--color-red); color: var(--color-white); }
+
+/* Cards */
+.card {
+  background: var(--color-white);
+  border-radius: 12px;
+  border: 1px solid var(--color-gray-border);
+  overflow: hidden;
+}
+
+/* Game Cover Card */
+.game-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.game-card:hover { transform: scale(1.02); }
+.game-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.game-card .add-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  background: var(--color-red);
+  border: none;
+  border-radius: 50%;
+  color: var(--color-white);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Avatar */
+.avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--color-white); }
+.avatar-sm { width: 40px; height: 40px; }
+.avatar-lg { width: 120px; height: 120px; }
+
+/* Badge */
+.badge-ambassador {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-yellow);
+  color: var(--color-dark-gray);
+  font-family: 'HF Gesco Regular', Georgia, serif;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* Reactions */
+.reactions { display: flex; gap: 8px; align-items: center; }
+.reaction-btn {
+  background: var(--color-gray-bg);
+  border: none;
+  border-radius: 16px;
+  padding: 4px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.2s;
+}
+.reaction-btn:hover { background: var(--color-gray-border); }
+.reaction-btn span { font-size: 12px; color: var(--color-gray); }
+
+/* Section Headers */
+.section-header {
+  font-family: 'HF Gesco Regular', Georgia, serif;
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: var(--color-gray-dark);
+}
+
+/* Grid */
+.game-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.game-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+/* Input */
+.input {
+  font-family: 'HF Gesco Regular', Georgia, serif;
+  font-size: 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-gray-border);
+  border-radius: 8px;
+  background: var(--color-white);
+  color: var(--color-gray-dark);
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input:focus { border-color: var(--color-red); }
+.input::placeholder { color: var(--color-gray-light); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.modal {
+  background: var(--color-white);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 480px;
+  width: 90%;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--color-gray);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  border: 2px dashed var(--color-orange);
+  border-radius: 12px;
+}
+.empty-state-emoji { font-size: 48px; margin-bottom: 12px; }
+.empty-state-text { font-size: 16px; color: var(--color-gray); margin-bottom: 16px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .game-grid { grid-template-columns: repeat(3, 1fr); }
+  .game-grid-4 { grid-template-columns: repeat(2, 1fr); }
+}

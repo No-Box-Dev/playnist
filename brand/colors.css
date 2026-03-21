@@ -1,0 +1,72 @@
+:root {
+  /* Primary Brand */
+  --color-red: #C62E07;
+  --color-red-bright: #EF2F15;
+  --color-red-dark: #B0200C;
+
+  /* Warm Accents */
+  --color-terra-cotta: #DD8167;
+  --color-terra-cotta-light: #F9B3A9;
+  --color-terra-cotta-lighter: #FBD0CB;
+  --color-terra-cotta-lightest: #FDEAE7;
+  --color-orange: #FA9B18;
+  --color-orange-dark: #E89320;
+  --color-yellow: #F4CF03;
+  --color-yellow-light: #FFDC8A;
+  --color-gold: #FFB505;
+  --color-gold-dark: #B88100;
+  --color-amber: #EBA500;
+  --color-peach: #FDE9C3;
+  --color-cream: #FFFDEB;
+
+  /* Greens */
+  --color-green: #79BC90;
+  --color-green-dark: #1E6C30;
+  --color-green-medium: #2EA84A;
+  --color-green-bright: #268838;
+  --color-green-success: #17DB4E;
+  --color-green-soft: #B7DCC0;
+  --color-green-light: #CFE8D5;
+  --color-green-lighter: #EAF5ED;
+  --color-green-lightest: #F5FAF6;
+
+  /* Blues */
+  --color-blue-primary: #0205D3;
+  --color-blue-royal: #0947D7;
+  --color-blue-bright: #1E6DF6;
+  --color-blue-purple: #401FC1;
+  --color-blue-soft: #AFCEF8;
+  --color-blue-light: #D5E5FB;
+  --color-blue-lighter: #EBF3FF;
+  --color-blue-lightest: #F5FAFF;
+
+  /* Purples */
+  --color-purple: #513EDF;
+  --color-purple-light: #625DFE;
+  --color-purple-deep: #341A9E;
+  --color-purple-navy: #0C29AB;
+  --color-purple-soft: #BDC3F4;
+  --color-purple-lighter: #D8DBF9;
+  --color-purple-lightest: #E9EBFB;
+
+  /* Neutrals */
+  --color-black: #000000;
+  --color-dark-gray: #252525;
+  --color-navy-text: #091747;
+  --color-gray-dark: #1A1A1A;
+  --color-gray-medium: #525252;
+  --color-gray: #8A8A8A;
+  --color-gray-cool: #9597A1;
+  --color-gray-light: #A6A6A6;
+  --color-gray-lighter: #C7C7C7;
+  --color-gray-border: #E3E3E5;
+  --color-gray-bg: #F2F2F2;
+  --color-gray-bg-light: #F7F7F7;
+  --color-white: #FFFFFF;
+
+  /* Semantic */
+  --color-success: #17DB4E;
+  --color-alert: #FAB515;
+  --color-danger: #B0200C;
+  --color-destructive: #FF0000;
+}

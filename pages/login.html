@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playnist 2.0</title>
+  <link rel="icon" type="image/png" href="../assets/images/red-accent.png">
+  <link rel="stylesheet" href="../components/base.css">
+  <style>
+    body {
+      background: rgba(255, 255, 255, 1);
+      overflow: hidden;
+    }
+
+    .auth-page {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      height: 100vh;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    /* Left side: Auth Form */
+    .auth-form-side {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 20px 40px;
+      overflow-y: auto;
+      gap: 32px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Welcome state */
+    .auth-welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 80%;
+    }
+
+    .auth-welcome-logo {
+      min-width: 320px;
+      min-height: 240px;
+      max-width: 100%;
+    }
+
+    .auth-welcome-logo img {
+      width: 100%;
+      height: auto;
+    }
+
+    .auth-tagline {
+      font-family: 'HF Gesco Regular', Georgia, serif;
+      font-size: 38px;
+      color: rgba(26, 26, 26, 1);
+      padding-bottom: 10px;
+    }
+
+    .auth-buttons {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+
+    .auth-buttons .btn {
+      min-width: 60px;
+      min-height: 44px;
+    }
+
+    /* Sign In / Sign Up forms */
+    .auth-form-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .auth-form-container.active {
+      display: flex;
+    }
+
+    .auth-form-header {
+      text-align: center;
+    }
+
+    .auth-form-title {
+      font-family: 'HF Gesco Regular', Georgia, serif;
+      font-size: 32px;
+      color: rgba(26, 26, 26, 1);
+      margin-bottom: 8px;
+    }
+
+    .auth-form-subtitle {
+      font-family: 'GT America Mono', monospace;
+      font-size: 16px;
+      color: rgba(138, 138, 138, 1);
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-family: 'HF Gesco Regular', Georgia, serif;
+      font-size: 14px;
+      color: rgba(26, 26, 26, 1);
+    }
+
+    .auth-form .btn {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .auth-link {
+      font-family: 'GT America Mono', monospace;
+      font-size: 13px;
+      color: rgba(138, 138, 138, 1);
+      text-align: center;
+    }
+
+    .auth-link a {
+      color: rgba(198, 46, 7, 1);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .auth-link a:hover {
+      text-decoration: underline;
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      color: rgba(166, 166, 166, 1);
+      font-size: 13px;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(227, 227, 229, 1);
+    }
+
+    .google-btn {
+      width: 100%;
+      background: rgba(255, 255, 255, 1);
+      border: 1px solid rgba(227, 227, 229, 1);
+      border-radius: 8px;
+      padding: 10px;
+      font-family: 'HF Gesco Regular', Georgia, serif;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .google-btn:hover {
+      background: rgba(247, 247, 247, 1);
+    }
+
+    .forgot-link {
+      font-family: 'GT America Mono', monospace;
+      font-size: 12px;
+      color: rgba(198, 46, 7, 1);
+      text-decoration: none;
+      align-self: flex-end;
+      margin-top: -4px;
+    }
+
+    /* Right side: Carousel */
+    .carousel-side {
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .carousel-side.hidden-mobile {
+      display: flex;
+    }
+
+    .carousel-container {
+      width: 208px;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carousel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .carousel img {
+      height: 300px;
+      width: 100%;
+      object-fit: cover;
+      margin: 5px 0;
+      border-radius: 8px;
+    }
+
+    .carousel-1 { animation: scrollUp 25s linear infinite; }
+    .carousel-2 { animation: scrollDown 30s linear infinite; }
+    .carousel-3 { animation: scrollUp 35s linear infinite; }
+
+    @keyframes scrollUp {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+
+    @keyframes scrollDown {
+      0% { transform: translateY(-50%); }
+      100% { transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .carousel-side { display: none; }
+      .auth-tagline { font-size: 32px; text-align: center; }
+      .auth-buttons { flex-direction: column; width: 100%; }
+      .auth-buttons .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-page">
+
+    <!-- Left: Auth Content -->
+    <div class="auth-form-side" id="authContent">
+
+      <!-- Welcome State -->
+      <div class="auth-welcome" id="welcomeState">
+        <div class="auth-welcome-logo">
+          <img src="../assets/images/logo.png" alt="Playnist">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 50px;">
+          <p class="auth-tagline">your game library<br>reimagined.</p>
+          <div class="auth-buttons">
+            <button class="btn btn-primary" onclick="showState('signup')">SIGN UP</button>
+            <button class="btn btn-outline" onclick="showState('signin')">SIGN IN</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sign In State -->
+      <div class="auth-form-container" id="signinState">
+        <div class="auth-form-header">
+          <h1 class="auth-form-title">Welcome back</h1>
+          <p class="auth-form-subtitle">Enter your information to access your accounts</p>
+        </div>
+        <form class="auth-form">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="input" type="email" placeholder="Enter your email">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="input" type="password" placeholder="Enter your password">
+          </div>
+          <a class="forgot-link" href="#" onclick="showState('forgot')">Forgot a password</a>
+          <button class="btn btn-primary" type="submit">SIGN IN</button>
+        </form>
+        <div class="auth-divider">or</div>
+        <button class="google-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+        <p class="auth-link">Don't Have An Account? <a href="#" onclick="showState('signup')">Sign Up</a></p>
+      </div>
+
+      <!-- Sign Up State -->
+      <div class="auth-form-container" id="signupState">
+        <div class="auth-form-header">
+          <h1 class="auth-form-title">Create an account</h1>
+          <p class="auth-form-subtitle">Fill in the following details to get started</p>
+        </div>
+        <form class="auth-form">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input class="input" type="text" placeholder="Choose a username">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="input" type="email" placeholder="Enter your email">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="input" type="password" placeholder="Create a password">
+          </div>
+          <button class="btn btn-primary" type="submit">SIGN UP</button>
+        </form>
+        <div class="auth-divider">or</div>
+        <button class="google-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+        <p class="auth-link">Already Have An Account? <a href="#" onclick="showState('signin')">Sign In</a></p>
+      </div>
+
+      <!-- Forgot Password State -->
+      <div class="auth-form-container" id="forgotState">
+        <div class="auth-form-header">
+          <h1 class="auth-form-title">Reset Password</h1>
+          <p class="auth-form-subtitle">Enter Email and we will send link to change</p>
+        </div>
+        <form class="auth-form">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="input" type="email" placeholder="Enter your email">
+          </div>
+          <button class="btn btn-primary" type="submit">RESET</button>
+        </form>
+        <p class="auth-link"><a href="#" onclick="showState('signin')">Back to Sign In</a></p>
+      </div>
+
+    </div>
+
+    <!-- Right: Carousel Background -->
+    <div class="carousel-side">
+      <div class="carousel-container">
+        <div class="carousel carousel-1">
+          <img src="../assets/images/carousel/carousel-minecraft.svg" alt="Minecraft">
+          <img src="../assets/images/carousel/carousel-mariokart.svg" alt="Mario Kart 8 Deluxe">
+          <img src="../assets/images/carousel/carousel-sims4.svg" alt="The Sims 4">
+          <img src="../assets/images/carousel/carousel-planet-coaster.svg" alt="Planet Coaster">
+          <!-- duplicate set for seamless loop -->
+          <img src="../assets/images/carousel/carousel-minecraft.svg" alt="Minecraft">
+          <img src="../assets/images/carousel/carousel-mariokart.svg" alt="Mario Kart 8 Deluxe">
+          <img src="../assets/images/carousel/carousel-sims4.svg" alt="The Sims 4">
+          <img src="../assets/images/carousel/carousel-planet-coaster.svg" alt="Planet Coaster">
+        </div>
+      </div>
+      <div class="carousel-container">
+        <div class="carousel carousel-2">
+          <img src="../assets/images/carousel/carousel-odyssey.svg" alt="Odyssey">
+          <img src="../assets/images/carousel/carousel-short-hike.svg" alt="A Short Hike">
+          <img src="../assets/images/carousel/carousel-unpacking.svg" alt="Unpacking">
+          <img src="../assets/images/game-cover-01.png" alt="Game">
+          <!-- duplicate set -->
+          <img src="../assets/images/carousel/carousel-odyssey.svg" alt="Odyssey">
+          <img src="../assets/images/carousel/carousel-short-hike.svg" alt="A Short Hike">
+          <img src="../assets/images/carousel/carousel-unpacking.svg" alt="Unpacking">
+          <img src="../assets/images/game-cover-01.png" alt="Game">
+        </div>
+      </div>
+      <div class="carousel-container">
+        <div class="carousel carousel-3">
+          <img src="../assets/images/game-cover-02.png" alt="Game">
+          <img src="../assets/images/game-cover-03.png" alt="Game">
+          <img src="../assets/images/game-cover-04.png" alt="Game">
+          <img src="../assets/images/game-cover-05.png" alt="Game">
+          <!-- duplicate set -->
+          <img src="../assets/images/game-cover-02.png" alt="Game">
+          <img src="../assets/images/game-cover-03.png" alt="Game">
+          <img src="../assets/images/game-cover-04.png" alt="Game">
+          <img src="../assets/images/game-cover-05.png" alt="Game">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function showState(state) {
+      document.getElementById('welcomeState').style.display = 'none';
+      document.getElementById('signinState').classList.remove('active');
+      document.getElementById('signupState').classList.remove('active');
+      document.getElementById('forgotState').classList.remove('active');
+
+      if (state === 'welcome') document.getElementById('welcomeState').style.display = 'flex';
+      else if (state === 'signin') document.getElementById('signinState').classList.add('active');
+      else if (state === 'signup') document.getElementById('signupState').classList.add('active');
+      else if (state === 'forgot') document.getElementById('forgotState').classList.add('active');
+    }
+  </script>
+
+</body>
+</html>
