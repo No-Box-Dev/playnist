@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playnist 2.0</title>
+  <link rel="icon" type="image/png" href="../assets/images/red-accent.png">
+  <link rel="stylesheet" href="../components/base.css">
+  <style>
+    body {
+      background: rgba(255, 253, 235, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .reset-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      max-width: 420px;
+      width: 90%;
+      padding: 40px;
+    }
+    .reset-logo {
+      width: 200px;
+    }
+    .reset-logo img {
+      width: 100%;
+      height: auto;
+    }
+    .reset-title {
+      font-family: 'GT America Mono', monospace;
+      font-size: 24px;
+      color: rgba(26, 26, 26, 1);
+      text-align: center;
+    }
+    .reset-subtitle {
+      font-family: 'GT America Mono', monospace;
+      font-size: 16px;
+      color: rgba(138, 138, 138, 1);
+      text-align: center;
+    }
+    .form-group {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-family: 'HF Gesco Regular', Georgia, serif;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+    .password-field {
+      position: relative;
+      width: 100%;
+    }
+    .password-field .input {
+      padding-right: 40px;
+    }
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(51, 51, 51, 1);
+      font-size: 18px;
+    }
+    .reset-submit {
+      width: 100%;
+    }
+    .reset-back {
+      margin-top: 12px;
+      font-family: 'GT America Mono', monospace;
+      font-size: 13px;
+    }
+    .reset-back a {
+      color: rgba(198, 46, 7, 1);
+      text-decoration: none;
+    }
+
+    /* Success Popup (hidden by default) */
+    .success-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .success-popup.show { display: flex; }
+    .success-content {
+      background: rgba(255, 255, 255, 1);
+      border-radius: 16px;
+      overflow: hidden;
+      width: 400px;
+      text-align: center;
+    }
+    .success-header {
+      background: rgba(198, 46, 7, 1);
+      color: rgba(255, 255, 255, 1);
+      font-family: 'HF Gesco Regular', Georgia, serif;
+      font-size: 32px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .success-header .close-x {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 1);
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .success-body {
+      padding: 32px;
+    }
+    .success-body h3 {
+      font-family: 'HF Gesco Regular', Georgia, serif;
+      font-size: 24px;
+      margin: 16px 0 8px;
+    }
+    .success-body p {
+      font-family: 'GT America Mono', monospace;
+      font-size: 14px;
+      color: rgba(138, 138, 138, 1);
+      margin-bottom: 24px;
+    }
+    .success-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="reset-card">
+    <div class="reset-logo">
+      <img src="../assets/images/logo.png" alt="Playnist">
+    </div>
+    <h1 class="reset-title">Reset Password</h1>
+    <p class="reset-subtitle">Enter your new password</p>
+    <form style="width: 100%;">
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <div class="password-field">
+          <input class="input" type="password" placeholder="Enter new password">
+          <button type="button" class="password-toggle">&#x1F441;</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Repeat Password</label>
+        <div class="password-field">
+          <input class="input" type="password" placeholder="Repeat new password">
+          <button type="button" class="password-toggle">&#x1F441;</button>
+        </div>
+      </div>
+      <button class="btn btn-primary reset-submit" type="submit">CHANGE</button>
+    </form>
+    <div class="reset-back">
+      <a href="login.html">Back to Sign In</a>
+    </div>
+  </div>
+
+  <!-- Success Popup -->
+  <div class="success-popup" id="successPopup">
+    <div class="success-content">
+      <div class="success-header">
+        <span>FORGOT A PASSWORD</span>
+        <button class="close-x">&times;</button>
+      </div>
+      <div class="success-body">
+        <div style="font-size: 48px;">&#x2705;</div>
+        <h3>Successful</h3>
+        <p>Your password successfully changed, let's login</p>
+        <div class="success-buttons">
+          <button class="btn btn-outline">CANCEL</button>
+          <a class="btn btn-primary" href="login.html">LOGIN</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

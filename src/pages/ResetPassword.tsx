@@ -1,0 +1,62 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import './ResetPassword.css';
+
+export default function ResetPassword() {
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showPw1, setShowPw1] = useState(false);
+  const [showPw2, setShowPw2] = useState(false);
+  const navigate = useNavigate();
+
+  return (
+    <div className="reset-page">
+      <div className="reset-card">
+        <div className="reset-logo">
+          <img src="/images/logo.png" alt="Playnist" />
+        </div>
+        <h1 className="reset-title">Reset Password</h1>
+        <p className="reset-subtitle">Enter your new password</p>
+        <form style={{ width: '100%' }} onSubmit={(e) => { e.preventDefault(); setShowSuccess(true); }}>
+          <div className="form-group" style={{ width: '100%', marginBottom: 16 }}>
+            <label className="form-label" style={{ display: 'block', marginBottom: 6 }}>New Password</label>
+            <div className="password-field">
+              <input className="input" type={showPw1 ? 'text' : 'password'} placeholder="Enter new password" />
+              <button type="button" className="password-toggle" onClick={() => setShowPw1(!showPw1)}>&#x1F441;</button>
+            </div>
+          </div>
+          <div className="form-group" style={{ width: '100%', marginBottom: 16 }}>
+            <label className="form-label" style={{ display: 'block', marginBottom: 6 }}>Repeat Password</label>
+            <div className="password-field">
+              <input className="input" type={showPw2 ? 'text' : 'password'} placeholder="Repeat new password" />
+              <button type="button" className="password-toggle" onClick={() => setShowPw2(!showPw2)}>&#x1F441;</button>
+            </div>
+          </div>
+          <button className="btn btn-primary" type="submit" style={{ width: '100%' }}>CHANGE</button>
+        </form>
+        <div className="reset-back">
+          <Link to="/">Back to Sign In</Link>
+        </div>
+      </div>
+
+      {showSuccess && (
+        <div className="success-popup show">
+          <div className="success-content">
+            <div className="success-header">
+              <span>FORGOT A PASSWORD</span>
+              <button className="close-x" onClick={() => setShowSuccess(false)}>&times;</button>
+            </div>
+            <div className="success-body">
+              <div style={{ fontSize: 48 }}>&#x2705;</div>
+              <h3>Successful</h3>
+              <p>Your password successfully changed, let's login</p>
+              <div className="success-buttons">
+                <button className="btn btn-outline" onClick={() => setShowSuccess(false)}>CANCEL</button>
+                <button className="btn btn-primary" onClick={() => navigate('/')}>LOGIN</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

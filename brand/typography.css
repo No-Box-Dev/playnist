@@ -1,0 +1,38 @@
+/* Custom Fonts */
+@font-face {
+  font-family: 'HF Gesco Bold';
+  src: url('../assets/fonts/HFGesco-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'HF Gesco Regular';
+  src: url('../assets/fonts/HFGesco-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'HF Gesco Light';
+  src: url('../assets/fonts/HFGesco-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT America Mono';
+  src: url('../assets/fonts/GTAmericaMono-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* Typography Scale */
+:root {
+  --font-heading: 'HF Gesco Bold', Georgia, serif;
+  --font-heading-regular: 'HF Gesco Regular', Georgia, serif;
+  --font-heading-light: 'HF Gesco Light', Georgia, serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'GT America Mono', 'Courier New', monospace;
+  --font-logo: 'HF Gesco Bold', Georgia, serif;
+}

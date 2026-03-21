@@ -1,0 +1,34 @@
+{
+  "brand": {
+    "red": "#C62E07",
+    "red-bright": "#EF2F15",
+    "red-dark": "#B0200C",
+    "terra-cotta": "#DD8167",
+    "orange": "#FA9B18",
+    "yellow": "#F4CF03",
+    "gold": "#FFB505",
+    "peach": "#FDE9C3",
+    "cream": "#FFFDEB",
+    "green": "#79BC90",
+    "green-dark": "#1E6C30",
+    "green-success": "#17DB4E",
+    "blue-primary": "#0205D3",
+    "blue-bright": "#1E6DF6",
+    "purple": "#513EDF",
+    "black": "#000000",
+    "dark-gray": "#252525",
+    "navy-text": "#091747",
+    "white": "#FFFFFF"
+  },
+  "semantic": {
+    "success": "#17DB4E",
+    "alert": "#FAB515",
+    "danger": "#B0200C",
+    "destructive": "#FF0000"
+  },
+  "gameStatus": {
+    "played": "#79BC90",
+    "playing": "#FA9B18",
+    "wantToPlay": "#C62E07"
+  }
+}

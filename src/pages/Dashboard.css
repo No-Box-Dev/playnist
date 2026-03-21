@@ -1,0 +1,82 @@
+.main-content {
+  margin-left: 72px;
+  margin-top: 56px;
+  padding: 40px 35px;
+  flex: 1;
+  max-width: 1080px;
+}
+.section { margin-bottom: 40px; }
+
+.ambassador-card {
+  background: var(--color-white);
+  border-radius: 16px;
+  border: 1px solid var(--color-gray-border);
+  padding: 24px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.ambassador-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.ambassador-content { flex: 1; }
+.ambassador-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+.ambassador-quote {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-gray-medium);
+  font-style: italic;
+  line-height: 1.5;
+}
+.ambassador-game { display: flex; align-items: center; gap: 12px; margin-top: 12px; cursor: pointer; }
+.ambassador-game img { width: 48px; height: 64px; border-radius: 6px; object-fit: cover; }
+
+.community-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.community-card {
+  background: var(--color-white);
+  border-radius: 12px;
+  border: 1px solid var(--color-gray-border);
+  padding: 16px;
+}
+.community-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.community-card-body { font-size: 14px; line-height: 1.6; color: var(--color-gray-medium); margin-bottom: 12px; }
+.community-game-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-gray-bg);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.prompt-card {
+  background: var(--color-peach);
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+}
+.prompt-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--color-gray);
+  margin-bottom: 12px;
+}
+.prompt-text {
+  font-family: 'HF Gesco Regular', Georgia, serif;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: var(--color-gray-dark);
+}
+
+.read-more {
+  color: var(--color-red);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .main-content { margin-left: 0; }
+  .community-grid { grid-template-columns: 1fr; }
+}

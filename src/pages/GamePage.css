@@ -1,0 +1,73 @@
+.game-hero { display: flex; gap: 20px; margin-bottom: 48px; }
+.game-hero-cover { width: 134px; min-height: 158px; flex-shrink: 0; border-radius: 12px; overflow: hidden; }
+.game-hero-cover img { width: 100%; display: block; }
+.game-hero-info { flex: 1; }
+.game-title {
+  font-family: 'HF Gesco Regular', Georgia, serif;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.game-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.game-tag {
+  background: var(--color-gray-bg);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--color-gray-medium);
+}
+.game-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.game-rating-score { font-size: 28px; font-weight: 700; color: var(--color-yellow); }
+.game-rating-label { font-size: 13px; color: var(--color-gray); }
+.game-description {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-gray-medium);
+  margin-bottom: 20px;
+}
+.game-details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+.game-detail-item { font-size: 13px; }
+.game-detail-label { color: var(--color-gray); margin-bottom: 2px; }
+.game-detail-value { font-weight: 500; color: var(--color-dark-gray); }
+.added-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-gray);
+  margin-bottom: 16px;
+}
+.added-count strong { color: var(--color-dark-gray); }
+.game-actions { display: flex; gap: 12px; margin-bottom: 24px; }
+.game-section { margin-bottom: 32px; }
+
+.comment-box {
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.comment-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.comment-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+.comment-name { font-weight: 500; font-size: 14px; }
+.comment-time { font-size: 12px; color: var(--color-gray); }
+.comment-body { font-size: 14px; color: var(--color-gray-medium); line-height: 1.5; }
+.add-comment { display: flex; gap: 12px; align-items: flex-start; }
+.add-comment textarea {
+  flex: 1;
+  font-family: 'HF Gesco Regular', Georgia, serif;
+  font-size: 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-gray-border);
+  border-radius: 8px;
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+}
+.add-comment textarea:focus { border-color: var(--color-red); }
+
+@media (max-width: 768px) {
+  .game-hero { flex-direction: column; }
+  .game-hero-cover { width: 100%; max-width: 300px; }
+}
