@@ -79,3 +79,15 @@
 .completion-text { font-size: 14px; color: var(--color-gray); margin-bottom: 24px; }
 .onboarding-footer { display: flex; justify-content: space-between; align-items: center; }
 .step-counter { font-size: 13px; color: var(--color-gray); }
+
+@media (max-width: 768px) {
+  .onboarding { padding: 24px; }
+  .game-pick-grid { grid-template-columns: repeat(3, 1fr); }
+  .user-card-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .onboarding { padding: 20px 16px; width: 95%; }
+  .game-pick-grid { grid-template-columns: repeat(2, 1fr); }
+  .user-card-grid { grid-template-columns: repeat(2, 1fr); }
+  .onboarding-title { font-size: 18px; }
+}

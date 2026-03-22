@@ -14,11 +14,24 @@
 }
 .header-logo { height: 28px; }
 .header-logo img { height: 100%; }
-.header-actions { display: flex; align-items: center; gap: 16px; }
-.header-add-btn { font-size: 13px; padding: 6px 14px; }
-.header-icon-btn { background: none; border: none; cursor: pointer; font-size: 20px; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.header-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--color-dark-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.header-icon-btn:hover { background: var(--color-gray-bg); }
 .header-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; cursor: pointer; }
 
 @media (max-width: 768px) {
-  .header { left: 0; }
+  .header { left: 0; padding: 0 16px; }
 }

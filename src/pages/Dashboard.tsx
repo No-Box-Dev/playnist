@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import BottomNav from '../components/BottomNav';
 import GameCard from '../components/GameCard';
 import Modal from '../components/Modal';
 import { getTrending, getNew, addToCollection } from '../api';
@@ -162,6 +163,7 @@ export default function Dashboard() {
           )}
         </Modal>
       </main>
+      <BottomNav />
     </div>
   );
 }

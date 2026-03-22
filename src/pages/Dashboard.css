@@ -1,10 +1,3 @@
-.main-content {
-  margin-left: 72px;
-  margin-top: 56px;
-  padding: 40px 35px;
-  flex: 1;
-  max-width: 1080px;
-}
 .section { margin-bottom: 40px; }
 
 .ambassador-card {
@@ -25,6 +18,7 @@
   color: var(--color-gray-medium);
   font-style: italic;
   line-height: 1.5;
+  max-width: 720px;
 }
 .ambassador-game { display: flex; align-items: center; gap: 12px; margin-top: 12px; cursor: pointer; }
 .ambassador-game img { width: 48px; height: 64px; border-radius: 6px; object-fit: cover; }
@@ -37,7 +31,16 @@
   padding: 16px;
 }
 .community-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.community-card-body { font-size: 14px; line-height: 1.6; color: var(--color-gray-medium); margin-bottom: 12px; }
+.community-card-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-gray-medium);
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 .community-game-tag {
   display: inline-flex;
   align-items: center;
@@ -76,7 +79,18 @@
   cursor: pointer;
 }
 
+@media (max-width: 1024px) {
+  .community-grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 768px) {
-  .main-content { margin-left: 0; }
   .community-grid { grid-template-columns: 1fr; }
+  .ambassador-card { flex-direction: column; align-items: center; text-align: center; }
+  .ambassador-game { justify-content: center; }
+  .section { margin-bottom: 28px; }
+}
+@media (max-width: 480px) {
+  .prompt-text { font-size: 18px; }
+  .prompt-card { padding: 24px 16px; }
+  .ambassador-card { padding: 16px; }
+  .section { margin-bottom: 24px; }
 }

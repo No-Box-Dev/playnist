@@ -116,6 +116,7 @@ body {
   color: var(--color-gray-dark);
   min-height: 100vh;
   line-height: 1.5;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5 {
@@ -127,6 +128,21 @@ a { color: inherit; text-decoration: none; }
 
 /* Layout */
 .app-layout { display: flex; min-height: 100vh; }
+.main-content {
+  margin-left: 72px;
+  margin-top: 56px;
+  padding: 40px;
+  flex: 1;
+  min-width: 0;
+  max-width: 1400px;
+}
+.main-area {
+  margin-left: 72px;
+  margin-top: 56px;
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 40px;
+}
 
 /* Buttons */
 .btn {
@@ -223,7 +239,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* Reactions */
-.reactions { display: flex; gap: 8px; align-items: center; }
+.reactions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .reaction-btn {
   background: var(--color-gray-bg);
   border: none;
@@ -307,7 +323,23 @@ a { color: inherit; text-decoration: none; }
 .empty-state-text { font-size: 16px; color: var(--color-gray); margin-bottom: 16px; }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .game-grid { grid-template-columns: repeat(4, 1fr); }
+}
 @media (max-width: 768px) {
-  .game-grid { grid-template-columns: repeat(3, 1fr); }
+  .main-content { margin-left: 0; padding: 24px 16px calc(72px + env(safe-area-inset-bottom)); max-width: none; }
+  .main-area { margin-left: 0; padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+  .game-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .game-grid-4 { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .game-card .add-btn { width: 36px; height: 36px; }
+  .modal { padding: 20px 16px; }
+  .modal .pill { font-size: 12px; padding: 5px 12px; }
+  .input, input, textarea, select { font-size: 16px; }
+}
+@media (max-width: 480px) {
+  .main-content { padding: 16px 12px calc(72px + env(safe-area-inset-bottom)); }
+  .game-grid { grid-template-columns: repeat(2, 1fr); }
   .game-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .section-header { font-size: 20px; }
+  .empty-state { padding: 32px 16px; }
 }
