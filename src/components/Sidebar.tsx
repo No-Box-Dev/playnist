@@ -31,7 +31,7 @@ export default function Sidebar() {
       <NavLink to="/dashboard" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} title="Discover">
         <DiscoverIcon />
       </NavLink>
-      <NavLink to="#" className="sidebar-item" title="Journal">
+      <NavLink to="/journal" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} title="Journal">
         <JournalIcon />
       </NavLink>
     </nav>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import BottomNav from '../components/BottomNav';
 import ReactionBar from '../components/ReactionBar';
 import Modal from '../components/Modal';
 import { getGame, getGameComments, getGameReactions, addGameComment, addToCollection, createJournal } from '../api';
@@ -52,6 +53,7 @@ export default function GamePage() {
       <Sidebar />
       <Header />
       <main className="main-content"><p>Loading...</p></main>
+      <BottomNav />
     </div>
   );
 
@@ -73,7 +75,7 @@ export default function GamePage() {
       <main className="main-content">
         <div className="game-hero">
           <div className="game-hero-cover">
-            {coverUrl ? <img src={coverUrl} alt={game.name} /> : <div style={{ width: '100%', height: 200, background: 'var(--color-gray-bg)' }} />}
+            {coverUrl ? <img src={coverUrl} alt={game.name} /> : <div style={{ width: '100%', aspectRatio: '3/4', background: 'var(--color-gray-bg)' }} />}
           </div>
           <div className="game-hero-info">
             <h1 className="game-title">{game.name}</h1>
@@ -170,6 +172,7 @@ export default function GamePage() {
           </div>
         </Modal>
       </main>
+      <BottomNav />
     </div>
   );
 }

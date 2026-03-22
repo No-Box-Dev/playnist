@@ -7,6 +7,8 @@ import Login from './pages/Login';
 import ResetPassword from './pages/ResetPassword';
 import Onboarding from './pages/Onboarding';
 import Dashboard from './pages/Dashboard';
+import Search from './pages/Search';
+import Journal from './pages/Journal';
 import Profile from './pages/Profile';
 import GamePage from './pages/GamePage';
 
@@ -28,6 +30,8 @@ export default function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/journal" element={<Journal />} />
         <Route path="/profile/:id?" element={<Profile />} />
         <Route path="/game/:igdbId" element={<GamePage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -249,10 +249,18 @@
   100% { transform: translateY(0); }
 }
 
+@media (max-width: 1024px) {
+  .auth-form-side { flex: 0 0 55%; width: 55%; }
+  .carousel-side { flex: 0 0 45%; width: 45%; }
+}
 @media (max-width: 768px) {
   .carousel-side { display: none; }
-  .auth-form-side { max-width: 100%; padding: 20px; }
+  .auth-form-side { flex: 1; width: 100%; max-width: 100%; padding: 20px; }
   .auth-tagline { font-size: 32px; text-align: center; }
   .auth-buttons { flex-direction: column; width: 100%; }
   .auth-buttons .btn { width: 100%; }
+}
+@media (max-width: 480px) {
+  .auth-form-side { padding: 16px; }
+  .auth-form-container { gap: 16px; }
 }

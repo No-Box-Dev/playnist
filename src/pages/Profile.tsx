@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import BottomNav from '../components/BottomNav';
 import Modal from '../components/Modal';
 import { useAuth } from '../hooks/useAuth';
 import { getUserCollection, getUserJournals, getGame, addToCollection, createJournal, deleteJournal, searchGames } from '../api';
@@ -98,7 +99,7 @@ export default function Profile() {
     <div className="app-layout">
       <Sidebar />
       <Header />
-      <main style={{ marginLeft: 72, marginTop: 56, flex: 1 }}>
+      <main className="main-area">
         {/* Sunburst Banner */}
         <div className="profile-banner" />
 
@@ -186,7 +187,7 @@ export default function Profile() {
 
         {/* Journal Tab */}
         {tab === 'journal' && (
-          <div style={{ padding: '0 32px' }}>
+          <div className="library-content">
             {isOwn && (
               <button className="btn btn-primary" style={{ marginBottom: 16 }} onClick={() => setJournalModal(true)}>+ Write in Journal</button>
             )}
@@ -290,6 +291,7 @@ export default function Profile() {
           )}
         </Modal>
       </main>
+      <BottomNav />
     </div>
   );
 }
