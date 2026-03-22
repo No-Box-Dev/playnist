@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -35,12 +35,22 @@ export default function Search() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    if (initialQuery) handleSearch(initialQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleAdd = (game: IGDBGame) => setAddModal(game);
 
   const confirmAdd = async () => {
     if (!addModal) return;
-    await addToCollection(addModal.id, addStatus);
-    setAddModal(null);
+    try {
+      await addToCollection(addModal.id, addStatus);
+      setAddModal(null);
+      setAddStatus('played');
+    } catch {
+      // TODO: surface error feedback
+    }
   };
 
   return (

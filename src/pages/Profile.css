@@ -141,9 +141,8 @@
   .profile-actions .btn { width: 100%; }
   .profile-bio { padding: 12px 16px; }
   .profile-tabs { padding: 0 16px; }
-  .library-header { padding: 0 16px; flex-wrap: wrap; gap: 12px; }
+  .library-header { padding: 0 16px; flex-wrap: wrap; gap: 12px; max-width: none; }
   .library-content { padding: 0 16px; max-width: none; }
-  .library-header { max-width: none; }
   .profile-name { font-size: 20px; }
   .profile-stats { gap: 12px; }
   .journal-entry { gap: 12px; }

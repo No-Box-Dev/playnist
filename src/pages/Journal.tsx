@@ -12,7 +12,7 @@ import './Journal.css';
 export default function Journal() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const userId = user?.id || 'dev-user-001';
+  const userId = user?.id;
 
   const [journals, setJournals] = useState<JournalType[]>([]);
   const [gameCache, setGameCache] = useState<Record<number, IGDBGame>>({});
@@ -23,7 +23,8 @@ export default function Journal() {
   const [content, setContent] = useState('');
 
   useEffect(() => {
-    getUserJournals(userId).then((j) => setJournals(j as JournalType[]));
+    if (!userId) return;
+    getUserJournals(userId).then((j) => setJournals(j as JournalType[])).catch(() => {});
   }, [userId]);
 
   useEffect(() => {
@@ -38,24 +39,36 @@ export default function Journal() {
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
-    const results = await searchGames(searchQuery);
-    setSearchResults(results as IGDBGame[]);
+    try {
+      const results = await searchGames(searchQuery);
+      setSearchResults(results as IGDBGame[]);
+    } catch {
+      setSearchResults([]);
+    }
   };
 
   const handleCreate = async () => {
-    if (!selectedGame || !content.trim()) return;
-    await createJournal(selectedGame.id, content);
-    setWriteModal(false);
-    setSelectedGame(null);
-    setContent('');
-    setSearchQuery('');
-    setSearchResults([]);
-    getUserJournals(userId).then((j) => setJournals(j as JournalType[]));
+    if (!selectedGame || !content.trim() || !userId) return;
+    try {
+      await createJournal(selectedGame.id, content);
+      setWriteModal(false);
+      setSelectedGame(null);
+      setContent('');
+      setSearchQuery('');
+      setSearchResults([]);
+      getUserJournals(userId).then((j) => setJournals(j as JournalType[])).catch(() => {});
+    } catch {
+      // TODO: surface error feedback
+    }
   };
 
   const handleDelete = async (id: string) => {
-    await deleteJournal(id);
-    setJournals((prev) => prev.filter((j) => j.id !== id));
+    try {
+      await deleteJournal(id);
+      setJournals((prev) => prev.filter((j) => j.id !== id));
+    } catch {
+      // TODO: surface error feedback
+    }
   };
 
   const closeModal = () => {
@@ -88,7 +101,14 @@ export default function Journal() {
             {journals.map((j) => {
               const game = gameCache[j.igdb_game_id];
               return (
-                <div key={j.id} className="journal-card" onClick={() => navigate(`/game/${j.igdb_game_id}`)}>
+                <div
+                  key={j.id}
+                  className="journal-card"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate(`/game/${j.igdb_game_id}`)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(`/game/${j.igdb_game_id}`); }}
+                >
                   <div className="journal-card-top">
                     {game?.cover?.image_id ? (
                       <img className="journal-card-cover" src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.image_id}.jpg`} alt={game.name} />

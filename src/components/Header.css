@@ -12,7 +12,13 @@
   padding: 0 24px;
   z-index: 40;
 }
-.header-logo { height: 28px; }
+.header-logo {
+  height: 28px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
 .header-logo img { height: 100%; }
 .header-actions { display: flex; align-items: center; gap: 12px; }
 .header-icon-btn {
