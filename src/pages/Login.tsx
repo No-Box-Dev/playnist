@@ -131,8 +131,8 @@ export default function Login() {
             </div>
             <div className="signup-tabs">
               <button className={`signup-tab ${signupStep === 'email' ? 'active' : 'done'}`} onClick={() => setSignupStep('email')}>Email</button>
-              <button className={`signup-tab ${signupStep === 'password' ? 'active-green' : signupStep === 'username' ? 'done' : ''}`} onClick={() => signupEmail && setSignupStep('password')}>Password</button>
-              <button className={`signup-tab ${signupStep === 'username' ? 'active-green' : ''}`} onClick={() => signupEmail && signupPassword && setSignupStep('username')}>Username</button>
+              <button className={`signup-tab ${signupStep === 'password' ? 'active' : signupStep === 'username' ? 'done' : ''}`} onClick={() => signupEmail && setSignupStep('password')}>Password</button>
+              <button className={`signup-tab ${signupStep === 'username' ? 'active' : ''}`} onClick={() => signupEmail && signupPassword && setSignupStep('username')}>Username</button>
             </div>
             <div className="auth-form" style={{ gap: 16 }}>
               {signupStep === 'email' && (
