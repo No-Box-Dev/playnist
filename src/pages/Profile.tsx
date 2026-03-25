@@ -17,7 +17,7 @@ export default function Profile() {
   const isOwn = !id || id === user?.id;
 
   const [tab, setTab] = useState<'library' | 'journal'>('library');
-  const [filter, setFilter] = useState<string | null>('played');
+  const [filter, setFilter] = useState<string | null>(null);
   const [collection, setCollection] = useState<CollectionItem[]>([]);
   const [journals, setJournals] = useState<Journal[]>([]);
   const [gameCache, setGameCache] = useState<Record<number, IGDBGame>>({});
@@ -39,24 +39,20 @@ export default function Profile() {
     }
   }, [profileId, tab]);
 
-  // Fetch game details for collection items
   useEffect(() => {
     const missing = collection.filter((c) => !gameCache[c.igdb_game_id]).map((c) => c.igdb_game_id);
     if (missing.length === 0) return;
-    const unique = [...new Set(missing)];
-    unique.forEach((igdbId) => {
+    [...new Set(missing)].forEach((igdbId) => {
       getGame(igdbId).then((g) => {
         if (g) setGameCache((prev) => ({ ...prev, [igdbId]: g as IGDBGame }));
       });
     });
   }, [collection]);
 
-  // Also fetch game details for journals
   useEffect(() => {
     const missing = journals.filter((j) => !gameCache[j.igdb_game_id]).map((j) => j.igdb_game_id);
     if (missing.length === 0) return;
-    const unique = [...new Set(missing)];
-    unique.forEach((igdbId) => {
+    [...new Set(missing)].forEach((igdbId) => {
       getGame(igdbId).then((g) => {
         if (g) setGameCache((prev) => ({ ...prev, [igdbId]: g as IGDBGame }));
       });
@@ -95,6 +91,10 @@ export default function Profile() {
     getUserJournals(profileId).then((j) => setJournals(j as Journal[]));
   };
 
+  const playedCount = collection.filter((c) => c.status === 'played').length;
+  const playingCount = collection.filter((c) => c.status === 'playing').length;
+  const wantCount = collection.filter((c) => c.status === 'want_to_play').length;
+
   return (
     <div className="app-layout">
       <Sidebar />
@@ -103,59 +103,57 @@ export default function Profile() {
         {/* Sunburst Banner */}
         <div className="profile-banner" />
 
-        {/* Profile Info */}
+        {/* Profile Info — avatar left, stats+edit right */}
         <div className="profile-info">
           <div className="profile-avatar-wrap">
             <img className="profile-avatar" src={user?.avatar_url || '/images/user-icon.png'} alt="Avatar" />
             {isOwn && <div className="profile-edit-avatar">&#x270F;</div>}
           </div>
-          <div className="profile-details">
-            <h1 className="profile-name">{user?.username || 'User'}</h1>
-            <div className="profile-username">@{user?.username?.toLowerCase() || 'user'}</div>
-            {user?.is_ambassador === 1 && (
-              <div style={{ marginTop: 6 }}><span className="badge-ambassador">&#x2B50; Ambassador</span></div>
-            )}
-            <div className="profile-stats">
-              <div><strong>128</strong> <span>Followers</span></div>
-              <div><strong>64</strong> <span>Following</span></div>
-              <div><strong>{collection.length}</strong> <span>Games</span></div>
+          <div className="profile-right">
+            <div className="profile-stats-row">
+              <div className="profile-stat"><strong>0</strong> Followers</div>
+              <div className="profile-stat"><strong>0</strong> Following</div>
             </div>
-          </div>
-          <div className="profile-actions">
             {isOwn ? (
-              <button className="btn btn-outline">Edit Profile</button>
+              <button className="btn btn-outline profile-edit-btn" onClick={() => navigate('/settings')}>EDIT PROFILE &#x270F;</button>
             ) : (
               <button className="btn btn-primary">+ Follow</button>
             )}
           </div>
         </div>
 
-        {/* Bio */}
-        <div className="profile-bio">{user?.bio || ''}</div>
+        {/* Username */}
+        <h1 className="profile-name">{user?.username || 'User'}</h1>
 
-        {/* Tabs */}
+        {/* Tabs — LIBRARY / JOURNAL */}
         <div className="profile-tabs">
-          <button className={`profile-tab ${tab === 'library' ? 'active' : ''}`} onClick={() => setTab('library')}>Library</button>
-          <button className={`profile-tab ${tab === 'journal' ? 'active' : ''}`} onClick={() => setTab('journal')}>Journal</button>
+          <button className={`profile-tab ${tab === 'library' ? 'active' : ''}`} onClick={() => setTab('library')}>
+            &#x1F3AE; LIBRARY
+          </button>
+          <button className={`profile-tab ${tab === 'journal' ? 'active' : ''}`} onClick={() => setTab('journal')}>
+            &#x1F4DD; JOURNAL
+          </button>
         </div>
 
         {/* Library Tab */}
         {tab === 'library' && (
-          <div>
-            <div className="library-header">
-              <div className="library-filters">
-                <button className={`pill pill-played ${filter === 'played' ? 'active' : ''}`} onClick={() => setFilter(filter === 'played' ? null : 'played')}>Played</button>
-                <button className={`pill pill-playing ${filter === 'playing' ? 'active' : ''}`} onClick={() => setFilter(filter === 'playing' ? null : 'playing')}>Playing</button>
-                <button className={`pill pill-want ${filter === 'want_to_play' ? 'active' : ''}`} onClick={() => setFilter(filter === 'want_to_play' ? null : 'want_to_play')}>Want to Play</button>
-              </div>
-              {isOwn && <button className="btn btn-primary" style={{ fontSize: 13 }} onClick={() => setAddModal(true)}>+ Add New Game</button>}
+          <div className="profile-section">
+            <div className="collections-header">
+              <h2 className="collections-title">COLLECTIONS</h2>
+              {isOwn && <button className="btn btn-primary collections-add-btn" onClick={() => setAddModal(true)}>ADD NEW GAME +</button>}
+            </div>
+            <div className="library-filters">
+              <button className={`pill pill-played ${filter === 'played' ? 'active' : ''}`} onClick={() => setFilter(filter === 'played' ? null : 'played')}>Played {playedCount}</button>
+              <button className={`pill pill-playing ${filter === 'playing' ? 'active' : ''}`} onClick={() => setFilter(filter === 'playing' ? null : 'playing')}>Playing {playingCount}</button>
+              <button className={`pill pill-want ${filter === 'want_to_play' ? 'active' : ''}`} onClick={() => setFilter(filter === 'want_to_play' ? null : 'want_to_play')}>Want to play {wantCount}</button>
             </div>
             <div className="library-content">
               {collection.length === 0 ? (
                 <div className="empty-state">
-                  <div className="empty-state-emoji">&#x1F622;</div>
-                  <div className="empty-state-text">Your Library is Empty</div>
-                  <button className="btn btn-primary" onClick={() => setAddModal(true)}>Add a Game +</button>
+                  <div className="empty-state-emoji">&#x1F4E6;</div>
+                  <div className="empty-state-title">YOUR LIBRARY IS EMPTY</div>
+                  <div className="empty-state-text">Add a game to your library</div>
+                  <button className="btn btn-orange" onClick={() => setAddModal(true)}>ADD A GAME +</button>
                 </div>
               ) : (
                 <div className="game-grid">
@@ -163,12 +161,7 @@ export default function Profile() {
                     const game = gameCache[item.igdb_game_id];
                     const imageId = game?.cover?.image_id;
                     return (
-                      <div
-                        key={item.id}
-                        className="game-card"
-                        style={{ aspectRatio: '2/3' }}
-                        onClick={() => navigate(`/game/${item.igdb_game_id}`)}
-                      >
+                      <div key={item.id} className="game-card" onClick={() => navigate(`/game/${item.igdb_game_id}`)}>
                         {imageId ? (
                           <img src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${imageId}.jpg`} alt={game?.name} loading="lazy" />
                         ) : (
@@ -187,15 +180,16 @@ export default function Profile() {
 
         {/* Journal Tab */}
         {tab === 'journal' && (
-          <div className="library-content">
+          <div className="profile-section">
             {isOwn && (
               <button className="btn btn-primary" style={{ marginBottom: 16 }} onClick={() => setJournalModal(true)}>+ Write in Journal</button>
             )}
             {journals.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-state-emoji">&#x1F4DD;</div>
-                <div className="empty-state-text">No journal entries yet</div>
-                {isOwn && <button className="btn btn-primary" onClick={() => setJournalModal(true)}>Write in Journal</button>}
+                <div className="empty-state-title">YOUR JOURNAL IS EMPTY</div>
+                <div className="empty-state-text">Add a game to your Library and write about your experience</div>
+                {isOwn && <button className="btn btn-orange" onClick={() => setAddModal(true)}>ADD NEW GAME +</button>}
               </div>
             ) : (
               journals.map((j) => {
@@ -209,7 +203,6 @@ export default function Profile() {
                     )}
                     <div style={{ flex: 1 }}>
                       <div className="journal-game-name">{game?.name || 'Game'}</div>
-                      {game?.genres && <span className="journal-genre">{game.genres.map((g) => g.name).join(', ')}</span>}
                       <p className="journal-text">{j.content}</p>
                     </div>
                     {isOwn && <button className="journal-delete" onClick={() => handleDeleteJournal(j.id)}>&#x1F5D1;</button>}
@@ -275,14 +268,7 @@ export default function Profile() {
           {selectedGame && (
             <>
               <div style={{ fontSize: 14, marginBottom: 12 }}>Game: <strong>{selectedGame.name}</strong></div>
-              <textarea
-                className="input"
-                rows={5}
-                placeholder="What moment made you smile? Made you cry? Made you frustrated?"
-                value={journalContent}
-                onChange={(e) => setJournalContent(e.target.value)}
-                style={{ resize: 'vertical', marginBottom: 16 }}
-              />
+              <textarea className="input" rows={5} placeholder="What moment made you smile? Made you cry?" value={journalContent} onChange={(e) => setJournalContent(e.target.value)} style={{ resize: 'vertical', marginBottom: 16 }} />
               <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
                 <button className="btn btn-outline" onClick={() => { setJournalModal(false); setSelectedGame(null); }}>Cancel</button>
                 <button className="btn btn-primary" onClick={handleCreateJournal}>Post</button>
