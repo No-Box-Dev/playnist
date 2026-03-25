@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
@@ -18,7 +18,6 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [addModal, setAddModal] = useState<IGDBGame | null>(null);
   const [addStatus, setAddStatus] = useState('played');
-  const navigate = useNavigate();
 
   const handleSearch = async (q?: string) => {
     const term = q ?? query;
