@@ -13,6 +13,7 @@ import Journal from './pages/Journal';
 import Profile from './pages/Profile';
 import GamePage from './pages/GamePage';
 import Settings from './pages/Settings';
+import Admin from './pages/Admin';
 
 function RequireAuth({ children, user }: { children: ReactNode; user: User | null }) {
   if (!user) return <Navigate to="/" replace />;
@@ -49,6 +50,7 @@ export default function App() {
         <Route path="/profile/:id?" element={<RequireAuth user={user}><Profile /></RequireAuth>} />
         <Route path="/game/:igdbId" element={<GamePage />} />
         <Route path="/settings" element={<RequireAuth user={user}><Settings /></RequireAuth>} />
+        <Route path="/admin" element={<RequireAuth user={user}><Admin /></RequireAuth>} />
         <Route path="*" element={<Navigate to={user ? '/dashboard' : '/'} replace />} />
       </Routes>
     </AuthContext>

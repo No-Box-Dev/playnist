@@ -402,6 +402,71 @@ export default {
         return json({ ok: true });
       }
 
+      // ── Admin: Page Sections ──
+      const pageSectionsMatch = path.match(/^\/admin\/pages\/([^/]+)\/sections$/);
+      if (pageSectionsMatch && method === 'GET') {
+        const { results } = await env.DB.prepare(
+          'SELECT * FROM page_sections WHERE page = ? ORDER BY sort_order'
+        ).bind(pageSectionsMatch[1]).all();
+        return json(results.map(r => ({ ...r, config: JSON.parse(r.config || '{}') })));
+      }
+
+      // Public endpoint: get enabled sections for a page
+      const publicPageMatch = path.match(/^\/pages\/([^/]+)\/sections$/);
+      if (publicPageMatch && method === 'GET') {
+        const { results } = await env.DB.prepare(
+          'SELECT * FROM page_sections WHERE page = ? AND enabled = 1 ORDER BY sort_order'
+        ).bind(publicPageMatch[1]).all();
+        return json(results.map(r => ({ ...r, config: JSON.parse(r.config || '{}') })));
+      }
+
+      const sectionMatch = path.match(/^\/admin\/sections\/([^/]+)$/);
+      if (sectionMatch && method === 'PATCH') {
+        const user = await getUser(env, request);
+        if (!user) return json({ error: 'Not authenticated' }, 401);
+        const body = await request.json();
+        const updates = [];
+        const values = [];
+        if (body.title !== undefined) { updates.push('title = ?'); values.push(body.title); }
+        if (body.config !== undefined) { updates.push('config = ?'); values.push(JSON.stringify(body.config)); }
+        if (body.enabled !== undefined) { updates.push('enabled = ?'); values.push(body.enabled ? 1 : 0); }
+        if (body.sort_order !== undefined) { updates.push('sort_order = ?'); values.push(body.sort_order); }
+        updates.push("updated_at = datetime('now')");
+        values.push(sectionMatch[1]);
+        await env.DB.prepare(`UPDATE page_sections SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
+        const updated = await env.DB.prepare('SELECT * FROM page_sections WHERE id = ?').bind(sectionMatch[1]).first();
+        return json({ ...updated, config: JSON.parse(updated.config || '{}') });
+      }
+
+      if (path === '/admin/sections' && method === 'POST') {
+        const user = await getUser(env, request);
+        if (!user) return json({ error: 'Not authenticated' }, 401);
+        const { page, section_type, title, config, sort_order } = await request.json();
+        if (!page || !section_type || !title) return json({ error: 'Missing fields' }, 400);
+        const id = uuid();
+        await env.DB.prepare(
+          'INSERT INTO page_sections (id, page, section_type, title, sort_order, config) VALUES (?, ?, ?, ?, ?, ?)'
+        ).bind(id, page, section_type, title, sort_order || 0, JSON.stringify(config || {})).run();
+        return json({ id, page, section_type, title, sort_order: sort_order || 0, config: config || {}, enabled: 1 }, 201);
+      }
+
+      if (sectionMatch && method === 'DELETE') {
+        const user = await getUser(env, request);
+        if (!user) return json({ error: 'Not authenticated' }, 401);
+        await env.DB.prepare('DELETE FROM page_sections WHERE id = ?').bind(sectionMatch[1]).run();
+        return json({ ok: true });
+      }
+
+      // Bulk reorder
+      if (path === '/admin/sections/reorder' && method === 'POST') {
+        const user = await getUser(env, request);
+        if (!user) return json({ error: 'Not authenticated' }, 401);
+        const { order } = await request.json(); // [{id, sort_order}]
+        const stmt = env.DB.prepare('UPDATE page_sections SET sort_order = ? WHERE id = ?');
+        await env.DB.batch(order.map(o => stmt.bind(o.sort_order, o.id)));
+        return json({ ok: true });
+      }
+
       // ── Onboarding ──
       if (path === '/onboarding/picks' && method === 'POST') {
         const user = await getUser(env, request);

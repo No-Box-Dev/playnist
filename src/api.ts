@@ -90,3 +90,15 @@ export const unfollowUser = (userId: string) =>
 // Onboarding
 export const saveOnboardingPicks = (game_ids: number[]) =>
   request<unknown>('/onboarding/picks', { method: 'POST', body: JSON.stringify({ game_ids }) });
+
+// Admin: Page Sections
+export const getPageSections = (page: string) =>
+  request<unknown[]>(`/admin/pages/${page}/sections`);
+export const updateSection = (id: string, data: Record<string, unknown>) =>
+  request<unknown>(`/admin/sections/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
+export const createSection = (data: Record<string, unknown>) =>
+  request<unknown>('/admin/sections', { method: 'POST', body: JSON.stringify(data) });
+export const deleteSection = (id: string) =>
+  request<unknown>(`/admin/sections/${id}`, { method: 'DELETE' });
+export const reorderSections = (order: { id: string; sort_order: number }[]) =>
+  request<unknown>('/admin/sections/reorder', { method: 'POST', body: JSON.stringify({ order }) });
