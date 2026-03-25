@@ -1,96 +1,154 @@
 .section { margin-bottom: 40px; }
 
-.ambassador-card {
+/* Section headers — Bubble uses uppercase bold */
+.section-header-caps {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  color: var(--color-gray-dark);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Ambassador Spotlight V2 — game cover left, info right */
+.ambassador-card-v2 {
   background: var(--color-white);
   border-radius: 16px;
   border: 1px solid var(--color-gray-border);
   padding: 24px;
   display: flex;
-  gap: 20px;
+  gap: 24px;
   align-items: flex-start;
 }
-.ambassador-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-.ambassador-content { flex: 1; }
-.ambassador-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
-.ambassador-quote {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  color: var(--color-gray-medium);
-  font-style: italic;
-  line-height: 1.5;
-  max-width: 720px;
-}
-.ambassador-game { display: flex; align-items: center; gap: 12px; margin-top: 12px; cursor: pointer; }
-.ambassador-game img { width: 48px; height: 64px; border-radius: 6px; object-fit: cover; }
-
-.community-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.community-card {
-  background: var(--color-white);
+.ambassador-game-cover {
+  position: relative;
+  flex-shrink: 0;
+  width: 160px;
   border-radius: 12px;
-  border: 1px solid var(--color-gray-border);
-  padding: 16px;
-}
-.community-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.community-card-body {
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--color-gray-medium);
-  margin-bottom: 12px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
   overflow: hidden;
+  cursor: pointer;
 }
-.community-game-tag {
-  display: inline-flex;
+.ambassador-game-cover img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+}
+.ambassador-info { flex: 1; }
+.ambassador-header {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  background: var(--color-gray-bg);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 13px;
+  gap: 12px;
   margin-bottom: 12px;
+}
+.ambassador-avatar-sm {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.ambassador-name-v2 {
+  font-family: var(--font-heading-regular);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-gray-dark);
+}
+.badge-ambassador-sm {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--color-red);
+  color: var(--color-white);
+}
+.btn-follow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 2px solid var(--color-red);
+  background: var(--color-red);
+  color: var(--color-white);
+  cursor: pointer;
+  margin-left: auto;
+}
+.btn-follow:hover { opacity: 0.9; }
+.ambassador-quote-v2 {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-medium);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.ambassador-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.read-more-link {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-gray);
+  cursor: pointer;
+}
+.read-more-link:hover { color: var(--color-red); }
+.btn-add-library {
+  font-size: 12px;
+  padding: 8px 16px;
+  float: right;
 }
 
+/* Ambassador Top Picks */
+.ambassador-picks-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.ambassador-picks-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-gray);
+  margin-left: 8px;
+  font-style: italic;
+}
+
+/* Journal Prompt */
 .prompt-card {
-  background: var(--color-peach);
+  background: var(--color-cream);
+  border: 2px solid var(--color-gray-border);
   border-radius: 16px;
   padding: 32px;
   text-align: center;
 }
-.prompt-label {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  text-transform: uppercase;
-  color: var(--color-gray);
+.prompt-icon {
+  font-size: 40px;
   margin-bottom: 12px;
 }
 .prompt-text {
-  font-family: 'HF Gesco Regular', Georgia, serif;
-  font-size: 24px;
+  font-family: var(--font-heading-regular);
+  font-size: 22px;
   margin-bottom: 20px;
   color: var(--color-gray-dark);
 }
-
-.read-more {
-  color: var(--color-red);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
+.prompt-btn {
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 10px 24px;
 }
 
-@media (max-width: 1024px) {
-  .community-grid { grid-template-columns: repeat(2, 1fr); }
-}
 @media (max-width: 768px) {
-  .community-grid { grid-template-columns: 1fr; }
-  .ambassador-card { flex-direction: column; align-items: center; text-align: center; }
-  .ambassador-game { justify-content: center; }
+  .ambassador-card-v2 { flex-direction: column; }
+  .ambassador-game-cover { width: 100%; max-width: 200px; }
   .section { margin-bottom: 28px; }
 }
 @media (max-width: 480px) {
   .prompt-text { font-size: 18px; }
   .prompt-card { padding: 24px 16px; }
-  .ambassador-card { padding: 16px; }
   .section { margin-bottom: 24px; }
 }
