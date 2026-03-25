@@ -77,10 +77,12 @@ export default function Login() {
         {state === 'welcome' && (
           <div className="auth-welcome">
             <div className="auth-welcome-logo"><img src="/images/logo.png" alt="Playnist" /></div>
-            <div className="auth-tagline">your game library<br />reimagined.</div>
-            <div className="auth-buttons">
-              <button className="btn btn-outline" onClick={goToSignup}>SIGN UP</button>
-              <button className="btn btn-dark" onClick={goToSignin}>SIGN IN</button>
+            <div className="auth-welcome-bottom">
+              <div className="auth-tagline">your game library<br />reimagined.</div>
+              <div className="auth-buttons">
+                <button className="btn btn-primary" onClick={goToSignup}>SIGN UP</button>
+                <button className="btn btn-outline" onClick={goToSignin}>SIGN IN</button>
+              </div>
             </div>
           </div>
         )}

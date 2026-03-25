@@ -1,13 +1,22 @@
 .auth-page { display: flex; width: 100%; height: 100vh; background: var(--color-cream); overflow: hidden; }
+
+/* Left side */
 .auth-form-side { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 60px 40px; overflow-y: auto; gap: 32px; flex: 0 0 50%; width: 50%; }
-.auth-welcome { display: flex; flex-direction: column; align-items: flex-start; max-width: 80%; }
-.auth-welcome-logo { min-width: 320px; max-width: 100%; margin-bottom: 12px; }
+
+/* Welcome / Landing — logo fills the space, tagline + buttons at bottom */
+.auth-welcome { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; width: 90%; max-width: 520px; height: 80vh; padding: 40px 0; }
+.auth-welcome-logo { width: 100%; flex-shrink: 0; }
 .auth-welcome-logo img { width: 100%; height: auto; }
-.auth-tagline { font-family: var(--font-heading-regular); font-size: 38px; color: var(--color-gray-dark); line-height: 1.2; margin-bottom: 24px; }
-.auth-buttons { display: flex; gap: 10px; }
-.auth-buttons .btn { min-width: 120px; min-height: 44px; font-size: 14px; letter-spacing: 1px; }
+.auth-welcome-bottom { margin-top: auto; }
+.auth-tagline { font-family: var(--font-heading-regular); font-size: 32px; color: var(--color-gray-dark); line-height: 1.2; margin-bottom: 20px; }
+.auth-buttons { display: flex; gap: 12px; }
+.auth-buttons .btn { min-width: 140px; min-height: 48px; font-size: 14px; letter-spacing: 1px; padding: 14px 32px; }
+
+/* Button styles matching Bubble: SIGN UP = red filled, SIGN IN = dark outlined */
 .btn-dark { background: linear-gradient(180deg, #3a3a3a 0%, #1a1a1a 100%); color: var(--color-white); border: 2px solid #1a1a1a; }
 .btn-dark:hover { background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%); }
+
+/* Form container */
 .auth-form-container { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; max-width: 400px; }
 .auth-logo-small { height: 48px; margin-bottom: 4px; }
 .auth-logo-small img { height: 100%; }
@@ -28,23 +37,28 @@
 .field-error { font-family: var(--font-mono); font-size: 12px; color: var(--color-red); margin-top: -4px; line-height: 1.4; }
 .auth-link { font-family: var(--font-mono); font-size: 13px; color: var(--color-gray); text-align: center; }
 .auth-link a { color: var(--color-gray-dark); text-decoration: underline; cursor: pointer; }
+
+/* Signup avatar */
 .signup-avatar-wrap { position: relative; width: 64px; height: 64px; cursor: pointer; }
 .signup-avatar-placeholder { width: 64px; height: 64px; border-radius: 50%; background: var(--color-gray-bg); border: 2px solid var(--color-gray-border); display: flex; align-items: center; justify-content: center; }
 .signup-avatar-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--color-gray-border); }
 .signup-avatar-edit { position: absolute; bottom: -2px; right: -2px; width: 24px; height: 24px; background: var(--color-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+/* Signup tabs — Bubble uses yellow/gold for active, not green */
 .signup-tabs { display: flex; gap: 8px; }
 .signup-tab { font-family: var(--font-mono); font-size: 13px; padding: 6px 16px; border-radius: 20px; cursor: pointer; border: 2px solid var(--color-gray-border); background: var(--color-white); color: var(--color-gray); transition: all 0.2s; }
-.signup-tab.active { background: var(--color-green); border-color: var(--color-green); color: var(--color-white); }
-.signup-tab.done { background: var(--color-green-light); border-color: var(--color-green); color: var(--color-green-dark); }
+.signup-tab.active { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-white); }
+.signup-tab.done { background: var(--color-yellow-light); border-color: var(--color-gold); color: var(--color-gold-dark); }
 .signup-bio { resize: vertical; min-height: 60px; }
 .terms-label { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 13px; color: var(--color-gray-dark); cursor: pointer; }
 .terms-label input[type="checkbox"] { accent-color: var(--color-gray-dark); width: 16px; height: 16px; }
 .terms-link { text-decoration: underline; cursor: pointer; }
-.cover-grid-side { display: flex; flex-direction: row; overflow: hidden; flex: 0 0 50%; width: 50%; gap: 8px; padding: 8px; }
+
+/* Game cover grid — right side */
+.cover-grid-side { display: flex; flex-direction: row; overflow: hidden; flex: 0 0 50%; width: 50%; gap: 10px; padding: 10px; }
 .cover-grid-column { flex: 1; min-width: 0; height: 100vh; overflow: hidden; position: relative; }
-.cover-grid-scroll { display: flex; flex-direction: column; gap: 8px; }
-.cover-grid-card { width: 100%; aspect-ratio: 3/4; border-radius: 12px; border: 3px solid var(--color-red); background: linear-gradient(160deg, var(--color-peach) 0%, var(--color-terra-cotta-lightest) 40%, var(--color-cream) 100%); overflow: hidden; position: relative; flex-shrink: 0; }
-.cover-grid-card:nth-child(3n+2) { aspect-ratio: 4/5; }
+.cover-grid-scroll { display: flex; flex-direction: column; gap: 10px; }
+.cover-grid-card { width: 100%; aspect-ratio: 3/4; border-radius: 16px; border: 3px solid var(--color-red); background: linear-gradient(160deg, var(--color-peach) 0%, var(--color-terra-cotta-lightest) 40%, var(--color-cream) 100%); overflow: hidden; position: relative; flex-shrink: 0; }
 .cover-grid-card:nth-child(5n+2) { border-color: var(--color-terra-cotta); }
 .cover-grid-card:nth-child(7n+3) { border-color: var(--color-green); }
 .cover-grid-card:nth-child(11n+5) { border-color: var(--color-blue-bright); }
@@ -55,4 +69,12 @@
 .cover-grid-scroll-3 { animation: gridScrollUp 50s linear infinite; }
 @keyframes gridScrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
 @keyframes gridScrollDown { 0% { transform: translateY(-50%); } 100% { transform: translateY(0); } }
-@media (max-width: 768px) { .cover-grid-side { display: none; } .auth-form-side { flex: 1; max-width: 100%; padding: 20px; } .auth-tagline { font-size: 28px; } .auth-buttons { flex-direction: column; width: 100%; } .auth-buttons .btn { width: 100%; } }
+
+@media (max-width: 768px) {
+  .cover-grid-side { display: none; }
+  .auth-form-side { flex: 1; max-width: 100%; padding: 20px; }
+  .auth-welcome { height: auto; }
+  .auth-tagline { font-size: 24px; }
+  .auth-buttons { flex-direction: column; width: 100%; }
+  .auth-buttons .btn { width: 100%; }
+}
