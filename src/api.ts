@@ -1,13 +1,26 @@
 const API_URL = import.meta.env.VITE_API_URL || 'https://playnist-api.jasper-414.workers.dev';
 
+// Token management
+let authToken: string | null = localStorage.getItem('playnist_token');
+
+export function setToken(token: string | null) {
+  authToken = token;
+  if (token) localStorage.setItem('playnist_token', token);
+  else localStorage.removeItem('playnist_token');
+}
+
+export function getStoredToken() {
+  return authToken;
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-  });
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options?.headers as Record<string, string>),
+  };
+  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+
+  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
     throw new Error((err as { error: string }).error || res.statusText);
@@ -15,14 +28,26 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
+// Auth
+export const signup = (email: string, password: string, username: string, bio?: string) =>
+  request<{ user: unknown; token: string }>('/auth/signup', { method: 'POST', body: JSON.stringify({ email, password, username, bio }) });
+
+export const signin = (email: string, password: string) =>
+  request<{ user: unknown; token: string }>('/auth/signin', { method: 'POST', body: JSON.stringify({ email, password }) });
+
+export const signout = () =>
+  request<unknown>('/auth/signout', { method: 'POST' });
+
+export const getMe = () => request<unknown>('/me');
+
+export const updateMe = (data: { username?: string; bio?: string; avatar_url?: string; onboarding_step?: number }) =>
+  request<unknown>('/me', { method: 'PATCH', body: JSON.stringify(data) });
+
 // IGDB
 export const searchGames = (q: string) => request<unknown[]>(`/search?q=${encodeURIComponent(q)}`);
 export const getGame = (id: number) => request<unknown>(`/game?id=${id}`);
 export const getTrending = () => request<unknown[]>('/trending');
 export const getNew = () => request<unknown[]>('/new');
-
-// Auth
-export const getMe = () => request<unknown>('/me');
 
 // Users
 export const getUser = (id: string) => request<unknown>(`/users/${id}`);
@@ -61,3 +86,23 @@ export const followUser = (userId: string) =>
   request<unknown>(`/follows/${userId}`, { method: 'POST' });
 export const unfollowUser = (userId: string) =>
   request<unknown>(`/follows/${userId}`, { method: 'DELETE' });
+
+// Onboarding
+export const saveOnboardingPicks = (game_ids: number[]) =>
+  request<unknown>('/onboarding/picks', { method: 'POST', body: JSON.stringify({ game_ids }) });
+
+// Public: Page Sections (enabled only)
+export const getPublicPageSections = (page: string) =>
+  request<unknown[]>(`/pages/${page}/sections`);
+
+// Admin: Page Sections
+export const getPageSections = (page: string) =>
+  request<unknown[]>(`/admin/pages/${page}/sections`);
+export const updateSection = (id: string, data: Record<string, unknown>) =>
+  request<unknown>(`/admin/sections/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
+export const createSection = (data: Record<string, unknown>) =>
+  request<unknown>('/admin/sections', { method: 'POST', body: JSON.stringify(data) });
+export const deleteSection = (id: string) =>
+  request<unknown>(`/admin/sections/${id}`, { method: 'DELETE' });
+export const reorderSections = (order: { id: string; sort_order: number }[]) =>
+  request<unknown>('/admin/sections/reorder', { method: 'POST', body: JSON.stringify({ order }) });

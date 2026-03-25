@@ -59,3 +59,16 @@ export interface Reaction {
   emoji: string;
   count: number;
 }
+
+export type SectionType = 'game_grid' | 'ambassador' | 'community_posts' | 'journal_prompt' | 'category_pills';
+
+export interface PageSection {
+  id: string;
+  page: string;
+  section_type: SectionType;
+  title: string;
+  sort_order: number;
+  config: Record<string, unknown>;
+  enabled: number;
+  updated_at: string;
+}

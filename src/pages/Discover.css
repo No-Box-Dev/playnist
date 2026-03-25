@@ -1,0 +1,96 @@
+.discover-search-section {
+  margin-bottom: 16px;
+}
+
+.discover-search-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+}
+
+.discover-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-gray);
+  pointer-events: none;
+}
+
+.discover-search-input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  border: 1px solid var(--color-gray-border);
+  border-radius: 10px;
+  background: var(--color-white);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-gray-dark);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.discover-search-input::placeholder {
+  color: var(--color-gray-lighter);
+}
+
+.discover-search-input:focus {
+  border-color: var(--color-red);
+}
+
+.discover-categories {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.discover-pill {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: 2px solid var(--color-gray-border);
+  background: var(--color-white);
+  color: var(--color-gray);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.discover-pill:hover {
+  border-color: var(--color-gray);
+  color: var(--color-gray-dark);
+}
+
+.discover-pill.active {
+  background: var(--color-red);
+  border-color: var(--color-red);
+  color: var(--color-white);
+}
+
+.discover-empty {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-gray);
+  padding: 32px 0;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .discover-search-wrap {
+    max-width: 100%;
+  }
+
+  .discover-categories {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+
+  .discover-categories::-webkit-scrollbar {
+    display: none;
+  }
+}
