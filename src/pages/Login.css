@@ -13,8 +13,8 @@
 .auth-buttons .btn { flex: 1; min-height: 52px; font-size: 15px; letter-spacing: 1.5px; padding: 16px 32px; }
 
 /* Gray gradient button for form submit (signin/signup) */
-.btn-gray { background: linear-gradient(180deg, #8a8a8a 0%, #6a6a6a 100%); color: var(--color-white); border: none; border-radius: 8px; }
-.btn-gray:hover { background: linear-gradient(180deg, #9a9a9a 0%, #7a7a7a 100%); }
+.btn-gray { background: #7a7a7a; color: var(--color-white); border: none; border-radius: 12px; }
+.btn-gray:hover { background: #8a8a8a; }
 
 /* Form container */
 .auth-form-container { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; max-width: 400px; }
@@ -46,10 +46,11 @@
 
 /* Signup tabs — Bubble uses yellow/gold for active, not green */
 .signup-tabs { display: flex; gap: 8px; }
-.signup-tab { font-family: var(--font-mono); font-size: 13px; padding: 8px 24px; border-radius: 8px; cursor: pointer; border: 2px solid var(--color-gray-border); background: var(--color-white); color: var(--color-gray); transition: all 0.2s; }
+.signup-tab { font-family: var(--font-mono); font-size: 13px; padding: 8px 24px; border-radius: 8px; cursor: pointer; border: 2px solid var(--color-gray-border); background: var(--color-white); color: var(--color-gray); transition: all 0.2s; transform: rotate(-2deg); }
+.signup-tab:nth-child(2) { transform: rotate(1deg); }
+.signup-tab:nth-child(3) { transform: rotate(-1deg); }
 .signup-tab.active { background: var(--color-yellow); border-color: var(--color-yellow); color: var(--color-gray-dark); }
-.signup-tab.active-green { background: var(--color-green); border-color: var(--color-green); color: var(--color-white); }
-.signup-tab.done { background: var(--color-green-light); border-color: var(--color-green); color: var(--color-green-dark); }
+.signup-tab.done { background: var(--color-green-soft); border-color: var(--color-green-soft); color: var(--color-gray-dark); }
 .signup-bio { resize: vertical; min-height: 60px; }
 .terms-label { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 13px; color: var(--color-gray-dark); cursor: pointer; }
 .terms-label input[type="checkbox"] { accent-color: var(--color-gray-dark); width: 16px; height: 16px; }
