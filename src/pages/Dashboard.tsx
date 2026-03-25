@@ -9,16 +9,11 @@ import { getTrending, getNew, addToCollection } from '../api';
 import type { IGDBGame } from '../types';
 import './Dashboard.css';
 
-const COMMUNITY_POSTS = [
-  { user: 'PixelHunter', time: '2 hours ago', genre: 'Action Adventure', coverIdx: 0, body: 'Just finished the main storyline and I\'m blown away. The final boss fight was incredibly satisfying...', reactions: { heart: 12, star: 5, laugh: 3, fire: 8 } },
-  { user: 'RetroGamer99', time: '5 hours ago', genre: 'Strategy, Simulation', coverIdx: 1, body: '100 hours in and still discovering new things. This is hands down the best simulation game I\'ve played...', reactions: { heart: 24, star: 10, fire: 15 } },
-  { user: 'NightOwlPlays', time: '1 day ago', genre: 'Indie, Platformer', coverIdx: 2, body: 'Don\'t sleep on this indie gem! The art style alone makes it worth playing, but the mechanics are what keeps you coming back...', reactions: { heart: 7, laugh: 2 } },
-];
-
 export default function Dashboard() {
   const [trending, setTrending] = useState<IGDBGame[]>([]);
   const [newGames, setNewGames] = useState<IGDBGame[]>([]);
   const [rainyDay, setRainyDay] = useState<IGDBGame[]>([]);
+  const [ambassadorPicks, setAmbassadorPicks] = useState<IGDBGame[]>([]);
   const [addModal, setAddModal] = useState<IGDBGame | null>(null);
   const [addStatus, setAddStatus] = useState('played');
   const navigate = useNavigate();
@@ -27,7 +22,8 @@ export default function Dashboard() {
     getTrending().then((g) => {
       const all = g as IGDBGame[];
       setTrending(all.slice(0, 4));
-      setRainyDay(all.slice(4, 9));
+      setAmbassadorPicks(all.slice(4, 8));
+      setRainyDay(all.slice(8, 12));
     });
     getNew().then((g) => setNewGames((g as IGDBGame[]).slice(0, 5)));
   }, []);
@@ -39,6 +35,8 @@ export default function Dashboard() {
     await addToCollection(addModal.id, addStatus);
     setAddModal(null);
   };
+
+  const spotlightGame = trending[0];
 
   return (
     <div className="app-layout">
@@ -53,88 +51,81 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Ambassador Spotlight */}
+        {/* Ambassador Spotlight — Bubble layout: game cover left, info right */}
         <section className="section">
-          <h2 className="section-header">Ambassador Spotlight</h2>
-          <div className="ambassador-card">
-            <img className="ambassador-avatar" src="/images/user-icon.png" alt="Ambassador" />
-            <div className="ambassador-content">
-              <div className="ambassador-name">
-                GameMaster42{' '}
-                <span className="badge-ambassador" style={{ marginLeft: 8 }}>&#x2B50; Ambassador</span>
+          <h2 className="section-header-caps">Ambassador Spotlight</h2>
+          <div className="ambassador-card-v2">
+            {spotlightGame?.cover?.image_id && (
+              <div className="ambassador-game-cover" onClick={() => navigate(`/game/${spotlightGame.id}`)}>
+                <img src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${spotlightGame.cover.image_id}.jpg`} alt={spotlightGame.name} />
+                <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAdd(spotlightGame); }}>+</button>
               </div>
-              <p className="ambassador-quote">"This game completely changed my perspective on storytelling in games. The way it weaves narrative with gameplay is unlike anything I've experienced before."</p>
-              {trending[0] && (
-                <div className="ambassador-game" onClick={() => navigate(`/game/${trending[0].id}`)}>
-                  {trending[0].cover?.image_id && (
-                    <img src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${trending[0].cover.image_id}.jpg`} alt={trending[0].name} />
-                  )}
-                  <div>
-                    <div style={{ fontWeight: 500, fontSize: 14 }}>{trending[0].name}</div>
-                    <div style={{ fontSize: 12, color: 'var(--color-gray)' }}>{trending[0].genres?.map((g) => g.name).join(', ') || 'Game'}</div>
-                  </div>
+            )}
+            <div className="ambassador-info">
+              <div className="ambassador-header">
+                <img className="ambassador-avatar-sm" src="/images/user-icon.png" alt="Ambassador" />
+                <div>
+                  <div className="ambassador-name-v2">Emma Nicole</div>
+                  <span className="badge-ambassador-sm">Ambassador</span>
                 </div>
-              )}
+                <button className="btn-follow">Follow</button>
+              </div>
+              <p className="ambassador-quote-v2">
+                This is one of my standouts of the year so far! It feels so different to other management games, but it has all the same familiar mechanics that you know and love. I'm so excited to see how this game continues to grow and evolve.
+              </p>
+              <div className="ambassador-actions">
+                <div className="reactions">
+                  <button className="reaction-btn">&#x2764;&#xFE0F; <span>8</span></button>
+                  <button className="reaction-btn">&#x1F31F; <span>3</span></button>
+                  <button className="reaction-btn">&#x1F602; <span>1</span></button>
+                  <button className="reaction-btn">&#x1F525; <span>4</span></button>
+                </div>
+                <a className="read-more-link">&gt; Read more</a>
+              </div>
+              <button className="btn btn-primary btn-add-library">Add to Library</button>
             </div>
-          </div>
-        </section>
-
-        {/* Community */}
-        <section className="section">
-          <h2 className="section-header">What the Community is Playing</h2>
-          <div className="community-grid">
-            {COMMUNITY_POSTS.map((post) => {
-              const coverGame = newGames[post.coverIdx];
-              const coverImageId = coverGame?.cover?.image_id;
-              return (
-                <div key={post.user} className="community-card">
-                  <div className="community-card-header">
-                    <img style={{ borderRadius: '50%', width: 36, height: 36, objectFit: 'cover' }} src="/images/user-icon.png" alt={post.user} />
-                    <div>
-                      <div style={{ fontWeight: 500, fontSize: 14 }}>{post.user}</div>
-                      <div style={{ fontSize: 12, color: 'var(--color-gray)' }}>{post.time}</div>
-                    </div>
-                  </div>
-                  <div className="community-game-tag">
-                    {coverImageId && <img src={`https://images.igdb.com/igdb/image/upload/t_thumb/${coverImageId}.jpg`} alt="" style={{ width: 20, height: 28, borderRadius: 3, objectFit: 'cover' }} />}
-                    <span>{post.genre}</span>
-                  </div>
-                  <p className="community-card-body">{post.body}</p>
-                  <a className="read-more">Read more</a>
-                  <div className="reactions" style={{ marginTop: 12 }}>
-                    {Object.entries(post.reactions).map(([key, count]) => (
-                      <button key={key} className="reaction-btn">
-                        {key === 'heart' ? '\u2764\uFE0F' : key === 'star' ? '\uD83C\uDF1F' : key === 'laugh' ? '\uD83D\uDE02' : '\uD83D\uDD25'} <span>{count}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </section>
 
         {/* New & Noteworthy */}
         <section className="section">
-          <h2 className="section-header">New & Noteworthy</h2>
+          <h2 className="section-header-caps">New and Noteworthy!</h2>
           <div className="game-grid">
             {newGames.map((g) => <GameCard key={g.id} game={g} onAdd={handleAdd} />)}
           </div>
         </section>
 
-        {/* Journal Prompt */}
+        {/* Ambassador Top Picks */}
         <section className="section">
-          <div className="prompt-card">
-            <div className="prompt-label">Journal Prompt of the Week</div>
-            <p className="prompt-text">What game moment made you feel something you didn't expect?</p>
-            <button className="btn btn-primary">Write in Journal</button>
+          <h2 className="section-header-caps">Ambassador Top Picks</h2>
+          <div className="ambassador-picks-header">
+            <img className="ambassador-avatar-sm" src="/images/user-icon.png" alt="Ambassador" />
+            <div>
+              <span className="ambassador-name-v2">Emma Nicole</span>
+              <span className="badge-ambassador-sm" style={{ marginLeft: 8 }}>Ambassador</span>
+            </div>
+            <button className="btn-follow">Follow</button>
+            <span className="ambassador-picks-label">Favourite games</span>
+          </div>
+          <div className="game-grid-4">
+            {ambassadorPicks.map((g) => <GameCard key={g.id} game={g} onAdd={handleAdd} />)}
           </div>
         </section>
 
-        {/* Games for a Rainy Day */}
+        {/* Journal Prompt */}
         <section className="section">
-          <h2 className="section-header">Games for a Rainy Day</h2>
-          <div className="game-grid">
+          <h2 className="section-header-caps">Journal Prompt of the Week!</h2>
+          <div className="prompt-card">
+            <div className="prompt-icon">&#x1F4DD;</div>
+            <p className="prompt-text">What games are you playing in the New Year 2026?</p>
+            <button className="btn btn-primary prompt-btn" onClick={() => navigate('/journal')}>WRITE IN JOURNAL +</button>
+          </div>
+        </section>
+
+        {/* Games for Rainy Days */}
+        <section className="section">
+          <h2 className="section-header-caps">Games for Rainy Days</h2>
+          <div className="game-grid-4">
             {rainyDay.map((g) => <GameCard key={g.id} game={g} onAdd={handleAdd} />)}
           </div>
         </section>
