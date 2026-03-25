@@ -105,7 +105,9 @@ export default function Profile() {
       <Header />
       <main className="main-area">
         {/* Sunburst Banner */}
-        <div className="profile-banner" />
+        <div className="profile-banner">
+          {isOwn && <button className="profile-banner-edit">&#x270F;</button>}
+        </div>
 
         {/* Profile Info — avatar left, stats+edit right */}
         <div className="profile-info">
