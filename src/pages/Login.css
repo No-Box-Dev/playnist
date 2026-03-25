@@ -39,16 +39,17 @@
 .auth-link a { color: var(--color-gray-dark); text-decoration: underline; cursor: pointer; }
 
 /* Signup avatar */
-.signup-avatar-wrap { position: relative; width: 64px; height: 64px; cursor: pointer; }
-.signup-avatar-placeholder { width: 64px; height: 64px; border-radius: 50%; background: var(--color-gray-bg); border: 2px solid var(--color-gray-border); display: flex; align-items: center; justify-content: center; }
-.signup-avatar-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--color-gray-border); }
-.signup-avatar-edit { position: absolute; bottom: -2px; right: -2px; width: 24px; height: 24px; background: var(--color-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.signup-avatar-wrap { position: relative; width: 80px; height: 80px; cursor: pointer; }
+.signup-avatar-placeholder { width: 80px; height: 80px; border-radius: 50%; background: var(--color-gray-bg); border: 2px solid var(--color-gray-border); display: flex; align-items: center; justify-content: center; }
+.signup-avatar-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--color-gray-border); }
+.signup-avatar-edit { position: absolute; top: -4px; right: -8px; width: 28px; height: 28px; background: var(--color-red); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
 
 /* Signup tabs — Bubble uses yellow/gold for active, not green */
 .signup-tabs { display: flex; gap: 8px; }
-.signup-tab { font-family: var(--font-mono); font-size: 13px; padding: 6px 16px; border-radius: 20px; cursor: pointer; border: 2px solid var(--color-gray-border); background: var(--color-white); color: var(--color-gray); transition: all 0.2s; }
-.signup-tab.active { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-white); }
-.signup-tab.done { background: var(--color-yellow-light); border-color: var(--color-gold); color: var(--color-gold-dark); }
+.signup-tab { font-family: var(--font-mono); font-size: 13px; padding: 8px 24px; border-radius: 8px; cursor: pointer; border: 2px solid var(--color-gray-border); background: var(--color-white); color: var(--color-gray); transition: all 0.2s; }
+.signup-tab.active { background: var(--color-yellow); border-color: var(--color-yellow); color: var(--color-gray-dark); }
+.signup-tab.active-green { background: var(--color-green); border-color: var(--color-green); color: var(--color-white); }
+.signup-tab.done { background: var(--color-green-light); border-color: var(--color-green); color: var(--color-green-dark); }
 .signup-bio { resize: vertical; min-height: 60px; }
 .terms-label { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 13px; color: var(--color-gray-dark); cursor: pointer; }
 .terms-label input[type="checkbox"] { accent-color: var(--color-gray-dark); width: 16px; height: 16px; }
