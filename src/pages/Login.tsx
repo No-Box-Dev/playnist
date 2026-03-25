@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getRandomCarouselCovers } from '../carouselSets';
 import { signin, signup, setToken } from '../api';
@@ -22,13 +22,10 @@ export default function Login() {
   const [signupUsername, setSignupUsername] = useState('');
   const [signupBio, setSignupBio] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const avatarRef = useRef<HTMLInputElement>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   // Signin
   const [signinEmail, setSigninEmail] = useState('');
   const [signinPassword, setSigninPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(true);
 
   // Errors
   const [error, setError] = useState('');
@@ -71,15 +68,6 @@ export default function Login() {
     }
   };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setAvatarPreview(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-
   const goToSignup = () => { setState('signup'); setSignupStep('email'); setError(''); };
   const goToSignin = () => { setState('signin'); setError(''); };
 
@@ -114,7 +102,7 @@ export default function Login() {
                 <input className="input" type="password" placeholder="Type Password" value={signinPassword} onChange={(e) => setSigninPassword(e.target.value)} />
               </div>
               <div className="auth-remember-row">
-                <label className="remember-label"><input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} /> Remember me</label>
+                <label className="remember-label"><input type="checkbox" defaultChecked /> Remember me</label>
                 <a className="forgot-link" onClick={() => setState('forgot')}>Forgot a password</a>
               </div>
               {error && <div className="field-error">{error}</div>}
@@ -131,18 +119,13 @@ export default function Login() {
               <h1 className="auth-form-title">Create an account</h1>
               <p className="auth-form-subtitle">Fill in the following details to get started</p>
             </div>
-            <div className="signup-avatar-wrap" onClick={() => avatarRef.current?.click()}>
-              {avatarPreview ? (
-                <img src={avatarPreview} alt="Avatar" className="signup-avatar-img" />
-              ) : (
-                <div className="signup-avatar-placeholder">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#999"/></svg>
-                </div>
-              )}
+            <div className="signup-avatar-wrap">
+              <div className="signup-avatar-placeholder">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#999"/></svg>
+              </div>
               <div className="signup-avatar-edit">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="white"/></svg>
               </div>
-              <input ref={avatarRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
             </div>
             <div className="signup-tabs">
               <button className={`signup-tab ${signupStep === 'email' ? 'active' : signupStep !== 'email' ? 'done' : ''}`} onClick={() => setSignupStep('email')}>Email</button>
@@ -168,7 +151,7 @@ export default function Login() {
                   <div className="form-group"><label className="form-label">Your password</label><input className="input" type="password" value={signupPassword} readOnly /></div>
                   <div className="form-group"><label className="form-label">Username</label><input className="input" type="text" placeholder="Your Username" value={signupUsername} onChange={(e) => setSignupUsername(e.target.value)} /></div>
                   <div className="form-group"><label className="form-label">Profile bio</label><textarea className="input signup-bio" placeholder="Optional bio" value={signupBio} onChange={(e) => setSignupBio(e.target.value)} rows={3} /></div>
-                  <label className="terms-label"><input type="checkbox" checked={agreedToTerms} onChange={(e) => setAgreedToTerms(e.target.checked)} /> Agree to <a className="terms-link">Terms of Service</a></label>
+                  <label className="terms-label"><input type="checkbox" checked={agreedToTerms} onChange={(e) => setAgreedToTerms(e.target.checked)} /> Agree to <a className="terms-link" href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a></label>
                 </>
               )}
               {error && <div className="field-error">{error}</div>}

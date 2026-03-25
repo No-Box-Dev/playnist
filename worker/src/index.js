@@ -4,10 +4,37 @@ function uuid() {
   return crypto.randomUUID();
 }
 
-async function hashPassword(password) {
-  const data = new TextEncoder().encode(password);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+function toHex(buf) {
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function hashPassword(password, salt) {
+  if (!salt) {
+    salt = toHex(crypto.getRandomValues(new Uint8Array(16)));
+  }
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']
+  );
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt: new TextEncoder().encode(salt), iterations: 100000, hash: 'SHA-256' },
+    key, 256
+  );
+  return salt + ':' + toHex(bits);
+}
+
+async function verifyPassword(password, stored) {
+  const [salt] = stored.split(':');
+  const rehash = await hashPassword(password, salt);
+  // Constant-time comparison
+  if (rehash.length !== stored.length) return false;
+  let diff = 0;
+  for (let i = 0; i < rehash.length; i++) diff |= rehash.charCodeAt(i) ^ stored.charCodeAt(i);
+  return diff === 0;
+}
+
+function requireAdmin(user) {
+  if (!user || !user.is_ambassador) return json({ error: 'Admin access required' }, 403);
+  return null;
 }
 
 const CORS_HEADERS = {
@@ -136,8 +163,8 @@ export default {
         const user = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first();
         if (!user) return json({ error: 'Invalid credentials' }, 401);
 
-        const hash = await hashPassword(password);
-        if (hash !== user.password_hash) return json({ error: 'Invalid credentials' }, 401);
+        const valid = await verifyPassword(password, user.password_hash);
+        if (!valid) return json({ error: 'Invalid credentials' }, 401);
 
         const token = uuid();
         const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
@@ -180,15 +207,16 @@ export default {
       if (path === '/search') {
         const query = url.searchParams.get('q');
         if (!query) return json({ error: 'Missing ?q=' }, 400);
+        const sanitized = query.replace(/[";]/g, '');
         const games = await igdbFetch(env, 'games',
-          `search "${query}"; fields name, cover.image_id, summary, rating, first_release_date, genres.name, platforms.name, involved_companies.company.name, screenshots.image_id, slug; limit 20;`
+          `search "${sanitized}"; fields name, cover.image_id, summary, rating, first_release_date, genres.name, platforms.name, involved_companies.company.name, screenshots.image_id, slug; limit 20;`
         );
         return json(games);
       }
 
       if (path === '/game') {
         const id = url.searchParams.get('id');
-        if (!id) return json({ error: 'Missing ?id=' }, 400);
+        if (!id || !/^\d+$/.test(id)) return json({ error: 'Missing or invalid ?id=' }, 400);
         const games = await igdbFetch(env, 'games',
           `where id = ${id}; fields name, cover.image_id, summary, storyline, rating, aggregated_rating, first_release_date, genres.name, platforms.name, involved_companies.company.name, involved_companies.developer, screenshots.image_id, videos.video_id, slug, similar_games.name, similar_games.cover.image_id, rating_count; limit 1;`
         );
@@ -405,6 +433,9 @@ export default {
       // ── Admin: Page Sections ──
       const pageSectionsMatch = path.match(/^\/admin\/pages\/([^/]+)\/sections$/);
       if (pageSectionsMatch && method === 'GET') {
+        const user = await getUser(env, request);
+        const denied = requireAdmin(user);
+        if (denied) return denied;
         const { results } = await env.DB.prepare(
           'SELECT * FROM page_sections WHERE page = ? ORDER BY sort_order'
         ).bind(pageSectionsMatch[1]).all();
@@ -423,7 +454,8 @@ export default {
       const sectionMatch = path.match(/^\/admin\/sections\/([^/]+)$/);
       if (sectionMatch && method === 'PATCH') {
         const user = await getUser(env, request);
-        if (!user) return json({ error: 'Not authenticated' }, 401);
+        const denied = requireAdmin(user);
+        if (denied) return denied;
         const body = await request.json();
         const updates = [];
         const values = [];
@@ -440,7 +472,8 @@ export default {
 
       if (path === '/admin/sections' && method === 'POST') {
         const user = await getUser(env, request);
-        if (!user) return json({ error: 'Not authenticated' }, 401);
+        const denied = requireAdmin(user);
+        if (denied) return denied;
         const { page, section_type, title, config, sort_order } = await request.json();
         if (!page || !section_type || !title) return json({ error: 'Missing fields' }, 400);
         const id = uuid();
@@ -452,7 +485,8 @@ export default {
 
       if (sectionMatch && method === 'DELETE') {
         const user = await getUser(env, request);
-        if (!user) return json({ error: 'Not authenticated' }, 401);
+        const denied = requireAdmin(user);
+        if (denied) return denied;
         await env.DB.prepare('DELETE FROM page_sections WHERE id = ?').bind(sectionMatch[1]).run();
         return json({ ok: true });
       }
@@ -460,7 +494,8 @@ export default {
       // Bulk reorder
       if (path === '/admin/sections/reorder' && method === 'POST') {
         const user = await getUser(env, request);
-        if (!user) return json({ error: 'Not authenticated' }, 401);
+        const denied = requireAdmin(user);
+        if (denied) return denied;
         const { order } = await request.json(); // [{id, sort_order}]
         const stmt = env.DB.prepare('UPDATE page_sections SET sort_order = ? WHERE id = ?');
         await env.DB.batch(order.map(o => stmt.bind(o.sort_order, o.id)));

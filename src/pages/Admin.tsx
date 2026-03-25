@@ -56,9 +56,14 @@ function SectionEditor({ section, onSave, onDelete }: { section: PageSection; on
 
   const handleSave = async () => {
     setSaving(true);
-    const updated = await updateSection(section.id, { title, config, enabled }) as PageSection;
-    onSave(updated);
-    setSaving(false);
+    try {
+      const updated = await updateSection(section.id, { title, config, enabled }) as PageSection;
+      onSave(updated);
+    } catch {
+      // save failed
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -241,7 +246,7 @@ export default function Admin() {
       page: activePage,
       section_type: newType,
       title: newTitle,
-      sort_order: sections.length,
+      sort_order: sections.reduce((max, s) => Math.max(max, s.sort_order), -1) + 1,
       config: newType === 'game_grid' ? { query: 'trending', limit: 5, columns: 5 }
         : newType === 'category_pills' ? { categories: ['All'] }
         : newType === 'journal_prompt' ? { text: '' }

@@ -15,6 +15,8 @@ import GamePage from './pages/GamePage';
 import Settings from './pages/Settings';
 import Admin from './pages/Admin';
 
+const ONBOARDING_COMPLETE = 3;
+
 function RequireAuth({ children, user }: { children: ReactNode; user: User | null }) {
   if (!user) return <Navigate to="/" replace />;
   return <>{children}</>;
@@ -40,7 +42,7 @@ export default function App() {
   return (
     <AuthContext value={{ user, loading, setUser }}>
       <Routes>
-        <Route path="/" element={user ? <Navigate to={user.onboarding_step < 3 ? '/onboarding' : '/dashboard'} replace /> : <Login />} />
+        <Route path="/" element={user ? <Navigate to={user.onboarding_step < ONBOARDING_COMPLETE ? '/onboarding' : '/dashboard'} replace /> : <Login />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/onboarding" element={<RequireAuth user={user}><Onboarding /></RequireAuth>} />
         <Route path="/dashboard" element={<RequireAuth user={user}><Dashboard /></RequireAuth>} />

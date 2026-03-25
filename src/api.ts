@@ -91,6 +91,10 @@ export const unfollowUser = (userId: string) =>
 export const saveOnboardingPicks = (game_ids: number[]) =>
   request<unknown>('/onboarding/picks', { method: 'POST', body: JSON.stringify({ game_ids }) });
 
+// Public: Page Sections (enabled only)
+export const getPublicPageSections = (page: string) =>
+  request<unknown[]>(`/pages/${page}/sections`);
+
 // Admin: Page Sections
 export const getPageSections = (page: string) =>
   request<unknown[]>(`/admin/pages/${page}/sections`);

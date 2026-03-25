@@ -4,16 +4,13 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import GameCard from '../components/GameCard';
 import Modal from '../components/Modal';
-import { getTrending, getNew, searchGames, addToCollection } from '../api';
-import type { IGDBGame } from '../types';
+import { getPublicPageSections, getTrending, getNew, searchGames, addToCollection } from '../api';
+import type { IGDBGame, PageSection } from '../types';
 import './Discover.css';
 
-const CATEGORIES = ['All', 'Action', 'Adventure', 'RPG', 'Strategy', 'Indie', 'Platformer', 'Shooter', 'Puzzle', 'Simulation'];
-
 export default function Discover() {
-  const [trending, setTrending] = useState<IGDBGame[]>([]);
-  const [newReleases, setNewReleases] = useState<IGDBGame[]>([]);
-  const [popular, setPopular] = useState<IGDBGame[]>([]);
+  const [sections, setSections] = useState<PageSection[]>([]);
+  const [gameData, setGameData] = useState<Record<string, IGDBGame[]>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<IGDBGame[]>([]);
   const [activeCategory, setActiveCategory] = useState('All');
@@ -21,19 +18,30 @@ export default function Discover() {
   const [addStatus, setAddStatus] = useState('played');
 
   useEffect(() => {
-    getTrending().then((g) => {
-      const all = g as IGDBGame[];
-      setTrending(all.slice(0, 4));
-      setPopular(all.slice(4, 12));
+    getPublicPageSections('discover').then((s) => {
+      const loaded = s as PageSection[];
+      setSections(loaded);
+      // Fetch game data for each game_grid section
+      loaded.forEach((section) => {
+        if (section.section_type === 'game_grid') {
+          const cfg = section.config;
+          const query = cfg.query as string;
+          const offset = (cfg.offset as number) || 0;
+          const limit = (cfg.limit as number) || 5;
+          const fetcher = query === 'new' ? getNew() : getTrending();
+          fetcher.then((g) => {
+            setGameData((prev) => ({
+              ...prev,
+              [section.id]: (g as IGDBGame[]).slice(offset, offset + limit),
+            }));
+          });
+        }
+      });
     });
-    getNew().then((g) => setNewReleases((g as IGDBGame[]).slice(0, 6)));
   }, []);
 
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-      return;
-    }
+    if (!searchQuery.trim()) { setSearchResults([]); return; }
     const timeout = setTimeout(() => {
       searchGames(searchQuery).then((g) => setSearchResults(g as IGDBGame[]));
     }, 400);
@@ -41,7 +49,6 @@ export default function Discover() {
   }, [searchQuery]);
 
   const handleAdd = (game: IGDBGame) => setAddModal(game);
-
   const confirmAdd = async () => {
     if (!addModal) return;
     await addToCollection(addModal.id, addStatus);
@@ -55,7 +62,8 @@ export default function Discover() {
     );
   };
 
-  const displayGames = searchQuery.trim() ? searchResults : null;
+  const categoriesSection = sections.find((s) => s.section_type === 'category_pills');
+  const categories = categoriesSection ? (categoriesSection.config.categories as string[]) || [] : [];
 
   return (
     <div className="app-layout">
@@ -66,78 +74,51 @@ export default function Discover() {
         <section className="discover-search-section">
           <div className="discover-search-wrap">
             <svg className="discover-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <input
-              className="discover-search-input"
-              type="text"
-              placeholder="Search games..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <input className="discover-search-input" type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
         </section>
 
-        {/* Category Pills */}
-        <section className="discover-categories">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              className={`discover-pill${activeCategory === cat ? ' active' : ''}`}
-              onClick={() => setActiveCategory(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </section>
+        {/* Category Pills from CMS */}
+        {categories.length > 0 && (
+          <section className="discover-categories">
+            {categories.map((cat) => (
+              <button key={cat} className={`discover-pill${activeCategory === cat ? ' active' : ''}`} onClick={() => setActiveCategory(cat)}>
+                {cat}
+              </button>
+            ))}
+          </section>
+        )}
 
         {/* Search Results */}
-        {displayGames ? (
+        {searchQuery.trim() ? (
           <section className="section">
             <h2 className="section-header">Search Results</h2>
-            {displayGames.length === 0 ? (
+            {searchResults.length === 0 ? (
               <p className="discover-empty">No games found for "{searchQuery}"</p>
             ) : (
               <div className="game-grid">
-                {filterByCategory(displayGames).map((g) => (
-                  <GameCard key={g.id} game={g} onAdd={handleAdd} />
-                ))}
+                {filterByCategory(searchResults).map((g) => <GameCard key={g.id} game={g} onAdd={handleAdd} />)}
               </div>
             )}
           </section>
         ) : (
-          <>
-            {/* Trending */}
-            <section className="section">
-              <h2 className="section-header">Trending</h2>
-              <div className="game-grid-4">
-                {filterByCategory(trending).map((g) => (
-                  <GameCard key={g.id} game={g} onAdd={handleAdd} />
-                ))}
-              </div>
-            </section>
-
-            {/* New Releases */}
-            <section className="section">
-              <h2 className="section-header">New Releases</h2>
-              <div className="game-grid">
-                {filterByCategory(newReleases).map((g) => (
-                  <GameCard key={g.id} game={g} onAdd={handleAdd} />
-                ))}
-              </div>
-            </section>
-
-            {/* Popular Games */}
-            <section className="section">
-              <h2 className="section-header">Popular Games</h2>
-              <div className="game-grid">
-                {filterByCategory(popular).map((g) => (
-                  <GameCard key={g.id} game={g} onAdd={handleAdd} />
-                ))}
-              </div>
-            </section>
-          </>
+          /* Render CMS sections dynamically */
+          sections.filter((s) => s.section_type === 'game_grid').map((section) => {
+            const games = gameData[section.id] || [];
+            const columns = (section.config.columns as number) || 5;
+            const filtered = filterByCategory(games);
+            if (filtered.length === 0) return null;
+            return (
+              <section key={section.id} className="section">
+                <h2 className="section-header">{section.title}</h2>
+                <div className={columns === 4 ? 'game-grid-4' : 'game-grid'}>
+                  {filtered.map((g) => <GameCard key={g.id} game={g} onAdd={handleAdd} />)}
+                </div>
+              </section>
+            );
+          })
         )}
 
         {/* Add to Collection Modal */}
@@ -145,13 +126,9 @@ export default function Discover() {
           {addModal && (
             <div style={{ textAlign: 'center' }}>
               <h3 style={{ marginBottom: 16 }}>Add "{addModal.name}" to Collection</h3>
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 24 }}>
+              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 24, flexWrap: 'wrap' }}>
                 {(['played', 'playing', 'want_to_play'] as const).map((s) => (
-                  <button
-                    key={s}
-                    className={`pill pill-${s === 'played' ? 'played' : s === 'playing' ? 'playing' : 'want'}${addStatus === s ? ' active' : ''}`}
-                    onClick={() => setAddStatus(s)}
-                  >
+                  <button key={s} className={`pill pill-${s === 'played' ? 'played' : s === 'playing' ? 'playing' : 'want'}${addStatus === s ? ' active' : ''}`} onClick={() => setAddStatus(s)}>
                     {s === 'want_to_play' ? 'Want to Play' : s.charAt(0).toUpperCase() + s.slice(1)}
                   </button>
                 ))}

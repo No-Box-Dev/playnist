@@ -39,21 +39,21 @@ export default function Sidebar() {
         <img src="/images/app-icon.png" alt="Playnist" />
       </div>
       <div className="sidebar-nav-top">
-        <NavLink to="/profile" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} title="Profile">
+        <NavLink to="/profile" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} aria-label="Profile">
           <ProfileIcon />
         </NavLink>
-        <NavLink to="/dashboard" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} title="Home">
+        <NavLink to="/dashboard" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} aria-label="Home">
           <DiscoverIcon />
         </NavLink>
-        <NavLink to="/discover" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} title="Discover">
+        <NavLink to="/discover" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} aria-label="Discover">
           <SearchIcon />
         </NavLink>
-        <NavLink to="/journal" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} title="Journal">
+        <NavLink to="/journal" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} aria-label="Journal">
           <JournalIcon />
         </NavLink>
       </div>
       <div className="sidebar-nav-bottom">
-        <NavLink to="/settings" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} title="Settings">
+        <NavLink to="/settings" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} aria-label="Settings">
           <SettingsIcon />
         </NavLink>
       </div>
