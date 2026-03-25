@@ -104,11 +104,11 @@ export default function Login() {
                 <input className="input" type="password" placeholder="Type Password" value={signinPassword} onChange={(e) => setSigninPassword(e.target.value)} />
               </div>
               <div className="auth-remember-row">
-                <label className="remember-label"><input type="checkbox" defaultChecked /> Remember me</label>
+                <label className="remember-label"><input type="checkbox" /> Remember me</label>
                 <a className="forgot-link" onClick={() => setState('forgot')}>Forgot a password</a>
               </div>
               {error && <div className="field-error">{error}</div>}
-              <button className="btn btn-dark auth-submit" type="submit">SIGN IN</button>
+              <button className="btn btn-gray auth-submit" type="submit">SIGN IN</button>
             </form>
             <p className="auth-link">Don't Have An Account? <a onClick={goToSignup}>Sign Up</a></p>
           </div>
@@ -157,7 +157,7 @@ export default function Login() {
                 </>
               )}
               {error && <div className="field-error">{error}</div>}
-              <button className={`btn ${signupStep === 'username' ? 'btn-primary' : 'btn-dark'} auth-submit`} onClick={handleSignupNext} type="button">SIGN UP</button>
+              <button className={`btn ${signupStep === 'username' ? 'btn-primary' : 'btn-gray'} auth-submit`} onClick={handleSignupNext} type="button">SIGN UP</button>
             </div>
             <p className="auth-link">Already Have An Account? <a onClick={goToSignin}>Sign In</a></p>
           </div>
@@ -172,7 +172,7 @@ export default function Login() {
             </div>
             <form className="auth-form" onSubmit={(e) => { e.preventDefault(); navigate('/reset-password'); }}>
               <div className="form-group"><label className="form-label">Email</label><input className="input" type="email" placeholder="Your Email" /></div>
-              <button className="btn btn-dark auth-submit" type="submit">RESET</button>
+              <button className="btn btn-gray auth-submit" type="submit">RESET</button>
             </form>
             <p className="auth-link"><a onClick={goToSignin}>Back to Sign In</a></p>
           </div>

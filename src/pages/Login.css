@@ -4,21 +4,21 @@
 .auth-form-side { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 60px 40px; overflow-y: auto; gap: 32px; flex: 0 0 50%; width: 50%; }
 
 /* Welcome / Landing — logo fills the space, tagline + buttons at bottom */
-.auth-welcome { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; width: 90%; max-width: 520px; height: 80vh; padding: 40px 0; }
+.auth-welcome { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; width: 100%; max-width: 100%; height: 85vh; padding: 60px 80px 60px 80px; }
 .auth-welcome-logo { width: 100%; flex-shrink: 0; }
 .auth-welcome-logo img { width: 100%; height: auto; }
-.auth-welcome-bottom { margin-top: auto; }
-.auth-tagline { font-family: var(--font-heading-regular); font-size: 32px; color: var(--color-gray-dark); line-height: 1.2; margin-bottom: 20px; }
-.auth-buttons { display: flex; gap: 12px; }
-.auth-buttons .btn { min-width: 140px; min-height: 48px; font-size: 14px; letter-spacing: 1px; padding: 14px 32px; }
+.auth-welcome-bottom { margin-top: auto; width: 100%; }
+.auth-tagline { font-family: var(--font-heading-regular); font-size: 36px; color: var(--color-red); line-height: 1.15; margin-bottom: 24px; }
+.auth-buttons { display: flex; gap: 12px; width: 100%; }
+.auth-buttons .btn { flex: 1; min-height: 52px; font-size: 15px; letter-spacing: 1.5px; padding: 16px 32px; }
 
-/* Button styles matching Bubble: SIGN UP = red filled, SIGN IN = dark outlined */
-.btn-dark { background: linear-gradient(180deg, #3a3a3a 0%, #1a1a1a 100%); color: var(--color-white); border: 2px solid #1a1a1a; }
-.btn-dark:hover { background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%); }
+/* Gray gradient button for form submit (signin/signup) */
+.btn-gray { background: linear-gradient(180deg, #8a8a8a 0%, #6a6a6a 100%); color: var(--color-white); border: none; border-radius: 8px; }
+.btn-gray:hover { background: linear-gradient(180deg, #9a9a9a 0%, #7a7a7a 100%); }
 
 /* Form container */
 .auth-form-container { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; max-width: 400px; }
-.auth-logo-small { height: 48px; margin-bottom: 4px; }
+.auth-logo-small { height: 56px; margin-bottom: 8px; }
 .auth-logo-small img { height: 100%; }
 .auth-form-header { text-align: center; }
 .auth-form-title { font-family: var(--font-mono); font-size: 16px; color: var(--color-gray-dark); margin-bottom: 8px; letter-spacing: 2px; font-weight: 400; }
