@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getTrending } from '../api';
+import { getTrending, saveOnboardingPicks } from '../api';
 import type { IGDBGame } from '../types';
 import './Onboarding.css';
 
@@ -65,7 +65,7 @@ export default function Onboarding() {
             </div>
             <div className="onboarding-footer">
               <span className="step-counter">{selected.size} selected</span>
-              <button className="btn btn-primary" onClick={() => setStep(2)}>Next</button>
+              <button className="btn btn-primary" onClick={() => { if (selected.size > 0) saveOnboardingPicks([...selected]).catch(() => {}); setStep(2); }}>Next</button>
             </div>
           </>
         )}
