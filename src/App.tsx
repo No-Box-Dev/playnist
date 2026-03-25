@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthContext } from './hooks/useAuth';
 import { getMe, getStoredToken } from './api';
@@ -13,6 +13,11 @@ import Journal from './pages/Journal';
 import Profile from './pages/Profile';
 import GamePage from './pages/GamePage';
 import Settings from './pages/Settings';
+
+function RequireAuth({ children, user }: { children: ReactNode; user: User | null }) {
+  if (!user) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -36,14 +41,14 @@ export default function App() {
       <Routes>
         <Route path="/" element={user ? <Navigate to={user.onboarding_step < 3 ? '/onboarding' : '/dashboard'} replace /> : <Login />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/discover" element={<Discover />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/journal" element={<Journal />} />
-        <Route path="/profile/:id?" element={<Profile />} />
+        <Route path="/onboarding" element={<RequireAuth user={user}><Onboarding /></RequireAuth>} />
+        <Route path="/dashboard" element={<RequireAuth user={user}><Dashboard /></RequireAuth>} />
+        <Route path="/discover" element={<RequireAuth user={user}><Discover /></RequireAuth>} />
+        <Route path="/search" element={<RequireAuth user={user}><Search /></RequireAuth>} />
+        <Route path="/journal" element={<RequireAuth user={user}><Journal /></RequireAuth>} />
+        <Route path="/profile/:id?" element={<RequireAuth user={user}><Profile /></RequireAuth>} />
         <Route path="/game/:igdbId" element={<GamePage />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/settings" element={<RequireAuth user={user}><Settings /></RequireAuth>} />
         <Route path="*" element={<Navigate to={user ? '/dashboard' : '/'} replace />} />
       </Routes>
     </AuthContext>

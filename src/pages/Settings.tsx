@@ -11,6 +11,8 @@ export default function Settings() {
   const navigate = useNavigate();
   const { user, setUser } = useAuth();
 
+  if (!user) { navigate('/'); return null; }
+
   const [username, setUsername] = useState(user?.username || '');
   const [email] = useState(user?.email || '');
   const [bio, setBio] = useState(user?.bio || '');

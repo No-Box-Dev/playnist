@@ -65,7 +65,7 @@ export default function Onboarding() {
             </div>
             <div className="onboarding-footer">
               <span className="step-counter">{selected.size} selected</span>
-              <button className="btn btn-primary" onClick={() => { if (selected.size > 0) saveOnboardingPicks([...selected]).catch(() => {}); setStep(2); }}>Next</button>
+              <button className="btn btn-primary" onClick={async () => { if (selected.size > 0) await saveOnboardingPicks([...selected]).catch(() => {}); setStep(2); }}>Next</button>
             </div>
           </>
         )}
