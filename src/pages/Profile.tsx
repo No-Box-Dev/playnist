@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
@@ -16,7 +16,11 @@ export default function Profile() {
   const profileId = id || user?.id || 'dev-user-001';
   const isOwn = !id || id === user?.id;
 
-  const [tab, setTab] = useState<'library' | 'journal'>('library');
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab') === 'journal' ? 'journal' : 'library';
+  const [tab, setTab] = useState<'library' | 'journal'>(tabParam);
+
+  useEffect(() => { setTab(tabParam); }, [tabParam]);
   const [filter, setFilter] = useState<string | null>(null);
   const [collection, setCollection] = useState<CollectionItem[]>([]);
   const [journals, setJournals] = useState<Journal[]>([]);

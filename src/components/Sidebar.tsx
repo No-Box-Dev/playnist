@@ -31,7 +31,7 @@ export default function Sidebar() {
         <DiscoverIcon />
         <span className="sidebar-label">Discover</span>
       </NavLink>
-      <NavLink to="/journal" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} aria-label="Journal">
+      <NavLink to="/profile?tab=journal" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} aria-label="Journal">
         <JournalIcon />
         <span className="sidebar-label">Journal</span>
       </NavLink>
