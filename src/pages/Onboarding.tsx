@@ -55,7 +55,7 @@ export default function Onboarding() {
                   onClick={() => toggleGame(g.id)}
                 >
                   {g.cover?.image_id ? (
-                    <img src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${g.cover.image_id}.jpg`} alt={g.name} />
+                    <img src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${g.cover.image_id}.jpg`} alt={g.name} />
                   ) : (
                     <div style={{ width: '100%', height: '100%', background: 'var(--color-gray-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, padding: 4 }}>{g.name}</div>
                   )}

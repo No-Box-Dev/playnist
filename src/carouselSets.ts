@@ -216,6 +216,6 @@ export function getRandomCarouselCovers(): string[][] {
   const cols: string[][] = [[], [], []];
   shuffled.forEach((id, i) => cols[i % 3].push(id));
   return cols.map((col) =>
-    col.map((id) => `https://images.igdb.com/igdb/image/upload/t_cover_big/${id}.webp`)
+    col.map((id) => `https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${id}.webp`)
   );
 }

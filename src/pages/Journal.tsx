@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import Modal from '../components/Modal';
 import { useAuth } from '../hooks/useAuth';
-import { getUserJournals, getGame, createJournal, deleteJournal, searchGames } from '../api';
+import { getUserJournals, getGamesBatch, createJournal, deleteJournal, searchGames } from '../api';
 import type { Journal as JournalType, IGDBGame } from '../types';
 import './Journal.css';
 
@@ -28,12 +28,12 @@ export default function Journal() {
   }, [userId]);
 
   useEffect(() => {
-    const missing = journals.filter((j) => !gameCache[j.igdb_game_id]).map((j) => j.igdb_game_id);
+    const missing = [...new Set(journals.map((j) => j.igdb_game_id))].filter((id) => !gameCache[id]);
     if (missing.length === 0) return;
-    [...new Set(missing)].forEach((igdbId) => {
-      getGame(igdbId).then((g) => {
-        if (g) setGameCache((prev) => ({ ...prev, [igdbId]: g as IGDBGame }));
-      });
+    getGamesBatch(missing).then((games) => {
+      const batch: Record<number, IGDBGame> = {};
+      (games as IGDBGame[]).forEach((g) => { batch[g.id] = g; });
+      setGameCache((prev) => ({ ...prev, ...batch }));
     });
   }, [journals]);
 
