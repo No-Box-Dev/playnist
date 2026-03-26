@@ -21,9 +21,9 @@ vi.mock('../../api', () => ({
 // Mock carousel covers to avoid randomness
 vi.mock('../../carouselSets', () => ({
   getRandomCarouselCovers: () => [
-    ['https://images.igdb.com/igdb/image/upload/t_cover_big/test1.webp'],
-    ['https://images.igdb.com/igdb/image/upload/t_cover_big/test2.webp'],
-    ['https://images.igdb.com/igdb/image/upload/t_cover_big/test3.webp'],
+    ['https://images.igdb.com/igdb/image/upload/t_cover_small_2x/test1.webp'],
+    ['https://images.igdb.com/igdb/image/upload/t_cover_small_2x/test2.webp'],
+    ['https://images.igdb.com/igdb/image/upload/t_cover_small_2x/test3.webp'],
   ],
 }));
 

@@ -170,8 +170,20 @@ export default function Login() {
               <h1 className="auth-form-title">Reset Password</h1>
               <p className="auth-form-subtitle">Enter Email and we will send link to change</p>
             </div>
-            <form className="auth-form" onSubmit={(e) => { e.preventDefault(); navigate('/reset-password'); }}>
-              <div className="form-group"><label className="form-label">Email</label><input className="input" type="email" placeholder="Your Email" /></div>
+            <form className="auth-form" onSubmit={async (e) => {
+              e.preventDefault();
+              setError('');
+              const email = (e.currentTarget.elements.namedItem('resetEmail') as HTMLInputElement)?.value;
+              if (!email) { setError('Please enter your email'); return; }
+              try {
+                const { forgotPassword } = await import('../api');
+                await forgotPassword(email);
+                setError('');
+                alert('If an account exists, a reset link has been sent.');
+              } catch { /* silent */ }
+            }}>
+              <div className="form-group"><label className="form-label">Email</label><input name="resetEmail" className="input" type="email" placeholder="Your Email" /></div>
+              {error && <div className="field-error">{error}</div>}
               <button className="btn btn-gray auth-submit" type="submit">RESET</button>
             </form>
             <p className="auth-link"><a onClick={goToSignin}>Back to Sign In</a></p>

@@ -35,7 +35,7 @@ describe('GameCard', () => {
 
     const img = screen.getByAltText('Test Game') as HTMLImageElement;
     expect(img).toBeInTheDocument();
-    expect(img.src).toBe('https://images.igdb.com/igdb/image/upload/t_cover_big/abc123.jpg');
+    expect(img.src).toBe('https://images.igdb.com/igdb/image/upload/t_cover_small_2x/abc123.jpg');
   });
 
   it('shows fallback when no cover', () => {
