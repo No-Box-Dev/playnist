@@ -1,0 +1,14 @@
+name = "playnist-api"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+# Secrets set via: wrangler secret put TWITCH_CLIENT_ID / TWITCH_CLIENT_SECRET
+
+[[d1_databases]]
+binding = "DB"
+database_name = "playnist-db"
+database_id = "430ba89a-1b48-45b1-b8a8-283ad9379bf1"
+
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "playnist-uploads"

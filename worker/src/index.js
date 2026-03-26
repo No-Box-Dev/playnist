@@ -37,6 +37,26 @@ function requireAdmin(user) {
   return null;
 }
 
+// Rate limiting (in-memory, resets on deploy)
+const rateLimits = new Map();
+function checkRateLimit(key, maxRequests = 10, windowMs = 60000) {
+  const now = Date.now();
+  const entry = rateLimits.get(key) || { count: 0, resetAt: now + windowMs };
+  if (now > entry.resetAt) { entry.count = 0; entry.resetAt = now + windowMs; }
+  entry.count++;
+  rateLimits.set(key, entry);
+  if (entry.count > maxRequests) return true; // rate limited
+  return false;
+}
+
+// Helper to create notifications
+async function createNotification(env, userId, type, message, linkUrl) {
+  const id = uuid();
+  await env.DB.prepare(
+    'INSERT INTO notifications (id, user_id, type, message, link_url) VALUES (?, ?, ?, ?, ?)'
+  ).bind(id, userId, type, message, linkUrl || '').run();
+}
+
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
@@ -136,6 +156,8 @@ export default {
     try {
       // ── Auth ──
       if (path === '/auth/signup' && method === 'POST') {
+        const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+        if (checkRateLimit('signup:' + ip, 5, 300000)) return json({ error: 'Too many signups. Try again later.' }, 429);
         const { email, password, username, bio } = await request.json();
         if (!email || !password || !username) return json({ error: 'Missing fields' }, 400);
 
@@ -157,6 +179,8 @@ export default {
       }
 
       if (path === '/auth/signin' && method === 'POST') {
+        const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+        if (checkRateLimit('signin:' + ip, 10, 300000)) return json({ error: 'Too many attempts. Try again later.' }, 429);
         const { email, password } = await request.json();
         if (!email || !password) return json({ error: 'Missing fields' }, 400);
 
@@ -201,6 +225,76 @@ export default {
         await env.DB.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
         const updated = await env.DB.prepare('SELECT id, username, email, bio, avatar_url, is_ambassador, onboarding_step, created_at FROM users WHERE id = ?').bind(user.id).first();
         return json(updated);
+      }
+
+      // ── Avatar Upload (R2) ──
+      if (path === '/upload/avatar' && method === 'POST') {
+        const user = await getUser(env, request);
+        if (!user) return json({ error: 'Not authenticated' }, 401);
+        const contentType = request.headers.get('Content-Type') || '';
+        if (!contentType.includes('image/')) return json({ error: 'Must be an image' }, 400);
+        const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
+        const key = `avatars/${user.id}.${ext}`;
+        const body = await request.arrayBuffer();
+        if (body.byteLength > 5 * 1024 * 1024) return json({ error: 'Max 5MB' }, 400);
+        await env.UPLOADS.put(key, body, { httpMetadata: { contentType } });
+        const avatarUrl = `https://playnist-uploads.${env.CF_ACCOUNT_ID || 'account'}.r2.cloudflarestorage.com/${key}`;
+        await env.DB.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').bind(avatarUrl, user.id).run();
+        return json({ avatar_url: avatarUrl });
+      }
+
+      // ── Notifications ──
+      if (path === '/notifications' && method === 'GET') {
+        const user = await getUser(env, request);
+        if (!user) return json({ error: 'Not authenticated' }, 401);
+        const { results } = await env.DB.prepare(
+          'SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50'
+        ).bind(user.id).all();
+        return json(results);
+      }
+
+      if (path === '/notifications/unread-count' && method === 'GET') {
+        const user = await getUser(env, request);
+        if (!user) return json({ error: 'Not authenticated' }, 401);
+        const row = await env.DB.prepare(
+          'SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND read = 0'
+        ).bind(user.id).first();
+        return json({ count: row?.count || 0 });
+      }
+
+      if (path === '/notifications/mark-read' && method === 'POST') {
+        const user = await getUser(env, request);
+        if (!user) return json({ error: 'Not authenticated' }, 401);
+        await env.DB.prepare('UPDATE notifications SET read = 1 WHERE user_id = ?').bind(user.id).run();
+        return json({ ok: true });
+      }
+
+      // ── Password Reset ──
+      if (path === '/auth/forgot-password' && method === 'POST') {
+        const { email } = await request.json();
+        if (!email) return json({ error: 'Missing email' }, 400);
+        const userRow = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
+        if (!userRow) return json({ ok: true }); // Don't reveal if email exists
+        const resetToken = uuid();
+        const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
+        await env.DB.prepare(
+          'INSERT OR REPLACE INTO password_resets (token, user_id, expires_at) VALUES (?, ?, ?)'
+        ).bind(resetToken, userRow.id, expires).run();
+        // In production, send email here via Postmark/SES
+        return json({ ok: true, _dev_token: resetToken }); // _dev_token only for development
+      }
+
+      if (path === '/auth/reset-password' && method === 'POST') {
+        const { token, password } = await request.json();
+        if (!token || !password) return json({ error: 'Missing fields' }, 400);
+        const reset = await env.DB.prepare(
+          "SELECT user_id FROM password_resets WHERE token = ? AND expires_at > datetime('now')"
+        ).bind(token).first();
+        if (!reset) return json({ error: 'Invalid or expired token' }, 400);
+        const hash = await hashPassword(password);
+        await env.DB.prepare('UPDATE users SET password_hash = ? WHERE id = ?').bind(hash, reset.user_id).run();
+        await env.DB.prepare('DELETE FROM password_resets WHERE token = ?').bind(token).run();
+        return json({ ok: true });
       }
 
       // ── IGDB proxy endpoints (game data) ──
@@ -428,6 +522,7 @@ export default {
         try {
           await env.DB.prepare('INSERT INTO user_follows (follower_id, following_id) VALUES (?, ?)')
             .bind(user.id, targetId).run();
+          createNotification(env, targetId, 'follow', `${user.username} started following you`, `/profile/${user.id}`);
         } catch (e) {
           // Already following — ignore
         }

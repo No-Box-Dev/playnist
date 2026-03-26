@@ -65,7 +65,18 @@ export default function Settings() {
               />
               <div className="settings-avatar-info">
                 <div className="settings-avatar-name">{user?.username || 'User'}</div>
-                <div className="settings-avatar-hint">Change your profile picture in your profile page</div>
+                <label className="settings-avatar-upload">
+                  Change Avatar
+                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    try {
+                      const { uploadAvatar } = await import('../api');
+                      const result = await uploadAvatar(file);
+                      if (result.avatar_url) setUser({ ...user!, avatar_url: result.avatar_url });
+                    } catch { /* upload failed */ }
+                  }} />
+                </label>
               </div>
             </div>
             <div className="settings-form">

@@ -139,6 +139,36 @@ export default function GamePage() {
           ))}
         </div>
 
+        {/* Screenshots */}
+        {game.screenshots && game.screenshots.length > 0 && (
+          <section style={{ marginBottom: 48 }}>
+            <h2 className="game-section-title">Screenshots</h2>
+            <div className="game-screenshots">
+              {game.screenshots.slice(0, 4).map((s) => (
+                <img key={s.image_id} className="game-screenshot" src={`https://images.igdb.com/igdb/image/upload/t_screenshot_med/${s.image_id}.jpg`} alt="Screenshot" loading="lazy" />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Similar Games */}
+        {game.similar_games && game.similar_games.length > 0 && (
+          <section style={{ marginBottom: 48 }}>
+            <h2 className="game-section-title">Similar Games</h2>
+            <div className="game-grid-4">
+              {game.similar_games.slice(0, 4).map((sg) => (
+                <div key={sg.name} className="game-card" style={{ aspectRatio: '2/3' }} onClick={() => { if (sg.cover?.image_id) navigate(`/game/${sg.name}`); }}>
+                  {sg.cover?.image_id ? (
+                    <img src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${sg.cover.image_id}.jpg`} alt={sg.name} loading="lazy" />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', background: 'var(--color-gray-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, padding: 8, textAlign: 'center' }}>{sg.name}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Add to Collection Modal */}
         <Modal open={addModal} onClose={() => setAddModal(false)}>
           <div style={{ textAlign: 'center' }}>

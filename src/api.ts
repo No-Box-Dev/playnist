@@ -89,6 +89,26 @@ export const followUser = (userId: string) =>
 export const unfollowUser = (userId: string) =>
   request<unknown>(`/follows/${userId}`, { method: 'DELETE' });
 
+// Avatar upload
+export const uploadAvatar = async (file: File) => {
+  const headers: Record<string, string> = { 'Content-Type': file.type };
+  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+  const res = await fetch(`${API_URL}/upload/avatar`, { method: 'POST', headers, body: await file.arrayBuffer() });
+  if (!res.ok) throw new Error('Upload failed');
+  return res.json() as Promise<{ avatar_url: string }>;
+};
+
+// Notifications
+export const getNotifications = () => request<unknown[]>('/notifications');
+export const getUnreadCount = () => request<{ count: number }>('/notifications/unread-count');
+export const markNotificationsRead = () => request<unknown>('/notifications/mark-read', { method: 'POST' });
+
+// Password Reset
+export const forgotPassword = (email: string) =>
+  request<unknown>('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) });
+export const resetPassword = (token: string, password: string) =>
+  request<unknown>('/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, password }) });
+
 // Onboarding
 export const saveOnboardingPicks = (game_ids: number[]) =>
   request<unknown>('/onboarding/picks', { method: 'POST', body: JSON.stringify({ game_ids }) });

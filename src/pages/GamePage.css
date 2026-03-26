@@ -168,7 +168,21 @@
   line-height: 1.5;
 }
 
+/* Screenshots */
+.game-screenshots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.game-screenshot {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  aspect-ratio: 16/9;
+}
+
 @media (max-width: 768px) {
+  .game-screenshots { grid-template-columns: 1fr; }
   .game-hero-v2 { flex-direction: column-reverse; }
   .game-hero-cover-v2 { width: 100%; max-width: 300px; }
   .game-inline-grid { grid-template-columns: 1fr; }
