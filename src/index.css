@@ -240,6 +240,7 @@ a { color: inherit; text-decoration: none; }
 
 /* Reactions */
 .reactions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.reaction-emoji { width: 20px; height: 20px; object-fit: contain; }
 .reaction-btn {
   background: var(--color-gray-bg);
   border: none;

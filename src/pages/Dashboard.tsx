@@ -75,10 +75,10 @@ export default function Dashboard() {
               </p>
               <div className="ambassador-actions">
                 <div className="reactions">
-                  <button className="reaction-btn">&#x2764;&#xFE0F; <span>8</span></button>
-                  <button className="reaction-btn">&#x1F31F; <span>3</span></button>
-                  <button className="reaction-btn">&#x1F602; <span>1</span></button>
-                  <button className="reaction-btn">&#x1F525; <span>4</span></button>
+                  <button className="reaction-btn"><img src="/images/emoji-heart.png" alt="heart" className="reaction-emoji" /> <span>8</span></button>
+                  <button className="reaction-btn"><img src="/images/emoji-smile.png" alt="smile" className="reaction-emoji" /> <span>3</span></button>
+                  <button className="reaction-btn"><img src="/images/emoji-laugh.png" alt="laugh" className="reaction-emoji" /> <span>1</span></button>
+                  <button className="reaction-btn"><img src="/images/emoji-shocked.png" alt="shocked" className="reaction-emoji" /> <span>4</span></button>
                 </div>
                 <a className="read-more-link">&gt; Read more</a>
               </div>
