@@ -107,7 +107,7 @@ export default function Profile() {
         {/* Profile Info — avatar left, stats+edit right */}
         <div className="profile-info">
           <div className="profile-avatar-wrap">
-            <img className="profile-avatar" src={getAvatarUrl(profileId, user?.avatar_url)} alt="Avatar" />
+            <img className="profile-avatar" src={getAvatarUrl(profileId, isOwn ? user?.avatar_url : undefined)} alt="Avatar" />
             {isOwn && <div className="profile-edit-avatar">&#x270F;</div>}
           </div>
           <div className="profile-right">

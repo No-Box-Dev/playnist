@@ -53,7 +53,8 @@ export function getDefaultAvatar(userId: string): string {
  * Get avatar URL — use user's uploaded avatar if available, otherwise deterministic default.
  */
 export function getAvatarUrl(userId: string, uploadedAvatarUrl?: string): string {
-  if (uploadedAvatarUrl && uploadedAvatarUrl.length > 0) return uploadedAvatarUrl;
+  const normalized = uploadedAvatarUrl?.trim();
+  if (normalized) return normalized;
   return getDefaultAvatar(userId);
 }
 
