@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import type { IGDBGame } from '../types';
 
 function coverUrl(imageId: string) {
-  return `https://images.igdb.com/igdb/image/upload/t_cover_big/${imageId}.jpg`;
+  return `https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${imageId}.jpg`;
 }
 
 interface GameCardProps {

@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import Modal from '../components/Modal';
 import { useAuth } from '../hooks/useAuth';
-import { getUserCollection, getUserJournals, getGame, addToCollection, createJournal, deleteJournal, searchGames } from '../api';
+import { getUserCollection, getUserJournals, getGamesBatch, addToCollection, createJournal, deleteJournal, searchGames } from '../api';
 import type { CollectionItem, Journal, IGDBGame } from '../types';
 import './Profile.css';
 
@@ -44,24 +44,18 @@ export default function Profile() {
   }, [profileId, tab]);
 
   useEffect(() => {
-    const missing = collection.filter((c) => !gameCache[c.igdb_game_id]).map((c) => c.igdb_game_id);
+    const allIds = [
+      ...collection.map((c) => c.igdb_game_id),
+      ...journals.map((j) => j.igdb_game_id),
+    ];
+    const missing = [...new Set(allIds)].filter((id) => !gameCache[id]);
     if (missing.length === 0) return;
-    [...new Set(missing)].forEach((igdbId) => {
-      getGame(igdbId).then((g) => {
-        if (g) setGameCache((prev) => ({ ...prev, [igdbId]: g as IGDBGame }));
-      });
+    getGamesBatch(missing).then((games) => {
+      const batch: Record<number, IGDBGame> = {};
+      (games as IGDBGame[]).forEach((g) => { batch[g.id] = g; });
+      setGameCache((prev) => ({ ...prev, ...batch }));
     });
-  }, [collection]);
-
-  useEffect(() => {
-    const missing = journals.filter((j) => !gameCache[j.igdb_game_id]).map((j) => j.igdb_game_id);
-    if (missing.length === 0) return;
-    [...new Set(missing)].forEach((igdbId) => {
-      getGame(igdbId).then((g) => {
-        if (g) setGameCache((prev) => ({ ...prev, [igdbId]: g as IGDBGame }));
-      });
-    });
-  }, [journals]);
+  }, [collection, journals]);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -169,7 +163,7 @@ export default function Profile() {
                     return (
                       <div key={item.id} className="game-card" onClick={() => navigate(`/game/${item.igdb_game_id}`)}>
                         {imageId ? (
-                          <img src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${imageId}.jpg`} alt={game?.name} loading="lazy" />
+                          <img src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${imageId}.jpg`} alt={game?.name} loading="lazy" />
                         ) : (
                           <div style={{ width: '100%', height: '100%', background: 'var(--color-gray-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, padding: 8 }}>
                             {game?.name || 'Loading...'}

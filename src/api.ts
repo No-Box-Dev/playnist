@@ -46,6 +46,8 @@ export const updateMe = (data: { username?: string; bio?: string; avatar_url?: s
 // IGDB
 export const searchGames = (q: string) => request<unknown[]>(`/search?q=${encodeURIComponent(q)}`);
 export const getGame = (id: number) => request<unknown>(`/game?id=${id}`);
+export const getGamesBatch = (ids: number[]) =>
+  ids.length === 0 ? Promise.resolve([]) : request<unknown[]>(`/games/batch?ids=${ids.join(',')}`);
 export const getTrending = () => request<unknown[]>('/trending');
 export const getNew = () => request<unknown[]>('/new');
 

@@ -16,7 +16,7 @@ async function hashPassword(password, salt) {
     'raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']
   );
   const bits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt: new TextEncoder().encode(salt), iterations: 100000, hash: 'SHA-256' },
+    { name: 'PBKDF2', salt: new TextEncoder().encode(salt), iterations: 50000, hash: 'SHA-256' },
     key, 256
   );
   return salt + ':' + toHex(bits);
@@ -221,6 +221,18 @@ export default {
           `where id = ${id}; fields name, cover.image_id, summary, storyline, rating, aggregated_rating, first_release_date, genres.name, platforms.name, involved_companies.company.name, involved_companies.developer, screenshots.image_id, videos.video_id, slug, similar_games.name, similar_games.cover.image_id, rating_count; limit 1;`
         );
         return json(games[0] || null);
+      }
+
+      // Batch fetch multiple games by IDs
+      if (path === '/games/batch') {
+        const ids = url.searchParams.get('ids');
+        if (!ids) return json({ error: 'Missing ?ids=' }, 400);
+        const idList = ids.split(',').filter(id => /^\d+$/.test(id)).slice(0, 20);
+        if (idList.length === 0) return json([]);
+        const games = await igdbFetch(env, 'games',
+          `where id = (${idList.join(',')}); fields name, cover.image_id, summary, rating, genres.name, platforms.name, slug; limit ${idList.length};`
+        );
+        return json(games);
       }
 
       if (path === '/trending') {
