@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import './Sidebar.css';
 
 const ProfileIcon = () => (
@@ -21,9 +21,13 @@ const JournalIcon = () => (
 );
 
 export default function Sidebar() {
+  const location = useLocation();
+  const isJournal = location.pathname === '/profile' && location.search.includes('tab=journal');
+  const isProfile = location.pathname === '/profile' && !isJournal;
+
   return (
     <nav className="sidebar">
-      <NavLink to="/profile" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} aria-label="Profile">
+      <NavLink to="/profile" className={() => `sidebar-item${isProfile ? ' active' : ''}`} aria-label="Profile">
         <ProfileIcon />
         <span className="sidebar-label">Profile</span>
       </NavLink>
@@ -31,7 +35,7 @@ export default function Sidebar() {
         <DiscoverIcon />
         <span className="sidebar-label">Discover</span>
       </NavLink>
-      <NavLink to="/profile?tab=journal" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`} aria-label="Journal">
+      <NavLink to="/profile?tab=journal" className={() => `sidebar-item${isJournal ? ' active' : ''}`} aria-label="Journal">
         <JournalIcon />
         <span className="sidebar-label">Journal</span>
       </NavLink>
