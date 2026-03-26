@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import { getAvatarUrl } from '../avatars';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import Modal from '../components/Modal';
@@ -106,7 +107,7 @@ export default function Profile() {
         {/* Profile Info — avatar left, stats+edit right */}
         <div className="profile-info">
           <div className="profile-avatar-wrap">
-            <img className="profile-avatar" src={user?.avatar_url || '/images/user-icon.png'} alt="Avatar" />
+            <img className="profile-avatar" src={getAvatarUrl(profileId, user?.avatar_url)} alt="Avatar" />
             {isOwn && <div className="profile-edit-avatar">&#x270F;</div>}
           </div>
           <div className="profile-right">
