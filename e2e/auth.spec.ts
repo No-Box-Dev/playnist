@@ -37,7 +37,7 @@ test.describe('Authentication Flow', () => {
     // Fill email and go to Password tab
     await page.locator('input[placeholder="Your Email"]').fill('test@test.com');
     await page.locator('.signup-tab:has-text("Password")').click();
-    await expect(page.locator('input[type="password"]:visible')).toBeVisible();
+    await expect(page.locator('input[type="password"]:visible').first()).toBeVisible();
 
     // Fill password and go to Username tab
     await page.locator('input[type="password"]:visible').first().fill('TestPass1!');
@@ -55,27 +55,26 @@ test.describe('Authentication Flow', () => {
     // Email
     await page.locator('input[placeholder="Your Email"]').fill(`e2e${ts}@test.com`);
     await page.locator('.signup-tab:has-text("Password")').click();
-    await page.waitForTimeout(300);
+    await page.locator('input[type="password"]:visible').first().waitFor({ state: 'visible' });
 
     // Password
     await page.locator('input[type="password"]:visible').first().fill('TestPass1!');
     await page.locator('.signup-tab:has-text("Username")').click();
-    await page.waitForTimeout(300);
+    await page.locator('input[placeholder="Your Username"]').waitFor({ state: 'visible' });
 
     // Username + terms
     await page.locator('input[placeholder="Your Username"]').fill(`E2E${ts}`);
     await page.locator('input[type="checkbox"]').last().check();
     await page.locator('button:has-text("SIGN UP"):visible').click();
-    await page.waitForTimeout(6000);
 
     // Should be on onboarding
-    await expect(page).toHaveURL(/onboarding/);
+    await expect(page).toHaveURL(/onboarding/, { timeout: 15000 });
   });
 
   test('signin form shows error on empty fields', async ({ page }) => {
     await page.goto('/');
     await page.locator('button:has-text("SIGN IN")').click();
-    await page.locator('button:has-text("SIGN IN"):visible').last().click();
+    await page.locator('.auth-submit').click();
     await expect(page.locator('.field-error')).toBeVisible();
   });
 
