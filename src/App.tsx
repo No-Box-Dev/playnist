@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import GamePage from './pages/GamePage';
 import Settings from './pages/Settings';
 import Admin from './pages/Admin';
+import OnboardingPreview from './pages/OnboardingPreview';
 
 const ONBOARDING_COMPLETE = 3;
 
@@ -53,6 +54,7 @@ export default function App() {
         <Route path="/game/:igdbId" element={<GamePage />} />
         <Route path="/settings" element={<RequireAuth user={user}><Settings /></RequireAuth>} />
         <Route path="/admin" element={<RequireAuth user={user}><Admin /></RequireAuth>} />
+        <Route path="/onboarding-preview" element={<OnboardingPreview />} />
         <Route path="*" element={<Navigate to={user ? '/dashboard' : '/'} replace />} />
       </Routes>
     </AuthContext>

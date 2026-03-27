@@ -12,7 +12,7 @@
 
 /* Ambassador Spotlight V2 — game cover left, info right */
 .ambassador-card-v2 {
-  background: var(--color-white);
+  background: var(--color-cream);
   border-radius: 16px;
   border: 1px solid var(--color-gray-border);
   padding: 24px;

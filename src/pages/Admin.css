@@ -33,7 +33,7 @@
   padding: 8px 20px;
   border-radius: 8px;
   border: 1px solid var(--color-gray-border);
-  background: var(--color-white);
+  background: var(--color-cream);
   cursor: pointer;
   color: var(--color-gray);
   transition: all 0.2s;
@@ -74,7 +74,7 @@
 
 .admin-section-card {
   flex: 1;
-  background: var(--color-white);
+  background: var(--color-cream);
   border: 1px solid var(--color-gray-border);
   border-radius: 12px;
   overflow: hidden;
@@ -222,7 +222,7 @@
   gap: 8px;
   align-items: center;
   padding: 16px;
-  background: var(--color-white);
+  background: var(--color-cream);
   border: 1px solid var(--color-gray-border);
   border-radius: 12px;
 }

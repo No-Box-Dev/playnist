@@ -52,7 +52,7 @@
   border-radius: 20px;
   cursor: pointer;
   border: 2px solid var(--color-gray-border);
-  background: var(--color-white);
+  background: var(--color-cream);
   color: var(--color-gray);
   transition: all 0.2s;
   white-space: nowrap;
