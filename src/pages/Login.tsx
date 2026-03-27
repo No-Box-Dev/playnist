@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getRandomCarouselCovers } from '../carouselSets';
-import { signin, signup, setToken } from '../api';
+import { signin, signup, setToken, forgotPassword } from '../api';
 import { useAuth } from '../hooks/useAuth';
 import type { User } from '../types';
 import './Login.css';
@@ -9,39 +9,52 @@ import './Login.css';
 type AuthState = 'welcome' | 'signin' | 'signup' | 'forgot';
 type SignupStep = 'email' | 'password' | 'username';
 
+interface FormData {
+  signupEmail: string;
+  signupPassword: string;
+  signupUsername: string;
+  signupBio: string;
+  agreedToTerms: boolean;
+  signinEmail: string;
+  signinPassword: string;
+}
+
+const INITIAL_FORM: FormData = {
+  signupEmail: '',
+  signupPassword: '',
+  signupUsername: '',
+  signupBio: '',
+  agreedToTerms: false,
+  signinEmail: '',
+  signinPassword: '',
+};
+
 export default function Login() {
   const [state, setState] = useState<AuthState>('welcome');
   const [columns] = useState(() => getRandomCarouselCovers());
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
-  // Signup multi-step
   const [signupStep, setSignupStep] = useState<SignupStep>('email');
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
-  const [signupUsername, setSignupUsername] = useState('');
-  const [signupBio, setSignupBio] = useState('');
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
-
-  // Signin
-  const [signinEmail, setSigninEmail] = useState('');
-  const [signinPassword, setSigninPassword] = useState('');
-
-  // Errors
+  const [form, setForm] = useState<FormData>(INITIAL_FORM);
   const [error, setError] = useState('');
+
+  const update = (field: keyof FormData, value: string | boolean) =>
+    setForm((prev) => ({ ...prev, [field]: value }));
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!signinEmail || !signinPassword) {
+    if (!form.signinEmail || !form.signinPassword) {
       setError('Please fill in all fields');
       return;
     }
     try {
-      const result = await signin(signinEmail, signinPassword);
+      const result = await signin(form.signinEmail, form.signinPassword);
       setToken(result.token);
-      setUser(result.user as User);
-      navigate('/dashboard');
+      const user = result.user as User;
+      setUser(user);
+      navigate(user.onboarding_step < 3 ? '/onboarding' : '/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed');
     }
@@ -50,22 +63,38 @@ export default function Login() {
   const handleSignupNext = async () => {
     setError('');
     if (signupStep === 'email') {
-      if (!signupEmail) { setError('Please enter your email'); return; }
+      if (!form.signupEmail) { setError('Please enter your email'); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.signupEmail)) { setError('Please enter a valid email address'); return; }
       setSignupStep('password');
     } else if (signupStep === 'password') {
-      if (!signupPassword) { setError('Please enter a password'); return; }
+      if (!form.signupPassword) { setError('Please enter a password'); return; }
+      if (form.signupPassword.length < 8) { setError('Password must be at least 8 characters'); return; }
       setSignupStep('username');
     } else {
-      if (!signupUsername) { setError('Please choose a username'); return; }
-      if (!agreedToTerms) { setError('Please agree to Terms of Service'); return; }
+      if (!form.signupUsername) { setError('Please choose a username'); return; }
+      if (!form.agreedToTerms) { setError('Please agree to Terms of Service'); return; }
       try {
-        const result = await signup(signupEmail, signupPassword, signupUsername, signupBio);
+        const result = await signup(form.signupEmail, form.signupPassword, form.signupUsername, form.signupBio);
         setToken(result.token);
-        setUser(result.user as User);
+        const user = result.user as User;
+        setUser(user);
+        navigate('/onboarding');
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Sign up failed');
       }
     }
+  };
+
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    const email = (e.currentTarget as HTMLFormElement).elements.namedItem('resetEmail') as HTMLInputElement;
+    if (!email?.value) { setError('Please enter your email'); return; }
+    try {
+      await forgotPassword(email.value);
+      setError('');
+      alert('If an account exists, a reset link has been sent.');
+    } catch { /* silent */ }
   };
 
   const goToSignup = () => { setState('signup'); setSignupStep('email'); setError(''); };
@@ -96,21 +125,21 @@ export default function Login() {
             </div>
             <form className="auth-form" onSubmit={handleSignIn}>
               <div className="form-group">
-                <label className="form-label">Email</label>
-                <input className="input" type="email" placeholder="Type Email" value={signinEmail} onChange={(e) => setSigninEmail(e.target.value)} />
+                <label className="form-label" htmlFor="signin-email">Email</label>
+                <input id="signin-email" className="input" type="email" placeholder="Type Email" value={form.signinEmail} onChange={(e) => update('signinEmail', e.target.value)} />
               </div>
               <div className="form-group">
-                <label className="form-label">Your password</label>
-                <input className="input" type="password" placeholder="Type Password" value={signinPassword} onChange={(e) => setSigninPassword(e.target.value)} />
+                <label className="form-label" htmlFor="signin-password">Your password</label>
+                <input id="signin-password" className="input" type="password" placeholder="Type Password" value={form.signinPassword} onChange={(e) => update('signinPassword', e.target.value)} />
               </div>
               <div className="auth-remember-row">
-                <label className="remember-label"><input type="checkbox" /> Remember me</label>
-                <a className="forgot-link" onClick={() => setState('forgot')}>Forgot a password</a>
+                <label className="remember-label"><input type="checkbox" id="remember-me" /> Remember me</label>
+                <button type="button" className="forgot-link" onClick={() => setState('forgot')}>Forgot a password</button>
               </div>
-              {error && <div className="field-error">{error}</div>}
+              {error && <div className="field-error" role="alert">{error}</div>}
               <button className="btn btn-gray auth-submit" type="submit">SIGN IN</button>
             </form>
-            <p className="auth-link">Don't Have An Account? <a onClick={goToSignup}>Sign Up</a></p>
+            <p className="auth-link">Don't Have An Account? <button type="button" className="auth-link-btn" onClick={goToSignup}>Sign Up</button></p>
           </div>
         )}
 
@@ -131,35 +160,58 @@ export default function Login() {
             </div>
             <div className="signup-tabs">
               <button className={`signup-tab ${signupStep === 'email' ? 'active' : 'done'}`} onClick={() => setSignupStep('email')}>Email</button>
-              <button className={`signup-tab ${signupStep === 'password' ? 'active' : signupStep === 'username' ? 'done' : ''}`} onClick={() => signupEmail && setSignupStep('password')}>Password</button>
-              <button className={`signup-tab ${signupStep === 'username' ? 'active' : ''}`} onClick={() => signupEmail && signupPassword && setSignupStep('username')}>Username</button>
+              <button className={`signup-tab ${signupStep === 'password' ? 'active' : signupStep === 'username' ? 'done' : ''}`} disabled={!form.signupEmail} onClick={() => form.signupEmail && setSignupStep('password')}>Password</button>
+              <button className={`signup-tab ${signupStep === 'username' ? 'active' : ''}`} disabled={!form.signupEmail || !form.signupPassword} onClick={() => form.signupEmail && form.signupPassword && setSignupStep('username')}>Username</button>
             </div>
             <div className="auth-form" style={{ gap: 16 }}>
               {signupStep === 'email' && (
                 <div className="form-group">
-                  <label className="form-label">Email</label>
-                  <input className="input" type="email" placeholder="Your Email" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSignupNext()} />
+                  <label className="form-label" htmlFor="signup-email">Email</label>
+                  <input id="signup-email" className="input" type="email" placeholder="Your Email" value={form.signupEmail} onChange={(e) => update('signupEmail', e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSignupNext()} />
                 </div>
               )}
               {signupStep === 'password' && (
                 <>
-                  <div className="form-group"><label className="form-label">Email</label><input className="input" type="email" value={signupEmail} readOnly /></div>
-                  <div className="form-group"><label className="form-label">Your password</label><input className="input" type="password" placeholder="Type Password" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSignupNext()} /></div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="signup-email-ro">Email</label>
+                    <input id="signup-email-ro" className="input" type="email" value={form.signupEmail} readOnly />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="signup-password">Your password</label>
+                    <input id="signup-password" className="input" type="password" placeholder="Type Password" value={form.signupPassword} onChange={(e) => update('signupPassword', e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSignupNext()} />
+                  </div>
                 </>
               )}
               {signupStep === 'username' && (
                 <>
-                  <div className="form-group"><label className="form-label">Email</label><input className="input" type="email" value={signupEmail} readOnly /></div>
-                  <div className="form-group"><label className="form-label">Your password</label><input className="input" type="password" value={signupPassword} readOnly /></div>
-                  <div className="form-group"><label className="form-label">Username</label><input className="input" type="text" placeholder="Your Username" value={signupUsername} onChange={(e) => setSignupUsername(e.target.value)} /></div>
-                  <div className="form-group"><label className="form-label">Profile bio</label><textarea className="input signup-bio" placeholder="Optional bio" value={signupBio} onChange={(e) => setSignupBio(e.target.value)} rows={3} /></div>
-                  <label className="terms-label"><input type="checkbox" checked={agreedToTerms} onChange={(e) => setAgreedToTerms(e.target.checked)} /> Agree to <a className="terms-link" href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a></label>
+                  <div className="form-group">
+                    <label className="form-label">Email</label>
+                    <div className="input input--readonly">{form.signupEmail}</div>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Password</label>
+                    <div className="input input--readonly">{'•'.repeat(form.signupPassword.length)}</div>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="signup-username">Username</label>
+                    <input id="signup-username" className="input" type="text" placeholder="Your Username" value={form.signupUsername} onChange={(e) => update('signupUsername', e.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="signup-bio">Profile bio</label>
+                    <textarea id="signup-bio" className="input signup-bio" placeholder="Optional bio" value={form.signupBio} onChange={(e) => update('signupBio', e.target.value)} rows={3} />
+                  </div>
+                  <label className="terms-label">
+                    <input type="checkbox" id="agree-terms" checked={form.agreedToTerms} onChange={(e) => update('agreedToTerms', e.target.checked)} />
+                    {' '}Agree to <a className="terms-link" href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+                  </label>
                 </>
               )}
-              {error && <div className="field-error">{error}</div>}
-              <button className="btn btn-gray auth-submit" onClick={handleSignupNext} type="button">SIGN UP</button>
+              {error && <div className="field-error" role="alert">{error}</div>}
+              <button className="btn btn-gray auth-submit" onClick={handleSignupNext} type="button">
+                {signupStep === 'username' ? 'SIGN UP' : 'NEXT'}
+              </button>
             </div>
-            <p className="auth-link">Already Have An Account? <a onClick={goToSignin}>Sign In</a></p>
+            <p className="auth-link">Already Have An Account? <button type="button" className="auth-link-btn" onClick={goToSignin}>Sign In</button></p>
           </div>
         )}
 
@@ -170,23 +222,15 @@ export default function Login() {
               <h1 className="auth-form-title">Reset Password</h1>
               <p className="auth-form-subtitle">Enter Email and we will send link to change</p>
             </div>
-            <form className="auth-form" onSubmit={async (e) => {
-              e.preventDefault();
-              setError('');
-              const email = (e.currentTarget.elements.namedItem('resetEmail') as HTMLInputElement)?.value;
-              if (!email) { setError('Please enter your email'); return; }
-              try {
-                const { forgotPassword } = await import('../api');
-                await forgotPassword(email);
-                setError('');
-                alert('If an account exists, a reset link has been sent.');
-              } catch { /* silent */ }
-            }}>
-              <div className="form-group"><label className="form-label">Email</label><input name="resetEmail" className="input" type="email" placeholder="Your Email" /></div>
-              {error && <div className="field-error">{error}</div>}
+            <form className="auth-form" onSubmit={handleForgot}>
+              <div className="form-group">
+                <label className="form-label" htmlFor="reset-email">Email</label>
+                <input id="reset-email" name="resetEmail" className="input" type="email" placeholder="Your Email" />
+              </div>
+              {error && <div className="field-error" role="alert">{error}</div>}
               <button className="btn btn-gray auth-submit" type="submit">RESET</button>
             </form>
-            <p className="auth-link"><a onClick={goToSignin}>Back to Sign In</a></p>
+            <p className="auth-link"><button type="button" className="auth-link-btn" onClick={goToSignin}>Back to Sign In</button></p>
           </div>
         )}
       </div>
@@ -196,8 +240,8 @@ export default function Login() {
           <div key={i} className="cover-grid-column">
             <div className={`cover-grid-scroll cover-grid-scroll-${i + 1}`}>
               {[...col, ...col].map((src, j) => (
-                <div key={j} className="cover-grid-card">
-                  <img src={src} alt="Game" onLoad={(e) => e.currentTarget.classList.add('loaded')} />
+                <div key={`${src}-${j}`} className="cover-grid-card">
+                  <img src={src} alt="Game cover" onLoad={(e) => e.currentTarget.classList.add('loaded')} />
                 </div>
               ))}
             </div>

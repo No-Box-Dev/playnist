@@ -86,14 +86,14 @@ describe('Login page', () => {
     const emailInput = screen.getByPlaceholderText('Your Email');
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
 
-    // Click SIGN UP to advance to password step
-    fireEvent.click(screen.getByRole('button', { name: 'SIGN UP' }));
+    // Click NEXT to advance to password step
+    fireEvent.click(screen.getByRole('button', { name: 'NEXT' }));
     expect(screen.getByPlaceholderText('Type Password')).toBeInTheDocument();
 
     // Fill password and advance to username step
     const passwordInput = screen.getByPlaceholderText('Type Password');
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(screen.getByRole('button', { name: 'SIGN UP' }));
+    fireEvent.click(screen.getByRole('button', { name: 'NEXT' }));
 
     expect(screen.getByPlaceholderText('Your Username')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Optional bio')).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('Login page', () => {
     fireEvent.click(screen.getByText('SIGN UP'));
 
     // Try to advance without entering email
-    fireEvent.click(screen.getByRole('button', { name: 'SIGN UP' }));
+    fireEvent.click(screen.getByRole('button', { name: 'NEXT' }));
 
     expect(screen.getByText('Please enter your email')).toBeInTheDocument();
   });
@@ -144,11 +144,11 @@ describe('Login page', () => {
 
     // Step 1: Email
     fireEvent.change(screen.getByPlaceholderText('Your Email'), { target: { value: 'new@test.com' } });
-    fireEvent.click(screen.getByRole('button', { name: 'SIGN UP' }));
+    fireEvent.click(screen.getByRole('button', { name: 'NEXT' }));
 
     // Step 2: Password
-    fireEvent.change(screen.getByPlaceholderText('Type Password'), { target: { value: 'pass456' } });
-    fireEvent.click(screen.getByRole('button', { name: 'SIGN UP' }));
+    fireEvent.change(screen.getByPlaceholderText('Type Password'), { target: { value: 'password456' } });
+    fireEvent.click(screen.getByRole('button', { name: 'NEXT' }));
 
     // Step 3: Username + agree to terms
     fireEvent.change(screen.getByPlaceholderText('Your Username'), { target: { value: 'newplayer' } });
@@ -157,7 +157,7 @@ describe('Login page', () => {
     fireEvent.click(screen.getByRole('button', { name: 'SIGN UP' }));
 
     await waitFor(() => {
-      expect(mockedSignup).toHaveBeenCalledWith('new@test.com', 'pass456', 'newplayer', '');
+      expect(mockedSignup).toHaveBeenCalledWith('new@test.com', 'password456', 'newplayer', '');
     });
   });
 
