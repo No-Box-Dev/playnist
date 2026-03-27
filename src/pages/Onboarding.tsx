@@ -126,16 +126,30 @@ export default function Onboarding() {
     setStep(target);
   };
 
+  const [saving, setSaving] = useState(false);
+
   const handleContinue = async () => {
     if (step === 1) {
       if (!allGamesSelected) return;
-      await saveOnboardingPicks(selectedGameIds).catch(() => {});
+      setSaving(true);
+      try {
+        await saveOnboardingPicks(selectedGameIds);
+      } catch (e) {
+        console.error('Failed to save game picks:', e);
+      }
+      setSaving(false);
       setStep(2);
     } else if (step === 2) {
       setStep(3);
     } else if (step === 3) {
-      await updateMe({ onboarding_step: 3 }).catch(() => {});
-      navigate('/dashboard');
+      setSaving(true);
+      try {
+        await updateMe({ onboarding_step: 3 });
+        navigate('/dashboard');
+      } catch (e) {
+        console.error('Failed to complete onboarding:', e);
+        setSaving(false);
+      }
     }
   };
 
@@ -219,10 +233,11 @@ export default function Onboarding() {
 
         <div className="ob-footer">
           <button
-            className={`ob-continue ${step === 1 && !allGamesSelected ? 'ob-continue--disabled' : ''}`}
+            className={`ob-continue ${(step === 1 && !allGamesSelected) || saving ? 'ob-continue--disabled' : ''}`}
             onClick={handleContinue}
+            disabled={saving}
           >
-            {step === 3 ? 'LET\'S GO!' : 'CONTINUE'}
+            {saving ? 'SAVING...' : step === 3 ? 'LET\'S GO!' : 'CONTINUE'}
           </button>
         </div>
       </div>

@@ -393,7 +393,7 @@ export default {
           'INSERT OR REPLACE INTO password_resets (token, user_id, expires_at) VALUES (?, ?, ?)'
         ).bind(resetToken, userRow.id, expires).run();
         // In production, send email here via Postmark/SES
-        return json({ ok: true, _dev_token: resetToken }); // _dev_token only for development
+        return json({ ok: true });
       }
 
       if (path === '/auth/reset-password' && method === 'POST') {

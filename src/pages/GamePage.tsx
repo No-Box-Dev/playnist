@@ -157,7 +157,7 @@ export default function GamePage() {
             <h2 className="game-section-title">Similar Games</h2>
             <div className="game-grid-4">
               {game.similar_games.slice(0, 4).map((sg) => (
-                <div key={sg.name} className="game-card" style={{ aspectRatio: '2/3' }} onClick={() => { if (sg.cover?.image_id) navigate(`/game/${sg.name}`); }}>
+                <div key={sg.id || sg.name} className="game-card" style={{ aspectRatio: '2/3' }} onClick={() => { if (sg.id) navigate(`/game/${sg.id}`); }}>
                   {sg.cover?.image_id ? (
                     <img src={imageUrl(sg.cover.image_id, 't_cover_small_2x')} alt={sg.name} loading="lazy" />
                   ) : (
