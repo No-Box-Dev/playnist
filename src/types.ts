@@ -9,7 +9,7 @@ export interface User {
   created_at: string;
 }
 
-export interface IGDBGame {
+export interface Game {
   id: number;
   name: string;
   slug?: string;

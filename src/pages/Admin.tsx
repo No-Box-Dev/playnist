@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getPageSections, updateSection, createSection, deleteSection, reorderSections, searchGames } from '../api';
-import type { PageSection, SectionType, IGDBGame } from '../types';
+import { getPageSections, updateSection, createSection, deleteSection, reorderSections, searchGames, imageUrl } from '../api';
+import type { PageSection, SectionType, Game } from '../types';
 import './Admin.css';
 
 const SECTION_TYPES: { value: SectionType; label: string }[] = [
@@ -11,14 +11,14 @@ const SECTION_TYPES: { value: SectionType; label: string }[] = [
   { value: 'category_pills', label: 'Category Pills' },
 ];
 
-function GameSearch({ onSelect }: { onSelect: (game: IGDBGame) => void }) {
+function GameSearch({ onSelect }: { onSelect: (game: Game) => void }) {
   const [q, setQ] = useState('');
-  const [results, setResults] = useState<IGDBGame[]>([]);
+  const [results, setResults] = useState<Game[]>([]);
 
   const search = async () => {
     if (!q.trim()) return;
     const r = await searchGames(q);
-    setResults(r as IGDBGame[]);
+    setResults(r as Game[]);
   };
 
   return (
@@ -31,7 +31,7 @@ function GameSearch({ onSelect }: { onSelect: (game: IGDBGame) => void }) {
         <div className="admin-game-results">
           {results.slice(0, 8).map((g) => (
             <div key={g.id} className="admin-game-result" onClick={() => { onSelect(g); setResults([]); setQ(''); }}>
-              {g.cover?.image_id && <img src={`https://images.igdb.com/igdb/image/upload/t_thumb/${g.cover.image_id}.jpg`} alt="" />}
+              {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} alt="" />}
               <div>
                 <div className="admin-game-name">{g.name}</div>
                 <div className="admin-game-meta">{g.genres?.map((gen) => gen.name).join(', ')}</div>

@@ -21,9 +21,9 @@ vi.mock('../../api', () => ({
 // Mock carousel covers to avoid randomness
 vi.mock('../../carouselSets', () => ({
   getRandomCarouselCovers: () => [
-    ['https://images.igdb.com/igdb/image/upload/t_cover_small_2x/test1.webp'],
-    ['https://images.igdb.com/igdb/image/upload/t_cover_small_2x/test2.webp'],
-    ['https://images.igdb.com/igdb/image/upload/t_cover_small_2x/test3.webp'],
+    ['https://playnist-api.jasper-414.workers.dev/img/test1/t_cover_small_2x'],
+    ['https://playnist-api.jasper-414.workers.dev/img/test2/t_cover_small_2x'],
+    ['https://playnist-api.jasper-414.workers.dev/img/test3/t_cover_small_2x'],
   ],
 }));
 

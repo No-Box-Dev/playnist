@@ -43,7 +43,11 @@ export const getMe = () => request<unknown>('/me');
 export const updateMe = (data: { username?: string; bio?: string; avatar_url?: string; onboarding_step?: number }) =>
   request<unknown>('/me', { method: 'PATCH', body: JSON.stringify(data) });
 
-// IGDB
+// Images
+export const imageUrl = (imageId: string, size: string = 't_cover_big') =>
+  `${API_URL}/img/${imageId}/${size}`;
+
+// Games
 export const searchGames = (q: string) => request<unknown[]>(`/search?q=${encodeURIComponent(q)}`);
 export const getGame = (id: number) => request<unknown>(`/game?id=${id}`);
 export const getGamesBatch = (ids: number[]) =>

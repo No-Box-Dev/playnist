@@ -124,7 +124,7 @@ describe('signout', () => {
   });
 });
 
-describe('IGDB endpoints', () => {
+describe('Game endpoints', () => {
   it('searchGames calls /search with encoded query', async () => {
     const mockFetch = vi.mocked(global.fetch);
     mockFetch.mockResolvedValueOnce(new Response(JSON.stringify([]), { status: 200 }));

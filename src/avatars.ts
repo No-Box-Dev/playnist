@@ -1,5 +1,7 @@
+import { imageUrl } from './api';
+
 // 30 iconic game character avatars — assigned to new users based on hash of their ID
-// Using high-quality game cover art from IGDB as character avatars
+// Using game cover art as character avatars
 
 export const AVATAR_COVERS = [
   { name: 'Mario', imageId: 'co7kjl' },          // Super Mario Odyssey
@@ -36,7 +38,7 @@ export const AVATAR_COVERS = [
 
 /**
  * Get a deterministic avatar URL for a user based on their ID.
- * Uses IGDB cover art thumbnails cropped to square.
+ * Uses cover art thumbnails cropped to square.
  */
 export function getDefaultAvatar(userId: string): string {
   let hash = 0;
@@ -45,8 +47,8 @@ export function getDefaultAvatar(userId: string): string {
   }
   const index = Math.abs(hash) % AVATAR_COVERS.length;
   const cover = AVATAR_COVERS[index];
-  // t_thumb is 90x90 square crop from IGDB
-  return `https://images.igdb.com/igdb/image/upload/t_thumb/${cover.imageId}.jpg`;
+  // t_thumb is 90x90 square crop
+  return imageUrl(cover.imageId, 't_thumb');
 }
 
 /**

@@ -6,8 +6,8 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import Modal from '../components/Modal';
 import { useAuth } from '../hooks/useAuth';
-import { getUserCollection, getUserJournals, getGamesBatch, addToCollection, createJournal, deleteJournal, searchGames } from '../api';
-import type { CollectionItem, Journal, IGDBGame } from '../types';
+import { getUserCollection, getUserJournals, getGamesBatch, addToCollection, createJournal, deleteJournal, searchGames, imageUrl } from '../api';
+import type { CollectionItem, Journal, Game } from '../types';
 import './Profile.css';
 
 export default function Profile() {
@@ -25,12 +25,12 @@ export default function Profile() {
   const [filter, setFilter] = useState<string | null>(null);
   const [collection, setCollection] = useState<CollectionItem[]>([]);
   const [journals, setJournals] = useState<Journal[]>([]);
-  const [gameCache, setGameCache] = useState<Record<number, IGDBGame>>({});
+  const [gameCache, setGameCache] = useState<Record<number, Game>>({});
   const [addModal, setAddModal] = useState(false);
   const [journalModal, setJournalModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<IGDBGame[]>([]);
-  const [selectedGame, setSelectedGame] = useState<IGDBGame | null>(null);
+  const [searchResults, setSearchResults] = useState<Game[]>([]);
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [addStatus, setAddStatus] = useState('played');
   const [journalContent, setJournalContent] = useState('');
 
@@ -52,8 +52,8 @@ export default function Profile() {
     const missing = [...new Set(allIds)].filter((id) => !gameCache[id]);
     if (missing.length === 0) return;
     getGamesBatch(missing).then((games) => {
-      const batch: Record<number, IGDBGame> = {};
-      (games as IGDBGame[]).forEach((g) => { batch[g.id] = g; });
+      const batch: Record<number, Game> = {};
+      (games as Game[]).forEach((g) => { batch[g.id] = g; });
       setGameCache((prev) => ({ ...prev, ...batch }));
     });
   }, [collection, journals]);
@@ -61,7 +61,7 @@ export default function Profile() {
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     const results = await searchGames(searchQuery);
-    setSearchResults(results as IGDBGame[]);
+    setSearchResults(results as Game[]);
   };
 
   const handleAddGame = async () => {
@@ -164,7 +164,7 @@ export default function Profile() {
                     return (
                       <div key={item.id} className="game-card" onClick={() => navigate(`/game/${item.igdb_game_id}`)}>
                         {imageId ? (
-                          <img src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${imageId}.jpg`} alt={game?.name} loading="lazy" />
+                          <img src={imageUrl(imageId, 't_cover_small_2x')} alt={game?.name} loading="lazy" />
                         ) : (
                           <div style={{ width: '100%', height: '100%', background: 'var(--color-gray-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, padding: 8 }}>
                             {game?.name || 'Loading...'}
@@ -198,7 +198,7 @@ export default function Profile() {
                 return (
                   <div key={j.id} className="journal-entry">
                     {game?.cover?.image_id ? (
-                      <img src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.image_id}.jpg`} alt={game.name} />
+                      <img src={imageUrl(game.cover.image_id, 't_cover_small')} alt={game.name} />
                     ) : (
                       <div style={{ width: 48, height: 64, background: 'var(--color-gray-bg)', borderRadius: 6, flexShrink: 0 }} />
                     )}
@@ -225,7 +225,7 @@ export default function Profile() {
             <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 16 }}>
               {searchResults.slice(0, 10).map((g) => (
                 <div key={g.id} onClick={() => setSelectedGame(g)} style={{ padding: '8px 12px', cursor: 'pointer', background: selectedGame?.id === g.id ? 'var(--color-gray-bg)' : 'transparent', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  {g.cover?.image_id && <img src={`https://images.igdb.com/igdb/image/upload/t_thumb/${g.cover.image_id}.jpg`} style={{ width: 24, height: 32, borderRadius: 4, objectFit: 'cover' }} alt="" />}
+                  {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} style={{ width: 24, height: 32, borderRadius: 4, objectFit: 'cover' }} alt="" />}
                   <span style={{ fontSize: 14 }}>{g.name}</span>
                 </div>
               ))}
@@ -260,7 +260,7 @@ export default function Profile() {
             <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 16 }}>
               {searchResults.slice(0, 10).map((g) => (
                 <div key={g.id} onClick={() => setSelectedGame(g)} style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  {g.cover?.image_id && <img src={`https://images.igdb.com/igdb/image/upload/t_thumb/${g.cover.image_id}.jpg`} style={{ width: 24, height: 32, borderRadius: 4, objectFit: 'cover' }} alt="" />}
+                  {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} style={{ width: 24, height: 32, borderRadius: 4, objectFit: 'cover' }} alt="" />}
                   <span style={{ fontSize: 14 }}>{g.name}</span>
                 </div>
               ))}
