@@ -105,6 +105,10 @@
   --color-alert: #FAB515;
   --color-danger: #B0200C;
   --color-destructive: #FF0000;
+
+  /* Z-index layers */
+  --z-dropdown: 10;
+  --z-modal: 1000;
 }
 
 /* Reset */

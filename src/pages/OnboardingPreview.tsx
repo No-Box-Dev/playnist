@@ -22,7 +22,12 @@ interface GameSelection {
   cover_image_id?: string;
 }
 
-function GameSearchCard({ question, color }: { question: string; color: string; }) {
+interface GameSearchCardProps {
+  question: string;
+  color: string;
+}
+
+function GameSearchCard({ question, color }: GameSearchCardProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<IGDBGame[]>([]);
   const [selected, setSelected] = useState<GameSelection | null>(null);
@@ -37,7 +42,10 @@ function GameSearchCard({ question, color }: { question: string; color: string; 
       searchGames(query).then((r) => {
         setResults((r as IGDBGame[]).slice(0, 5));
         setShowResults(true);
-      }).catch(() => {});
+      }).catch((err) => {
+        console.error('Failed to search games:', err);
+        setResults([]);
+      });
     }, 300);
     return () => clearTimeout(debounceRef.current);
   }, [query]);
@@ -79,7 +87,7 @@ function GameSearchCard({ question, color }: { question: string; color: string; 
                 setQuery('');
               }}>
                 {g.cover?.image_id && (
-                  <img src={`https://images.igdb.com/igdb/image/upload/t_thumb/${g.cover.image_id}.jpg`} alt="" />
+                  <img src={`https://images.igdb.com/igdb/image/upload/t_thumb/${g.cover.image_id}.jpg`} alt={g.name} />
                 )}
                 <span>{g.name}</span>
               </div>

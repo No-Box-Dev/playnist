@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: var(--z-modal);
   padding: 24px;
 }
 
@@ -174,7 +174,7 @@
   border: 1px solid var(--color-gray-border);
   border-radius: 10px;
   margin-bottom: 4px;
-  z-index: 10;
+  z-index: var(--z-dropdown);
   max-height: 200px;
   overflow-y: auto;
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
