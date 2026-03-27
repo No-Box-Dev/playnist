@@ -41,6 +41,12 @@ function requireAdmin(user) {
 const rateLimits = new Map();
 function checkRateLimit(key, maxRequests = 10, windowMs = 60000) {
   const now = Date.now();
+  // Prevent unbounded growth — evict expired entries periodically
+  if (rateLimits.size > 5000) {
+    for (const [k, v] of rateLimits) {
+      if (now > v.resetAt) rateLimits.delete(k);
+    }
+  }
   const entry = rateLimits.get(key) || { count: 0, resetAt: now + windowMs };
   if (now > entry.resetAt) { entry.count = 0; entry.resetAt = now + windowMs; }
   entry.count++;
@@ -168,8 +174,16 @@ async function getUser(env, request) {
     .bind(session.user_id).first();
 }
 
+async function parseJsonBody(request) {
+  try {
+    return await request.json();
+  } catch {
+    return null;
+  }
+}
+
 function sessionCookie(token, maxAge = 60 * 60 * 24 * 30) {
-  return `playnist_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`;
+  return `playnist_session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
 }
 
 // ─── D1 game queries ───
@@ -333,11 +347,18 @@ export default {
         });
       }
 
+      // Parse JSON body once for POST/PATCH requests
+      let body = null;
+      if (method === 'POST' || method === 'PATCH') {
+        body = await parseJsonBody(request);
+        if (!body) return json({ error: 'Invalid JSON body' }, 400);
+      }
+
       // ── Auth ──
       if (path === '/auth/signup' && method === 'POST') {
         const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
         if (checkRateLimit('signup:' + ip, 5, 300000)) return json({ error: 'Too many signups. Try again later.' }, 429);
-        const { email, password, username, bio } = await request.json();
+        const { email, password, username, bio } = body;
         if (!email || !password || !username) return json({ error: 'Missing fields' }, 400);
 
         const existing = await env.DB.prepare('SELECT id FROM users WHERE email = ? OR username = ?').bind(email, username).first();
@@ -364,7 +385,7 @@ export default {
       if (path === '/auth/signin' && method === 'POST') {
         const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
         if (checkRateLimit('signin:' + ip, 10, 300000)) return json({ error: 'Too many attempts. Try again later.' }, 429);
-        const { email, password } = await request.json();
+        const { email, password } = body;
         if (!email || !password) return json({ error: 'Missing fields' }, 400);
 
         const user = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first();
@@ -396,7 +417,6 @@ export default {
       if (path === '/me' && method === 'PATCH') {
         const user = await getUser(env, request);
         if (!user) return json({ error: 'Not authenticated' }, 401);
-        const body = await request.json();
         const updates = [];
         const values = [];
         if (body.username !== undefined) { updates.push('username = ?'); values.push(body.username); }
@@ -454,7 +474,7 @@ export default {
 
       // ── Password Reset ──
       if (path === '/auth/forgot-password' && method === 'POST') {
-        const { email } = await request.json();
+        const { email } = body;
         if (!email) return json({ error: 'Missing email' }, 400);
         const userRow = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
         if (!userRow) return json({ ok: true }); // Don't reveal if email exists
@@ -465,13 +485,13 @@ export default {
         ).bind(resetToken, userRow.id, expires).run();
 
         const resetUrl = `${APP_URL}/reset-password?token=${resetToken}`;
-        sendEmail(env, email, 'Reset your Playnist password', resetEmail(resetUrl)).catch(() => {});
+        sendEmail(env, email, 'Reset your Playnist password', resetEmail(resetUrl)).catch((e) => console.error('[email] Reset email failed:', e));
 
         return json({ ok: true });
       }
 
       if (path === '/auth/reset-password' && method === 'POST') {
-        const { token, password } = await request.json();
+        const { token, password } = body;
         if (!token || !password) return json({ error: 'Missing fields' }, 400);
         const reset = await env.DB.prepare(
           "SELECT user_id FROM password_resets WHERE token = ? AND expires_at > datetime('now')"
@@ -565,7 +585,7 @@ export default {
       if (path === '/collection' && method === 'POST') {
         const user = await getUser(env, request);
         if (!user) return json({ error: 'Not authenticated' }, 401);
-        const { igdb_game_id, status } = await request.json();
+        const { igdb_game_id, status } = body;
         if (!igdb_game_id || !status) return json({ error: 'Missing fields' }, 400);
 
         const existing = await env.DB.prepare(
@@ -588,7 +608,7 @@ export default {
       if (collectionItemMatch && method === 'PATCH') {
         const user = await getUser(env, request);
         if (!user) return json({ error: 'Not authenticated' }, 401);
-        const { status } = await request.json();
+        const { status } = body;
         await env.DB.prepare('UPDATE user_collections SET status = ? WHERE id = ? AND user_id = ?')
           .bind(status, collectionItemMatch[1], user.id).run();
         return json({ ok: true });
@@ -606,7 +626,7 @@ export default {
       if (path === '/journals' && method === 'POST') {
         const user = await getUser(env, request);
         if (!user) return json({ error: 'Not authenticated' }, 401);
-        const { igdb_game_id, content } = await request.json();
+        const { igdb_game_id, content } = body;
         if (!igdb_game_id || !content) return json({ error: 'Missing fields' }, 400);
         const id = uuid();
         await env.DB.prepare(
@@ -639,7 +659,7 @@ export default {
       if (gameCommentsMatch && method === 'POST') {
         const user = await getUser(env, request);
         if (!user) return json({ error: 'Not authenticated' }, 401);
-        const { content } = await request.json();
+        const { content } = body;
         if (!content) return json({ error: 'Missing content' }, 400);
         const id = uuid();
         const igdbId = parseInt(gameCommentsMatch[1]);
@@ -666,7 +686,7 @@ export default {
       if (path === '/reactions' && method === 'POST') {
         const user = await getUser(env, request);
         if (!user) return json({ error: 'Not authenticated' }, 401);
-        const { target_type, target_id, emoji } = await request.json();
+        const { target_type, target_id, emoji } = body;
 
         const existing = await env.DB.prepare(
           'SELECT id FROM game_reactions WHERE user_id = ? AND target_type = ? AND target_id = ? AND emoji = ?'
@@ -735,7 +755,6 @@ export default {
         const user = await getUser(env, request);
         const denied = requireAdmin(user);
         if (denied) return denied;
-        const body = await request.json();
         const updates = [];
         const values = [];
         if (body.title !== undefined) { updates.push('title = ?'); values.push(body.title); }
@@ -753,7 +772,7 @@ export default {
         const user = await getUser(env, request);
         const denied = requireAdmin(user);
         if (denied) return denied;
-        const { page, section_type, title, config, sort_order } = await request.json();
+        const { page, section_type, title, config, sort_order } = body;
         if (!page || !section_type || !title) return json({ error: 'Missing fields' }, 400);
         const id = uuid();
         await env.DB.prepare(
@@ -775,7 +794,7 @@ export default {
         const user = await getUser(env, request);
         const denied = requireAdmin(user);
         if (denied) return denied;
-        const { order } = await request.json(); // [{id, sort_order}]
+        const { order } = body; // [{id, sort_order}]
         const stmt = env.DB.prepare('UPDATE page_sections SET sort_order = ? WHERE id = ?');
         await env.DB.batch(order.map(o => stmt.bind(o.sort_order, o.id)));
         return json({ ok: true });
@@ -785,7 +804,7 @@ export default {
       if (path === '/onboarding/picks' && method === 'POST') {
         const user = await getUser(env, request);
         if (!user) return json({ error: 'Not authenticated' }, 401);
-        const { game_ids } = await request.json();
+        const { game_ids } = body;
         if (!Array.isArray(game_ids)) return json({ error: 'game_ids must be array' }, 400);
         const stmt = env.DB.prepare('INSERT OR IGNORE INTO onboarding_picks (user_id, igdb_game_id) VALUES (?, ?)');
         await env.DB.batch(game_ids.map(gid => stmt.bind(user.id, gid)));

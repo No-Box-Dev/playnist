@@ -28,6 +28,19 @@ export default function ResetPassword() {
     }
   };
 
+  if (!token) {
+    return (
+      <div className="reset-page">
+        <div className="reset-card">
+          <div className="reset-logo"><img src="/images/logo.png" alt="Playnist" /></div>
+          <h1 className="reset-title">Invalid Link</h1>
+          <p className="reset-subtitle">This password reset link is invalid or has expired.</p>
+          <div className="reset-back"><Link to="/">Back to Sign In</Link></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="reset-page">
       <div className="reset-card">
