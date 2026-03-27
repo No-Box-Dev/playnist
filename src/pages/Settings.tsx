@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import { getAvatarUrl } from '../avatars';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import { updateMe, signout, setToken } from '../api';
@@ -60,7 +61,7 @@ export default function Settings() {
             <div className="settings-avatar-row">
               <img
                 className="settings-avatar"
-                src={user?.avatar_url || '/images/user-icon.png'}
+                src={getAvatarUrl(user.id, user?.avatar_url)}
                 alt="Avatar"
               />
               <div className="settings-avatar-info">

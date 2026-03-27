@@ -1,8 +1,15 @@
-/* Banner */
+/* Banner with sunburst pattern matching Figma */
 .profile-banner {
   height: 200px;
-  background: linear-gradient(135deg, var(--color-peach) 0%, var(--color-terra-cotta-light) 40%, var(--color-terra-cotta-lightest) 70%, var(--color-cream) 100%);
+  background:
+    repeating-conic-gradient(
+      from 0deg at 0% 100%,
+      rgba(255,255,255,0.08) 0deg 5deg,
+      transparent 5deg 10deg
+    ),
+    linear-gradient(135deg, var(--color-terra-cotta) 0%, var(--color-peach) 40%, var(--color-terra-cotta-lightest) 70%, var(--color-cream) 100%);
   position: relative;
+  overflow: hidden;
 }
 .profile-banner-edit {
   position: absolute;

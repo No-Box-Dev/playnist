@@ -5,12 +5,12 @@ import type { IGDBGame } from '../types';
 import './Onboarding.css';
 
 const MOCK_USERS = [
-  { name: 'PixelHunter', games: 42 },
-  { name: 'RetroGamer99', games: 87 },
-  { name: 'NightOwlPlays', games: 23 },
-  { name: 'GameMaster42', games: 156 },
-  { name: 'CozyGamerGal', games: 64 },
-  { name: 'SpeedRunKing', games: 98 },
+  { name: 'PixelHunter', games: 42, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/co7kjl.jpg' },
+  { name: 'RetroGamer99', games: 87, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/co4rs3.jpg' },
+  { name: 'NightOwlPlays', games: 23, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/cobfzp.jpg' },
+  { name: 'GameMaster42', games: 156, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/co5vmg.jpg' },
+  { name: 'CozyGamerGal', games: 64, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/coa93h.jpg' },
+  { name: 'SpeedRunKing', games: 98, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/co62ao.jpg' },
 ];
 
 export default function Onboarding() {
@@ -77,7 +77,7 @@ export default function Onboarding() {
             <div className="user-card-grid">
               {MOCK_USERS.map((u) => (
                 <div key={u.name} className="user-card">
-                  <img src="/images/user-icon.png" alt={u.name} />
+                  <img src={u.avatar} alt={u.name} />
                   <div className="user-card-name">{u.name}</div>
                   <div className="user-card-games">{u.games} games</div>
                   <button className="follow-btn">+ Follow</button>
