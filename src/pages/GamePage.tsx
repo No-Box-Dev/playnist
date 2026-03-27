@@ -4,8 +4,8 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import Modal from '../components/Modal';
-import { getGame, addToCollection, createJournal } from '../api';
-import type { IGDBGame } from '../types';
+import { getGame, addToCollection, createJournal, imageUrl } from '../api';
+import type { Game } from '../types';
 import './GamePage.css';
 
 export default function GamePage() {
@@ -13,7 +13,7 @@ export default function GamePage() {
   const navigate = useNavigate();
   const id = parseInt(igdbId || '0');
 
-  const [game, setGame] = useState<IGDBGame | null>(null);
+  const [game, setGame] = useState<Game | null>(null);
   const [addModal, setAddModal] = useState(false);
   const [addStatus, setAddStatus] = useState('played');
   const [journalModal, setJournalModal] = useState(false);
@@ -21,7 +21,7 @@ export default function GamePage() {
 
   useEffect(() => {
     if (!id) return;
-    getGame(id).then((g) => setGame(g as IGDBGame));
+    getGame(id).then((g) => setGame(g as Game));
   }, [id]);
 
   const handleAdd = async () => {
@@ -46,7 +46,7 @@ export default function GamePage() {
   );
 
   const coverUrl = game.cover?.image_id
-    ? `https://images.igdb.com/igdb/image/upload/t_cover_big_2x/${game.cover.image_id}.jpg`
+    ? imageUrl(game.cover.image_id, 't_cover_big_2x')
     : null;
 
   const developers = game.involved_companies?.filter((c) => c.developer).map((c) => c.company.name) || [];
@@ -145,7 +145,7 @@ export default function GamePage() {
             <h2 className="game-section-title">Screenshots</h2>
             <div className="game-screenshots">
               {game.screenshots.slice(0, 4).map((s) => (
-                <img key={s.image_id} className="game-screenshot" src={`https://images.igdb.com/igdb/image/upload/t_screenshot_med/${s.image_id}.jpg`} alt="Screenshot" loading="lazy" />
+                <img key={s.image_id} className="game-screenshot" src={imageUrl(s.image_id, 't_screenshot_med')} alt="Screenshot" loading="lazy" />
               ))}
             </div>
           </section>
@@ -157,9 +157,9 @@ export default function GamePage() {
             <h2 className="game-section-title">Similar Games</h2>
             <div className="game-grid-4">
               {game.similar_games.slice(0, 4).map((sg) => (
-                <div key={sg.name} className="game-card" style={{ aspectRatio: '2/3' }} onClick={() => { if (sg.cover?.image_id) navigate(`/game/${sg.name}`); }}>
+                <div key={sg.id || sg.name} className="game-card" style={{ aspectRatio: '2/3' }} onClick={() => { if (sg.id) navigate(`/game/${sg.id}`); }}>
                   {sg.cover?.image_id ? (
-                    <img src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${sg.cover.image_id}.jpg`} alt={sg.name} loading="lazy" />
+                    <img src={imageUrl(sg.cover.image_id, 't_cover_small_2x')} alt={sg.name} loading="lazy" />
                   ) : (
                     <div style={{ width: '100%', height: '100%', background: 'var(--color-gray-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, padding: 8, textAlign: 'center' }}>{sg.name}</div>
                   )}

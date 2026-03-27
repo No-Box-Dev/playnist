@@ -5,8 +5,8 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import Modal from '../components/Modal';
 import { useAuth } from '../hooks/useAuth';
-import { getUserJournals, getGamesBatch, createJournal, deleteJournal, searchGames } from '../api';
-import type { Journal as JournalType, IGDBGame } from '../types';
+import { getUserJournals, getGamesBatch, createJournal, deleteJournal, searchGames, imageUrl } from '../api';
+import type { Journal as JournalType, Game } from '../types';
 import './Journal.css';
 
 export default function Journal() {
@@ -15,11 +15,11 @@ export default function Journal() {
   const userId = user?.id;
 
   const [journals, setJournals] = useState<JournalType[]>([]);
-  const [gameCache, setGameCache] = useState<Record<number, IGDBGame>>({});
+  const [gameCache, setGameCache] = useState<Record<number, Game>>({});
   const [writeModal, setWriteModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<IGDBGame[]>([]);
-  const [selectedGame, setSelectedGame] = useState<IGDBGame | null>(null);
+  const [searchResults, setSearchResults] = useState<Game[]>([]);
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [content, setContent] = useState('');
 
   useEffect(() => {
@@ -31,8 +31,8 @@ export default function Journal() {
     const missing = [...new Set(journals.map((j) => j.igdb_game_id))].filter((id) => !gameCache[id]);
     if (missing.length === 0) return;
     getGamesBatch(missing).then((games) => {
-      const batch: Record<number, IGDBGame> = {};
-      (games as IGDBGame[]).forEach((g) => { batch[g.id] = g; });
+      const batch: Record<number, Game> = {};
+      (games as Game[]).forEach((g) => { batch[g.id] = g; });
       setGameCache((prev) => ({ ...prev, ...batch }));
     });
   }, [journals]);
@@ -41,7 +41,7 @@ export default function Journal() {
     if (!searchQuery.trim()) return;
     try {
       const results = await searchGames(searchQuery);
-      setSearchResults(results as IGDBGame[]);
+      setSearchResults(results as Game[]);
     } catch {
       setSearchResults([]);
     }
@@ -111,7 +111,7 @@ export default function Journal() {
                 >
                   <div className="journal-card-top">
                     {game?.cover?.image_id ? (
-                      <img className="journal-card-cover" src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.image_id}.jpg`} alt={game.name} />
+                      <img className="journal-card-cover" src={imageUrl(game.cover.image_id, 't_cover_small')} alt={game.name} />
                     ) : (
                       <div className="journal-card-cover-placeholder" />
                     )}
@@ -149,7 +149,7 @@ export default function Journal() {
                   onClick={() => setSelectedGame(g)}
                   style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}
                 >
-                  {g.cover?.image_id && <img src={`https://images.igdb.com/igdb/image/upload/t_thumb/${g.cover.image_id}.jpg`} style={{ width: 24, height: 32, borderRadius: 4, objectFit: 'cover' }} alt="" />}
+                  {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} style={{ width: 24, height: 32, borderRadius: 4, objectFit: 'cover' }} alt="" />}
                   <span style={{ fontSize: 14 }}>{g.name}</span>
                 </div>
               ))}

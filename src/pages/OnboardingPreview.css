@@ -17,8 +17,10 @@
   width: 100%;
   max-width: 960px;
   padding: 40px 48px;
-  max-height: 90vh;
-  overflow-y: auto;
+  height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
 }
 
@@ -27,8 +29,9 @@
   font-family: var(--font-heading);
   font-size: 28px;
   text-transform: uppercase;
-  margin: 0 0 24px;
+  margin: 0 0 20px;
   letter-spacing: 1px;
+  flex-shrink: 0;
 }
 
 /* Step indicator */
@@ -37,6 +40,7 @@
   align-items: center;
   gap: 0;
   margin-bottom: 8px;
+  flex-shrink: 0;
 }
 
 .ob-step {
@@ -50,6 +54,12 @@
   color: var(--color-gray);
   text-transform: uppercase;
   white-space: nowrap;
+  cursor: pointer;
+}
+
+.ob-step--disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .ob-step:first-child { justify-content: flex-start; }
@@ -71,12 +81,17 @@
   height: 3px;
   background: var(--color-red);
   border-radius: 2px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
+  flex-shrink: 0;
 }
 
 /* Content */
 .ob-content {
-  min-height: 320px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .ob-content--center {
@@ -92,14 +107,16 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+  flex: 1;
+  min-height: 0;
 }
 
 .ob-game-card {
   border-radius: 16px;
-  padding: 24px 20px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  min-height: 400px;
+  position: relative;
 }
 
 .ob-game-card--green { border: 3.5px solid var(--color-green); }
@@ -110,29 +127,55 @@
   font-family: var(--font-heading);
   font-size: 20px;
   line-height: 1.3;
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   color: var(--color-gray-dark);
+  min-height: 80px;
 }
 
 .ob-game-card__cover {
   flex: 1;
+  min-height: 0;
   border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
 }
 
-.ob-game-card__cover img {
+.ob-game-card__cover > img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 12px;
 }
 
+.ob-game-card__remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ob-game-card__remove:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
 .ob-game-card__search {
-  position: relative;
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
 }
 
 .ob-game-card__label {
@@ -234,16 +277,17 @@
 .ob-creator-card {
   border: 3.5px solid var(--color-orange);
   border-radius: 16px;
-  padding: 24px 20px;
+  padding: 16px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   background: rgba(244, 188, 80, 0.12);
+  overflow: hidden;
 }
 
 .ob-creator-card__avatar {
-  width: 90px;
-  height: 90px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -251,8 +295,11 @@
 
 .ob-creator-card__name {
   font-family: var(--font-heading);
-  font-size: 16px;
+  font-size: 14px;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--color-gray-dark);
 }
 
@@ -285,7 +332,8 @@
 .ob-footer {
   display: flex;
   justify-content: flex-end;
-  margin-top: 32px;
+  margin-top: 24px;
+  flex-shrink: 0;
 }
 
 .ob-continue {
@@ -303,6 +351,11 @@
 
 .ob-continue:hover {
   opacity: 0.9;
+}
+
+.ob-continue--disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 /* Responsive */

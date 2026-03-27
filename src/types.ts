@@ -9,7 +9,7 @@ export interface User {
   created_at: string;
 }
 
-export interface IGDBGame {
+export interface Game {
   id: number;
   name: string;
   slug?: string;
@@ -25,7 +25,7 @@ export interface IGDBGame {
   involved_companies?: { company: { name: string }; developer: boolean }[];
   screenshots?: { image_id: string }[];
   videos?: { video_id: string }[];
-  similar_games?: { name: string; cover?: { image_id: string } }[];
+  similar_games?: { id: number; name: string; cover?: { image_id: string } }[];
 }
 
 export interface CollectionItem {

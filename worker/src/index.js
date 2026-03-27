@@ -105,40 +105,118 @@ function sessionCookie(token, maxAge = 60 * 60 * 24 * 30) {
   return `playnist_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`;
 }
 
-// ─── IGDB proxy (kept for backward compat + games without local data) ───
+// ─── D1 game queries ───
 
-let tokenCache = { token: null, expiresAt: 0 };
-
-async function getAccessToken(env) {
-  if (tokenCache.token && Date.now() < tokenCache.expiresAt) return tokenCache.token;
-  const res = await fetch('https://id.twitch.tv/oauth2/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_id: env.TWITCH_CLIENT_ID,
-      client_secret: env.TWITCH_CLIENT_SECRET,
-      grant_type: 'client_credentials',
-    }),
-  });
-  const data = await res.json();
-  if (!data.access_token) throw new Error('Failed to get IGDB token');
-  tokenCache.token = data.access_token;
-  tokenCache.expiresAt = Date.now() + (data.expires_in - 300) * 1000;
-  return data.access_token;
+async function dbSearchGames(env, query) {
+  const { results } = await env.DB.prepare(`
+    SELECT g.id, g.name, g.slug, g.summary, g.rating, g.first_release_date,
+           c.image_id AS cover_image_id
+    FROM games g
+    LEFT JOIN covers c ON c.game = g.id
+    WHERE g.name LIKE ?
+    ORDER BY g.rating_count DESC, g.rating DESC
+    LIMIT 20
+  `).bind(`%${query}%`).all();
+  return results.map(r => ({
+    id: r.id, name: r.name, slug: r.slug, summary: r.summary,
+    rating: r.rating, first_release_date: r.first_release_date,
+    cover: r.cover_image_id ? { image_id: r.cover_image_id } : undefined,
+  }));
 }
 
-async function igdbFetch(env, endpoint, body) {
-  const token = await getAccessToken(env);
-  const res = await fetch(`https://api.igdb.com/v4/${endpoint}`, {
-    method: 'POST',
-    headers: {
-      'Client-ID': env.TWITCH_CLIENT_ID,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'text/plain',
-    },
-    body,
-  });
-  return res.json();
+async function dbGetGame(env, id) {
+  const game = await env.DB.prepare(`
+    SELECT g.id, g.name, g.slug, g.summary, g.storyline, g.rating, g.aggregated_rating,
+           g.first_release_date, g.rating_count,
+           c.image_id AS cover_image_id
+    FROM games g
+    LEFT JOIN covers c ON c.game = g.id
+    WHERE g.id = ?
+  `).bind(id).first();
+  if (!game) return null;
+
+  const [genres, platforms, companies, similar] = await Promise.all([
+    env.DB.prepare('SELECT gr.name FROM game_genres gg JOIN genres gr ON gr.id = gg.genre_id WHERE gg.game_id = ?').bind(id).all(),
+    env.DB.prepare('SELECT p.name FROM game_platforms gp JOIN platforms p ON p.id = gp.platform_id WHERE gp.game_id = ?').bind(id).all(),
+    env.DB.prepare(`
+      SELECT co.name, ic.developer FROM involved_companies ic
+      JOIN companies co ON co.id = ic.company WHERE ic.game = ?
+    `).bind(id).all(),
+    env.DB.prepare(`
+      SELECT g.id, g.name, c.image_id AS cover_image_id
+      FROM game_similar_games gs
+      JOIN games g ON g.id = gs.similar_game_id
+      LEFT JOIN covers c ON c.game = g.id
+      WHERE gs.game_id = ?
+      LIMIT 10
+    `).bind(id).all(),
+  ]);
+
+  return {
+    id: game.id, name: game.name, slug: game.slug, summary: game.summary,
+    storyline: game.storyline, rating: game.rating, aggregated_rating: game.aggregated_rating,
+    first_release_date: game.first_release_date, rating_count: game.rating_count,
+    cover: game.cover_image_id ? { image_id: game.cover_image_id } : undefined,
+    genres: genres.results.map(r => ({ name: r.name })),
+    platforms: platforms.results.map(r => ({ name: r.name })),
+    involved_companies: companies.results.map(r => ({ company: { name: r.name }, developer: !!r.developer })),
+    similar_games: similar.results.map(r => ({
+      id: r.id, name: r.name,
+      cover: r.cover_image_id ? { image_id: r.cover_image_id } : undefined,
+    })),
+  };
+}
+
+async function dbGetGamesBatch(env, ids) {
+  if (ids.length === 0) return [];
+  const placeholders = ids.map(() => '?').join(',');
+  const { results } = await env.DB.prepare(`
+    SELECT g.id, g.name, g.slug, g.summary, g.rating,
+           c.image_id AS cover_image_id
+    FROM games g
+    LEFT JOIN covers c ON c.game = g.id
+    WHERE g.id IN (${placeholders})
+  `).bind(...ids).all();
+  return results.map(r => ({
+    id: r.id, name: r.name, slug: r.slug, summary: r.summary, rating: r.rating,
+    cover: r.cover_image_id ? { image_id: r.cover_image_id } : undefined,
+  }));
+}
+
+async function dbGetTrending(env) {
+  const { results } = await env.DB.prepare(`
+    SELECT g.id, g.name, g.slug, g.summary, g.rating, g.first_release_date,
+           c.image_id AS cover_image_id
+    FROM games g
+    LEFT JOIN covers c ON c.game = g.id
+    WHERE g.rating > 80 AND g.rating_count > 50 AND c.image_id IS NOT NULL
+    ORDER BY g.rating DESC
+    LIMIT 20
+  `).all();
+  return results.map(r => ({
+    id: r.id, name: r.name, slug: r.slug, summary: r.summary,
+    rating: r.rating, first_release_date: r.first_release_date,
+    cover: r.cover_image_id ? { image_id: r.cover_image_id } : undefined,
+  }));
+}
+
+async function dbGetNew(env) {
+  const now = Math.floor(Date.now() / 1000);
+  const threeMonthsAgo = now - 90 * 24 * 60 * 60;
+  const { results } = await env.DB.prepare(`
+    SELECT g.id, g.name, g.slug, g.summary, g.rating, g.first_release_date,
+           c.image_id AS cover_image_id
+    FROM games g
+    LEFT JOIN covers c ON c.game = g.id
+    WHERE g.first_release_date >= ? AND g.first_release_date <= ? AND c.image_id IS NOT NULL
+    ORDER BY g.first_release_date DESC
+    LIMIT 20
+  `).bind(threeMonthsAgo, now).all();
+  return results.map(r => ({
+    id: r.id, name: r.name, slug: r.slug, summary: r.summary,
+    rating: r.rating, first_release_date: r.first_release_date,
+    cover: r.cover_image_id ? { image_id: r.cover_image_id } : undefined,
+  }));
 }
 
 // ─── Routes ───
@@ -154,6 +232,40 @@ export default {
     const method = request.method;
 
     try {
+      // ── Image proxy (R2 cache) ──
+      const imgMatch = path.match(/^\/img\/([a-zA-Z0-9_]+)\/(t_thumb|t_cover_small|t_cover_small_2x|t_cover_big|t_cover_big_2x|t_screenshot_med)$/);
+      if (imgMatch && method === 'GET') {
+        const [, imageId, size] = imgMatch;
+        const key = `covers/${size}/${imageId}.jpg`;
+
+        // Check R2 first
+        const cached = await env.UPLOADS.get(key);
+        if (cached) {
+          return new Response(cached.body, {
+            headers: {
+              'Content-Type': 'image/jpeg',
+              'Cache-Control': 'public, max-age=31536000, immutable',
+              ...CORS_HEADERS,
+            },
+          });
+        }
+
+        // Fetch from upstream, store in R2
+        const upstream = await fetch(`https://images.igdb.com/igdb/image/upload/${size}/${imageId}.jpg`);
+        if (!upstream.ok) return new Response('Image not found', { status: 404, headers: CORS_HEADERS });
+
+        const imageData = await upstream.arrayBuffer();
+        await env.UPLOADS.put(key, imageData, { httpMetadata: { contentType: 'image/jpeg' } });
+
+        return new Response(imageData, {
+          headers: {
+            'Content-Type': 'image/jpeg',
+            'Cache-Control': 'public, max-age=31536000, immutable',
+            ...CORS_HEADERS,
+          },
+        });
+      }
+
       // ── Auth ──
       if (path === '/auth/signup' && method === 'POST') {
         const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
@@ -281,7 +393,7 @@ export default {
           'INSERT OR REPLACE INTO password_resets (token, user_id, expires_at) VALUES (?, ?, ?)'
         ).bind(resetToken, userRow.id, expires).run();
         // In production, send email here via Postmark/SES
-        return json({ ok: true, _dev_token: resetToken }); // _dev_token only for development
+        return json({ ok: true });
       }
 
       if (path === '/auth/reset-password' && method === 'POST') {
@@ -297,51 +409,37 @@ export default {
         return json({ ok: true });
       }
 
-      // ── IGDB proxy endpoints (game data) ──
+      // ── Game data endpoints (D1) ──
       if (path === '/search') {
         const query = url.searchParams.get('q');
         if (!query) return json({ error: 'Missing ?q=' }, 400);
-        const sanitized = query.replace(/[";]/g, '');
-        const games = await igdbFetch(env, 'games',
-          `search "${sanitized}"; fields name, cover.image_id, summary, rating, first_release_date, genres.name, platforms.name, involved_companies.company.name, screenshots.image_id, slug; limit 20;`
-        );
+        const games = await dbSearchGames(env, query);
         return json(games);
       }
 
       if (path === '/game') {
         const id = url.searchParams.get('id');
         if (!id || !/^\d+$/.test(id)) return json({ error: 'Missing or invalid ?id=' }, 400);
-        const games = await igdbFetch(env, 'games',
-          `where id = ${id}; fields name, cover.image_id, summary, storyline, rating, aggregated_rating, first_release_date, genres.name, platforms.name, involved_companies.company.name, involved_companies.developer, screenshots.image_id, videos.video_id, slug, similar_games.name, similar_games.cover.image_id, rating_count; limit 1;`
-        );
-        return json(games[0] || null);
+        const game = await dbGetGame(env, parseInt(id));
+        return json(game);
       }
 
-      // Batch fetch multiple games by IDs
       if (path === '/games/batch') {
         const ids = url.searchParams.get('ids');
         if (!ids) return json({ error: 'Missing ?ids=' }, 400);
-        const idList = ids.split(',').filter(id => /^\d+$/.test(id)).slice(0, 20);
+        const idList = ids.split(',').filter(id => /^\d+$/.test(id)).slice(0, 20).map(Number);
         if (idList.length === 0) return json([]);
-        const games = await igdbFetch(env, 'games',
-          `where id = (${idList.join(',')}); fields name, cover.image_id, summary, rating, genres.name, platforms.name, slug; limit ${idList.length};`
-        );
+        const games = await dbGetGamesBatch(env, idList);
         return json(games);
       }
 
       if (path === '/trending') {
-        const games = await igdbFetch(env, 'games',
-          `fields name, cover.image_id, summary, rating, first_release_date, genres.name, platforms.name, slug; sort rating desc; where rating > 80 & rating_count > 50 & cover != null; limit 20;`
-        );
+        const games = await dbGetTrending(env);
         return json(games);
       }
 
       if (path === '/new') {
-        const now = Math.floor(Date.now() / 1000);
-        const threeMonthsAgo = now - 90 * 24 * 60 * 60;
-        const games = await igdbFetch(env, 'games',
-          `fields name, cover.image_id, summary, rating, first_release_date, genres.name, platforms.name, slug; sort first_release_date desc; where first_release_date >= ${threeMonthsAgo} & first_release_date <= ${now} & cover != null; limit 20;`
-        );
+        const games = await dbGetNew(env);
         return json(games);
       }
 

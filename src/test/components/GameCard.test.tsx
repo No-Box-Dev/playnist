@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import GameCard from '../../components/GameCard';
-import type { IGDBGame } from '../../types';
+import type { Game } from '../../types';
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -10,13 +10,13 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-const gameWithCover: IGDBGame = {
+const gameWithCover: Game = {
   id: 101,
   name: 'Test Game',
   cover: { image_id: 'abc123' },
 };
 
-const gameWithoutCover: IGDBGame = {
+const gameWithoutCover: Game = {
   id: 202,
   name: 'No Cover Game',
 };
@@ -35,7 +35,7 @@ describe('GameCard', () => {
 
     const img = screen.getByAltText('Test Game') as HTMLImageElement;
     expect(img).toBeInTheDocument();
-    expect(img.src).toBe('https://images.igdb.com/igdb/image/upload/t_cover_small_2x/abc123.jpg');
+    expect(img.src).toBe('https://playnist-api.jasper-414.workers.dev/img/abc123/t_cover_small_2x');
   });
 
   it('shows fallback when no cover', () => {

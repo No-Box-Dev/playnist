@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { searchGames } from '../api';
+import { searchGames, imageUrl } from '../api';
 import { getDefaultAvatar } from '../avatars';
-import type { IGDBGame } from '../types';
+import type { Game } from '../types';
 import './OnboardingPreview.css';
 
 const MOCK_CREATORS = [
@@ -25,28 +25,29 @@ interface GameSelection {
 interface GameSearchCardProps {
   question: string;
   color: string;
+  onSelect?: (selected: boolean) => void;
 }
 
-function GameSearchCard({ question, color }: GameSearchCardProps) {
+function GameSearchCard({ question, color, onSelect }: GameSearchCardProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<IGDBGame[]>([]);
+  const [results, setResults] = useState<Game[]>([]);
   const [selected, setSelected] = useState<GameSelection | null>(null);
   const [showResults, setShowResults] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!query || query.length < 2) { setResults([]); return; }
+    if (!query || query.length < 1) { setResults([]); return; }
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       searchGames(query).then((r) => {
-        setResults((r as IGDBGame[]).slice(0, 5));
+        setResults((r as Game[]).slice(0, 5));
         setShowResults(true);
       }).catch((err) => {
         console.error('Failed to search games:', err);
         setResults([]);
       });
-    }, 300);
+    }, 150);
     return () => clearTimeout(debounceRef.current);
   }, [query]);
 
@@ -65,33 +66,38 @@ function GameSearchCard({ question, color }: GameSearchCardProps) {
       <h3 className="ob-game-card__question">{question}</h3>
       <div className="ob-game-card__cover">
         {selected?.cover_image_id && (
-          <img src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${selected.cover_image_id}.jpg`} alt={selected.name} />
+          <>
+            <img src={imageUrl(selected.cover_image_id, 't_cover_big')} alt={selected.name} />
+            <button className="ob-game-card__remove" onClick={() => { setSelected(null); onSelect?.(false); }}>&times;</button>
+          </>
         )}
-      </div>
-      <div className="ob-game-card__search" ref={wrapperRef}>
-        <label className="ob-game-card__label">Game name</label>
-        <input
-          type="text"
-          className="ob-game-card__input"
-          placeholder="Start searching games..."
-          value={selected ? selected.name : query}
-          onChange={(e) => { setSelected(null); setQuery(e.target.value); }}
-          onFocus={() => results.length > 0 && setShowResults(true)}
-        />
-        {showResults && results.length > 0 && (
-          <div className="ob-game-card__results">
-            {results.map((g) => (
-              <div key={g.id} className="ob-game-card__result" onClick={() => {
-                setSelected({ id: g.id, name: g.name, cover_image_id: g.cover?.image_id });
-                setShowResults(false);
-                setQuery('');
-              }}>
-                {g.cover?.image_id && (
-                  <img src={`https://images.igdb.com/igdb/image/upload/t_thumb/${g.cover.image_id}.jpg`} alt={g.name} />
-                )}
-                <span>{g.name}</span>
+        {!selected && (
+          <div className="ob-game-card__search" ref={wrapperRef}>
+            <input
+              type="text"
+              className="ob-game-card__input"
+              placeholder="Start searching games..."
+              value={query}
+              onChange={(e) => { setQuery(e.target.value); }}
+              onFocus={() => results.length > 0 && setShowResults(true)}
+            />
+            {showResults && results.length > 0 && (
+              <div className="ob-game-card__results">
+                {results.map((g) => (
+                  <div key={g.id} className="ob-game-card__result" onClick={() => {
+                    setSelected({ id: g.id, name: g.name, cover_image_id: g.cover?.image_id });
+                    setShowResults(false);
+                    setQuery('');
+                    onSelect?.(true);
+                  }}>
+                    {g.cover?.image_id && (
+                      <img src={imageUrl(g.cover.image_id, 't_thumb')} alt={g.name} />
+                    )}
+                    <span>{g.name}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
@@ -102,6 +108,19 @@ function GameSearchCard({ question, color }: GameSearchCardProps) {
 export default function OnboardingPreview() {
   const [step, setStep] = useState(1);
   const [followed, setFollowed] = useState<Set<string>>(new Set());
+  const [gameSelections, setGameSelections] = useState([false, false, false]);
+
+  const allGamesSelected = gameSelections.every(Boolean);
+
+  const handleGameSelect = (index: number, selected: boolean) => {
+    setGameSelections((prev) => { const next = [...prev]; next[index] = selected; return next; });
+  };
+
+  const goToStep = (target: number) => {
+    if (target < step) { setStep(target); return; }
+    if (target >= 2 && !allGamesSelected) return;
+    setStep(target);
+  };
 
   const toggleFollow = (name: string) => {
     setFollowed((prev) => {
@@ -117,15 +136,15 @@ export default function OnboardingPreview() {
         <h1 className="ob-title">ONBOARDING</h1>
 
         <div className="ob-steps">
-          <div className={`ob-step ${step === 1 ? 'ob-step--active' : ''}`}>
+          <div className={`ob-step ${step === 1 ? 'ob-step--active' : ''}`} onClick={() => goToStep(1)}>
             {step === 1 && <span className="ob-step__mascot">🧑‍🎤</span>}
             <span>STEP 1 – GENRE OF GAMES</span>
           </div>
-          <div className={`ob-step ${step === 2 ? 'ob-step--active' : ''}`}>
+          <div className={`ob-step ${step === 2 ? 'ob-step--active' : ''} ${!allGamesSelected && step < 2 ? 'ob-step--disabled' : ''}`} onClick={() => goToStep(2)}>
             {step === 2 && <span className="ob-step__mascot">🧑‍🎤</span>}
             <span>STEP 2 – CREATORS</span>
           </div>
-          <div className={`ob-step ${step === 3 ? 'ob-step--active' : ''}`}>
+          <div className={`ob-step ${step === 3 ? 'ob-step--active' : ''} ${step < 3 ? 'ob-step--disabled' : ''}`} onClick={() => goToStep(3)}>
             {step === 3 && <span className="ob-step__mascot">🧑‍🎤</span>}
             <span>STEP 3 – Let's GOOOO!</span>
           </div>
@@ -136,8 +155,8 @@ export default function OnboardingPreview() {
         {step === 1 && (
           <div className="ob-content">
             <div className="ob-cards-row">
-              {GAME_CARDS.map((card) => (
-                <GameSearchCard key={card.color} question={card.question} color={card.color} />
+              {GAME_CARDS.map((card, i) => (
+                <GameSearchCard key={card.color} question={card.question} color={card.color} onSelect={(sel) => handleGameSelect(i, sel)} />
               ))}
             </div>
           </div>
@@ -182,8 +201,11 @@ export default function OnboardingPreview() {
         )}
 
         <div className="ob-footer">
-          <button className="ob-continue" onClick={() => setStep((s) => Math.min(s + 1, 3))}>
-            {step < 3 ? 'CONTINUE' : 'CONTINUE'}
+          <button
+            className={`ob-continue ${step === 1 && !allGamesSelected ? 'ob-continue--disabled' : ''}`}
+            onClick={() => { if (step === 1 && !allGamesSelected) return; setStep((s) => Math.min(s + 1, 3)); }}
+          >
+            CONTINUE
           </button>
         </div>
       </div>

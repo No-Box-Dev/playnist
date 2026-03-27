@@ -22,6 +22,7 @@ vi.mock('../api', () => ({
   getStoredToken: vi.fn(() => null),
   getMe: vi.fn(() => Promise.resolve(null)),
   setToken: vi.fn(),
+  imageUrl: (id: string, size: string) => `https://playnist-api.jasper-414.workers.dev/img/${id}/${size}`,
 }));
 
 import { getStoredToken, getMe } from '../api';

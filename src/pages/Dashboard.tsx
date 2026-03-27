@@ -5,30 +5,30 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import GameCard from '../components/GameCard';
 import Modal from '../components/Modal';
-import { getTrending, getNew, addToCollection } from '../api';
-import type { IGDBGame } from '../types';
+import { getTrending, getNew, addToCollection, imageUrl } from '../api';
+import type { Game } from '../types';
 import './Dashboard.css';
 
 export default function Dashboard() {
-  const [trending, setTrending] = useState<IGDBGame[]>([]);
-  const [newGames, setNewGames] = useState<IGDBGame[]>([]);
-  const [rainyDay, setRainyDay] = useState<IGDBGame[]>([]);
-  const [ambassadorPicks, setAmbassadorPicks] = useState<IGDBGame[]>([]);
-  const [addModal, setAddModal] = useState<IGDBGame | null>(null);
+  const [trending, setTrending] = useState<Game[]>([]);
+  const [newGames, setNewGames] = useState<Game[]>([]);
+  const [rainyDay, setRainyDay] = useState<Game[]>([]);
+  const [ambassadorPicks, setAmbassadorPicks] = useState<Game[]>([]);
+  const [addModal, setAddModal] = useState<Game | null>(null);
   const [addStatus, setAddStatus] = useState('played');
   const navigate = useNavigate();
 
   useEffect(() => {
     getTrending().then((g) => {
-      const all = g as IGDBGame[];
+      const all = g as Game[];
       setTrending(all.slice(0, 4));
       setAmbassadorPicks(all.slice(4, 8));
       setRainyDay(all.slice(8, 12));
     });
-    getNew().then((g) => setNewGames((g as IGDBGame[]).slice(0, 5)));
+    getNew().then((g) => setNewGames((g as Game[]).slice(0, 5)));
   }, []);
 
-  const handleAdd = (game: IGDBGame) => setAddModal(game);
+  const handleAdd = (game: Game) => setAddModal(game);
 
   const confirmAdd = async () => {
     if (!addModal) return;
@@ -57,7 +57,7 @@ export default function Dashboard() {
           <div className="ambassador-card-v2">
             {spotlightGame?.cover?.image_id && (
               <div className="ambassador-game-cover" onClick={() => navigate(`/game/${spotlightGame.id}`)}>
-                <img src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${spotlightGame.cover.image_id}.jpg`} alt={spotlightGame.name} />
+                <img src={imageUrl(spotlightGame.cover.image_id, 't_cover_big')} alt={spotlightGame.name} />
                 <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAdd(spotlightGame); }}>+</button>
               </div>
             )}

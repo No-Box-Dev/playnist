@@ -1,13 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import type { IGDBGame } from '../types';
+import { imageUrl } from '../api';
+import type { Game } from '../types';
 
 function coverUrl(imageId: string) {
-  return `https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${imageId}.jpg`;
+  return imageUrl(imageId, 't_cover_small_2x');
 }
 
 interface GameCardProps {
-  game: IGDBGame;
-  onAdd?: (game: IGDBGame) => void;
+  game: Game;
+  onAdd?: (game: Game) => void;
 }
 
 export default function GameCard({ game, onAdd }: GameCardProps) {

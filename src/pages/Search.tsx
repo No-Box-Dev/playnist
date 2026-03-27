@@ -6,17 +6,17 @@ import BottomNav from '../components/BottomNav';
 import GameCard from '../components/GameCard';
 import Modal from '../components/Modal';
 import { searchGames, addToCollection } from '../api';
-import type { IGDBGame } from '../types';
+import type { Game } from '../types';
 import './Search.css';
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
   const [query, setQuery] = useState(initialQuery);
-  const [results, setResults] = useState<IGDBGame[]>([]);
+  const [results, setResults] = useState<Game[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [addModal, setAddModal] = useState<IGDBGame | null>(null);
+  const [addModal, setAddModal] = useState<Game | null>(null);
   const [addStatus, setAddStatus] = useState('played');
 
   const handleSearch = async (q?: string) => {
@@ -26,7 +26,7 @@ export default function Search() {
     setSearchParams({ q: term });
     try {
       const res = await searchGames(term);
-      setResults(res as IGDBGame[]);
+      setResults(res as Game[]);
     } catch {
       setResults([]);
     }
@@ -39,7 +39,7 @@ export default function Search() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleAdd = (game: IGDBGame) => setAddModal(game);
+  const handleAdd = (game: Game) => setAddModal(game);
 
   const confirmAdd = async () => {
     if (!addModal) return;

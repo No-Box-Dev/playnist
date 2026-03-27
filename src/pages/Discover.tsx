@@ -5,16 +5,16 @@ import BottomNav from '../components/BottomNav';
 import GameCard from '../components/GameCard';
 import Modal from '../components/Modal';
 import { getPublicPageSections, getTrending, getNew, searchGames, addToCollection } from '../api';
-import type { IGDBGame, PageSection } from '../types';
+import type { Game, PageSection } from '../types';
 import './Discover.css';
 
 export default function Discover() {
   const [sections, setSections] = useState<PageSection[]>([]);
-  const [gameData, setGameData] = useState<Record<string, IGDBGame[]>>({});
+  const [gameData, setGameData] = useState<Record<string, Game[]>>({});
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<IGDBGame[]>([]);
+  const [searchResults, setSearchResults] = useState<Game[]>([]);
   const [activeCategory, setActiveCategory] = useState('All');
-  const [addModal, setAddModal] = useState<IGDBGame | null>(null);
+  const [addModal, setAddModal] = useState<Game | null>(null);
   const [addStatus, setAddStatus] = useState('played');
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function Discover() {
           fetcher.then((g) => {
             setGameData((prev) => ({
               ...prev,
-              [section.id]: (g as IGDBGame[]).slice(offset, offset + limit),
+              [section.id]: (g as Game[]).slice(offset, offset + limit),
             }));
           });
         }
@@ -43,19 +43,19 @@ export default function Discover() {
   useEffect(() => {
     if (!searchQuery.trim()) { setSearchResults([]); return; }
     const timeout = setTimeout(() => {
-      searchGames(searchQuery).then((g) => setSearchResults(g as IGDBGame[]));
+      searchGames(searchQuery).then((g) => setSearchResults(g as Game[]));
     }, 400);
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
-  const handleAdd = (game: IGDBGame) => setAddModal(game);
+  const handleAdd = (game: Game) => setAddModal(game);
   const confirmAdd = async () => {
     if (!addModal) return;
     await addToCollection(addModal.id, addStatus);
     setAddModal(null);
   };
 
-  const filterByCategory = (games: IGDBGame[]) => {
+  const filterByCategory = (games: Game[]) => {
     if (activeCategory === 'All') return games;
     return games.filter((g) =>
       g.genres?.some((genre) => genre.name.toLowerCase().includes(activeCategory.toLowerCase()))
