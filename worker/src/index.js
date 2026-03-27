@@ -804,13 +804,14 @@ export default {
       if (path === '/onboarding/picks' && method === 'POST') {
         const user = await getUser(env, request);
         if (!user) return json({ error: 'Not authenticated' }, 401);
-        const { game_ids } = body;
-        if (!Array.isArray(game_ids)) return json({ error: 'game_ids must be array' }, 400);
+        // Support both legacy {game_ids: []} and new {game_picks: [{id, status}]}
+        const { game_ids, game_picks } = body;
+        const picks = game_picks || (Array.isArray(game_ids) ? game_ids.map(id => ({ id, status: 'played' })) : null);
+        if (!Array.isArray(picks)) return json({ error: 'game_picks must be array' }, 400);
         const stmt = env.DB.prepare('INSERT OR IGNORE INTO onboarding_picks (user_id, igdb_game_id) VALUES (?, ?)');
-        await env.DB.batch(game_ids.map(gid => stmt.bind(user.id, gid)));
-        // Also add these to collection as "played"
+        await env.DB.batch(picks.map(p => stmt.bind(user.id, p.id)));
         const colStmt = env.DB.prepare('INSERT OR IGNORE INTO user_collections (id, user_id, igdb_game_id, status) VALUES (?, ?, ?, ?)');
-        await env.DB.batch(game_ids.map(gid => colStmt.bind(uuid(), user.id, gid, 'played')));
+        await env.DB.batch(picks.map(p => colStmt.bind(uuid(), user.id, p.id, p.status || 'played')));
         await env.DB.prepare('UPDATE users SET onboarding_step = 3 WHERE id = ?').bind(user.id).run();
         return json({ ok: true });
       }

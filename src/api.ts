@@ -114,8 +114,8 @@ export const resetPassword = (token: string, password: string) =>
   request<unknown>('/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, password }) });
 
 // Onboarding
-export const saveOnboardingPicks = (game_ids: number[]) =>
-  request<unknown>('/onboarding/picks', { method: 'POST', body: JSON.stringify({ game_ids }) });
+export const saveOnboardingPicks = (game_picks: { id: number; status: string }[]) =>
+  request<unknown>('/onboarding/picks', { method: 'POST', body: JSON.stringify({ game_picks }) });
 
 // Public: Page Sections (enabled only)
 export const getPublicPageSections = (page: string) =>

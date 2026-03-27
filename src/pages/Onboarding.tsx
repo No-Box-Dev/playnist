@@ -8,13 +8,16 @@ import './OnboardingPreview.css';
 const MOCK_CREATORS = [
   { name: 'Jasper Middendorp', avatar: getDefaultAvatar('Jasper Middendorp') },
   { name: 'Emma Nicole', avatar: getDefaultAvatar('Emma Nicole') },
-  { name: 'emmanicole', avatar: getDefaultAvatar('emmanicole') },
+  { name: 'PixelHunter', avatar: getDefaultAvatar('PixelHunter') },
+  { name: 'RetroGamer99', avatar: getDefaultAvatar('RetroGamer99') },
+  { name: 'CozyGamerGal', avatar: getDefaultAvatar('CozyGamerGal') },
+  { name: 'NightOwlPlays', avatar: getDefaultAvatar('NightOwlPlays') },
 ];
 
 const GAME_CARDS = [
-  { question: 'A game you wish you could play for the first time again?', color: 'green' },
-  { question: 'The game you\'re into right now?', color: 'orange' },
-  { question: 'A game you\'re saving for the perfect moment?', color: 'yellow' },
+  { question: 'A game you wish you could play for the first time again?', color: 'green', status: 'played' },
+  { question: 'The game you\'re into right now?', color: 'orange', status: 'playing' },
+  { question: 'A game you\'re saving for the perfect moment?', color: 'yellow', status: 'want_to_play' },
 ] as const;
 
 interface GameSelection {
@@ -114,7 +117,6 @@ export default function Onboarding() {
   const [gameSelections, setGameSelections] = useState<(GameSelection | null)[]>([null, null, null]);
 
   const allGamesSelected = gameSelections.every(Boolean);
-  const selectedGameIds = gameSelections.filter(Boolean).map((g) => g!.id);
 
   const handleGameSelect = (index: number, selected: boolean, game?: GameSelection) => {
     setGameSelections((prev) => { const next = [...prev]; next[index] = selected ? (game ?? null) : null; return next; });
@@ -133,7 +135,8 @@ export default function Onboarding() {
       if (!allGamesSelected) return;
       setSaving(true);
       try {
-        await saveOnboardingPicks(selectedGameIds);
+        const picks = gameSelections.map((g, i) => ({ id: g!.id, status: GAME_CARDS[i].status }));
+        await saveOnboardingPicks(picks);
       } catch (e) {
         console.error('Failed to save game picks:', e);
       }
