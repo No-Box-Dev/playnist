@@ -56,6 +56,7 @@ export const getTrending = () => request<unknown[]>('/trending');
 export const getNew = () => request<unknown[]>('/new');
 
 // Users
+export const getSuggestedUsers = () => request<unknown[]>('/users/suggested');
 export const getUser = (id: string) => request<unknown>(`/users/${id}`);
 export const getUserCollection = (id: string, status?: string) =>
   request<unknown[]>(`/users/${id}/collection${status ? `?status=${status}` : ''}`);

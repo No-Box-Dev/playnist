@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchGames, imageUrl, saveOnboardingPicks, updateMe } from '../api';
-import { getDefaultAvatar } from '../avatars';
+import { searchGames, imageUrl, saveOnboardingPicks, updateMe, getSuggestedUsers, followUser } from '../api';
+import { getDefaultAvatar, getAvatarUrl } from '../avatars';
 import type { Game } from '../types';
 import './OnboardingPreview.css';
 
@@ -114,6 +114,7 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [followed, setFollowed] = useState<Set<string>>(new Set());
+  const [suggestedUsers, setSuggestedUsers] = useState<{ id: string; username: string; avatar_url: string; is_ambassador: number }[]>([]);
   const [gameSelections, setGameSelections] = useState<(GameSelection | null)[]>([null, null, null]);
 
   const allGamesSelected = gameSelections.every(Boolean);
@@ -156,10 +157,23 @@ export default function Onboarding() {
     }
   };
 
-  const toggleFollow = (name: string) => {
+  useEffect(() => {
+    if (step === 2 && suggestedUsers.length === 0) {
+      getSuggestedUsers().then((users) => {
+        setSuggestedUsers(users as typeof suggestedUsers);
+      }).catch(() => {});
+    }
+  }, [step]);
+
+  const toggleFollow = (userId: string) => {
     setFollowed((prev) => {
       const next = new Set(prev);
-      if (next.has(name)) next.delete(name); else next.add(name);
+      if (next.has(userId)) {
+        next.delete(userId);
+      } else {
+        next.add(userId);
+        followUser(userId).catch(() => {});
+      }
       return next;
     });
   };
@@ -202,15 +216,20 @@ export default function Onboarding() {
             <p className="ob-subtext">Follow the ones you love and start filling your feed with cozy, uplifting content</p>
             <p className="ob-label">Suggested for you</p>
             <div className="ob-creators-row">
-              {MOCK_CREATORS.map((c) => (
-                <div key={c.name} className={`ob-creator-card ${followed.has(c.name) ? 'ob-creator-card--followed' : ''}`}>
-                  <img src={c.avatar} alt={c.name} className="ob-creator-card__avatar" />
-                  <span className="ob-creator-card__name">{c.name}</span>
-                  <button className="ob-creator-card__follow" onClick={() => toggleFollow(c.name)}>
-                    {followed.has(c.name) ? '✓' : '+'}
-                  </button>
-                </div>
-              ))}
+              {(suggestedUsers.length > 0 ? suggestedUsers : MOCK_CREATORS).map((c) => {
+                const userId = 'id' in c ? c.id : c.name;
+                const name = 'username' in c ? c.username : c.name;
+                const avatar = 'id' in c ? getAvatarUrl(c.id, c.avatar_url) : c.avatar;
+                return (
+                  <div key={userId} className={`ob-creator-card ${followed.has(userId) ? 'ob-creator-card--followed' : ''}`}>
+                    <img src={avatar} alt={name} className="ob-creator-card__avatar" />
+                    <span className="ob-creator-card__name">{name}</span>
+                    <button className="ob-creator-card__follow" onClick={() => toggleFollow(userId)}>
+                      {followed.has(userId) ? '✓' : '+'}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

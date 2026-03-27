@@ -537,6 +537,18 @@ export default {
         return json(games);
       }
 
+      // ── Suggested users (for onboarding) ──
+      if (path === '/users/suggested' && method === 'GET') {
+        const currentUser = await getUser(env, request);
+        const userId = currentUser?.id || '';
+        const { results } = await env.DB.prepare(
+          `SELECT id, username, avatar_url, is_ambassador FROM users
+           WHERE id != ? AND onboarding_step >= 3
+           ORDER BY RANDOM() LIMIT 6`
+        ).bind(userId).all();
+        return json(results);
+      }
+
       // ── Users ──
       const userMatch = path.match(/^\/users\/([^/]+)$/);
       if (userMatch && method === 'GET') {
