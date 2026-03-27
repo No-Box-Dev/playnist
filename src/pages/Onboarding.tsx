@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTrending, saveOnboardingPicks } from '../api';
+import { getDefaultAvatar } from '../avatars';
 import type { IGDBGame } from '../types';
 import './Onboarding.css';
 
 const MOCK_USERS = [
-  { name: 'PixelHunter', games: 42, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/co7kjl.jpg' },
-  { name: 'RetroGamer99', games: 87, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/co4rs3.jpg' },
-  { name: 'NightOwlPlays', games: 23, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/cobfzp.jpg' },
-  { name: 'GameMaster42', games: 156, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/co5vmg.jpg' },
-  { name: 'CozyGamerGal', games: 64, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/coa93h.jpg' },
-  { name: 'SpeedRunKing', games: 98, avatar: 'https://images.igdb.com/igdb/image/upload/t_thumb/co62ao.jpg' },
+  { name: 'PixelHunter', games: 42, avatar: getDefaultAvatar('PixelHunter') },
+  { name: 'RetroGamer99', games: 87, avatar: getDefaultAvatar('RetroGamer99') },
+  { name: 'NightOwlPlays', games: 23, avatar: getDefaultAvatar('NightOwlPlays') },
+  { name: 'GameMaster42', games: 156, avatar: getDefaultAvatar('GameMaster42') },
+  { name: 'CozyGamerGal', games: 64, avatar: getDefaultAvatar('CozyGamerGal') },
+  { name: 'SpeedRunKing', games: 98, avatar: getDefaultAvatar('SpeedRunKing') },
 ];
 
 export default function Onboarding() {

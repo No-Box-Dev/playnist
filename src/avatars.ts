@@ -1,14 +1,14 @@
 // 30 iconic game character avatars — assigned to new users based on hash of their ID
 // Using high-quality game cover art from IGDB as character avatars
 
-const AVATAR_COVERS = [
+export const AVATAR_COVERS = [
   { name: 'Mario', imageId: 'co7kjl' },          // Super Mario Odyssey
   { name: 'Link', imageId: 'co5vmg' },            // Zelda: Tears of the Kingdom
   { name: 'Kirby', imageId: 'co4yjz' },           // Kirby and the Forgotten Land
   { name: 'Samus', imageId: 'co935n' },            // Metroid Dread
   { name: 'Pikachu', imageId: 'co3d03' },          // Pokemon Legends: Arceus
   { name: 'Sonic', imageId: 'co5p52' },            // Sonic Frontiers
-  { name: 'Crash', imageId: 'co62ao' },            // Cuphead (iconic style)
+  { name: 'Crash', imageId: 'co62ao' },            // Crash Bandicoot 4: It's About Time
   { name: 'Ori', imageId: 'co2e1l' },              // Ori and the Will of the Wisps
   { name: 'Hollow Knight', imageId: 'cobfzp' },    // Hollow Knight
   { name: 'Celeste', imageId: 'cob9dh' },          // Celeste
@@ -58,4 +58,3 @@ export function getAvatarUrl(userId: string, uploadedAvatarUrl?: string): string
   return getDefaultAvatar(userId);
 }
 
-export { AVATAR_COVERS };
