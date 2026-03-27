@@ -41,7 +41,8 @@ export default function Login() {
       const result = await signin(signinEmail, signinPassword);
       setToken(result.token);
       setUser(result.user as User);
-      navigate('/dashboard');
+      const u = result.user as User;
+      navigate(u.onboarding_step < 3 ? '/onboarding' : '/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed');
     }
@@ -51,9 +52,11 @@ export default function Login() {
     setError('');
     if (signupStep === 'email') {
       if (!signupEmail) { setError('Please enter your email'); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signupEmail)) { setError('Please enter a valid email address'); return; }
       setSignupStep('password');
     } else if (signupStep === 'password') {
       if (!signupPassword) { setError('Please enter a password'); return; }
+      if (signupPassword.length < 6) { setError('Password must be at least 6 characters'); return; }
       setSignupStep('username');
     } else {
       if (!signupUsername) { setError('Please choose a username'); return; }
@@ -62,6 +65,7 @@ export default function Login() {
         const result = await signup(signupEmail, signupPassword, signupUsername, signupBio);
         setToken(result.token);
         setUser(result.user as User);
+        navigate('/onboarding');
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Sign up failed');
       }
