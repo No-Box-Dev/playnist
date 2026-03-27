@@ -49,6 +49,73 @@ function checkRateLimit(key, maxRequests = 10, windowMs = 60000) {
   return false;
 }
 
+// ─── Email (Postmark) ───
+
+const FROM_EMAIL = 'jasper@noboxdev.com';
+const APP_URL = 'https://playnist.pages.dev'; // TODO: update when custom domain is set up
+
+async function sendEmail(env, to, subject, htmlBody) {
+  if (!env.POSTMARK_SERVER_TOKEN) {
+    console.log(`[email] Skipping (no token): ${subject} → ${to}`);
+    return;
+  }
+  const res = await fetch('https://api.postmarkapp.com/email', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Postmark-Server-Token': env.POSTMARK_SERVER_TOKEN,
+    },
+    body: JSON.stringify({
+      From: FROM_EMAIL,
+      To: to,
+      Subject: subject,
+      HtmlBody: htmlBody,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error(`[email] Failed to send "${subject}" to ${to}: ${err}`);
+  }
+}
+
+function welcomeEmail(username) {
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 20px;">
+      <h1 style="font-size: 28px; margin: 0 0 16px;">Welcome to Playnist!</h1>
+      <p style="font-size: 16px; color: #444; line-height: 1.6;">
+        Hey <strong>${username}</strong>, you're in! 🎮
+      </p>
+      <p style="font-size: 16px; color: #444; line-height: 1.6;">
+        Your game library is ready. Search for games you love, follow creators, and build your collection.
+      </p>
+      <p style="font-size: 14px; color: #888; margin-top: 32px;">
+        — The Playnist Team
+      </p>
+    </div>
+  `;
+}
+
+function resetEmail(resetUrl) {
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 20px;">
+      <h1 style="font-size: 28px; margin: 0 0 16px;">Reset your password</h1>
+      <p style="font-size: 16px; color: #444; line-height: 1.6;">
+        We received a request to reset your Playnist password. Click the button below to choose a new one.
+      </p>
+      <a href="${resetUrl}" style="display: inline-block; margin: 24px 0; padding: 14px 32px; background: #c0392b; color: white; text-decoration: none; border-radius: 10px; font-size: 16px; font-weight: 600;">
+        Reset Password
+      </a>
+      <p style="font-size: 14px; color: #888; line-height: 1.6;">
+        This link expires in 1 hour. If you didn't request this, you can safely ignore this email.
+      </p>
+      <p style="font-size: 14px; color: #888; margin-top: 32px;">
+        — The Playnist Team
+      </p>
+    </div>
+  `;
+}
+
 // Helper to create notifications
 async function createNotification(env, userId, type, message, linkUrl) {
   const id = uuid();
@@ -287,6 +354,10 @@ export default {
         await env.DB.prepare('INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)').bind(token, id, expires).run();
 
         const user = await env.DB.prepare('SELECT id, username, email, bio, avatar_url, is_ambassador, onboarding_step, created_at FROM users WHERE id = ?').bind(id).first();
+
+        // Send welcome email (non-blocking)
+        sendEmail(env, email, `Welcome to Playnist, ${username}!`, welcomeEmail(username)).catch(() => {});
+
         return json({ user, token }, 201, { 'Set-Cookie': sessionCookie(token) });
       }
 
@@ -392,7 +463,10 @@ export default {
         await env.DB.prepare(
           'INSERT OR REPLACE INTO password_resets (token, user_id, expires_at) VALUES (?, ?, ?)'
         ).bind(resetToken, userRow.id, expires).run();
-        // In production, send email here via Postmark/SES
+
+        const resetUrl = `${APP_URL}/reset-password?token=${resetToken}`;
+        sendEmail(env, email, 'Reset your Playnist password', resetEmail(resetUrl)).catch(() => {});
+
         return json({ ok: true });
       }
 

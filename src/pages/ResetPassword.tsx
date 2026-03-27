@@ -19,7 +19,7 @@ export default function ResetPassword() {
     setError('');
     if (!password || !confirmPw) { setError('Please fill in both fields'); return; }
     if (password !== confirmPw) { setError('Passwords do not match'); return; }
-    if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
+    if (password.length < 8) { setError('Password must be at least 8 characters'); return; }
     try {
       await resetPassword(token, password);
       setShowSuccess(true);
