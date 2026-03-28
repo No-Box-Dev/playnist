@@ -107,14 +107,14 @@ export default function Profile() {
       <main className="main-area">
         {/* Sunburst Banner */}
         <div className="profile-banner">
-          {isOwn && <button className="profile-banner-edit" aria-label="Edit banner"><img src="/images/icon-edit.svg" alt="" /></button>}
+          {isOwn && <button className="profile-banner-edit"><img src="/images/icon-edit.svg" alt="Edit" /></button>}
         </div>
 
         {/* Profile Info — avatar left, stats+edit right */}
         <div className="profile-info">
           <div className="profile-avatar-wrap">
             <img className="profile-avatar" src={getAvatarUrl(profileId, isOwn ? user?.avatar_url : undefined)} alt="Avatar" />
-            {isOwn && <button className="profile-edit-avatar" aria-label="Change profile picture"><img src="/images/icon-edit.svg" alt="" /></button>}
+            {isOwn && <button className="profile-edit-avatar"><img src="/images/icon-edit.svg" alt="Edit avatar" /></button>}
           </div>
           <div className="profile-right">
             <div className="profile-stats-row">
@@ -176,7 +176,7 @@ export default function Profile() {
                         {imageId ? (
                           <img src={imageUrl(imageId, 't_cover_big_2x')} alt={game?.name} loading="lazy" />
                         ) : (
-                          <div className="w-full h-full bg-[var(--color-gray-bg)] flex items-center justify-center text-xs p-2">
+                          <div style={{ width: '100%', height: '100%', background: 'var(--color-gray-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, padding: 8 }}>
                             {game?.name || 'Loading...'}
                           </div>
                         )}
@@ -193,7 +193,7 @@ export default function Profile() {
         {tab === 'journal' && (
           <div className="profile-section">
             {isOwn && (
-              <button className="btn btn-primary mb-4" onClick={() => setJournalModal(true)}>+ Write in Journal</button>
+              <button className="btn btn-primary" style={{ marginBottom: 16 }} onClick={() => setJournalModal(true)}>+ Write in Journal</button>
             )}
             {loading ? (
               <div className="empty-state"><div className="empty-state-title">Loading...</div></div>
@@ -212,9 +212,9 @@ export default function Profile() {
                     {game?.cover?.image_id ? (
                       <img src={imageUrl(game.cover.image_id, 't_cover_big_2x')} alt={game.name} />
                     ) : (
-                      <div className="w-12 h-16 bg-[var(--color-gray-bg)] rounded-md shrink-0" />
+                      <div style={{ width: 48, height: 64, background: 'var(--color-gray-bg)', borderRadius: 6, flexShrink: 0 }} />
                     )}
-                    <div className="flex-1">
+                    <div style={{ flex: 1 }}>
                       <div className="journal-game-name">{game?.name || 'Game'}</div>
                       <p className="journal-text">{j.content}</p>
                     </div>
@@ -228,32 +228,32 @@ export default function Profile() {
 
         {/* Add Game Modal */}
         <Modal open={addModal} onClose={() => { setAddModal(false); setSelectedGame(null); setSearchResults([]); }}>
-          <h3 className="mb-4">Add a Game</h3>
-          <div className="flex gap-2 mb-4">
+          <h3 style={{ marginBottom: 16 }}>Add a Game</h3>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
             <input className="input" placeholder="Search for a game..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
             <button className="btn btn-primary" onClick={handleSearch}>Search</button>
           </div>
           {searchResults.length > 0 && (
-            <div className="max-h-[12.5rem] overflow-y-auto mb-4">
+            <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 16 }}>
               {searchResults.slice(0, 10).map((g) => (
-                <div key={g.id} onClick={() => setSelectedGame(g)} className={`px-3 py-2 cursor-pointer rounded-md flex items-center gap-2 mb-1 ${selectedGame?.id === g.id ? 'bg-[var(--color-gray-bg)]' : 'bg-transparent'}`}>
-                  {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} className="w-6 h-8 rounded object-cover" alt="" />}
-                  <span className="text-sm">{g.name}</span>
+                <div key={g.id} onClick={() => setSelectedGame(g)} style={{ padding: '8px 12px', cursor: 'pointer', background: selectedGame?.id === g.id ? 'var(--color-gray-bg)' : 'transparent', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} style={{ width: 24, height: 32, borderRadius: 4, objectFit: 'cover' }} alt="" />}
+                  <span style={{ fontSize: 14 }}>{g.name}</span>
                 </div>
               ))}
             </div>
           )}
           {selectedGame && (
             <>
-              <div className="text-sm mb-3">Selected: <strong>{selectedGame.name}</strong></div>
-              <div className="flex gap-2 mb-4">
+              <div style={{ fontSize: 14, marginBottom: 12 }}>Selected: <strong>{selectedGame.name}</strong></div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                 {(['played', 'playing', 'want_to_play'] as const).map((s) => (
                   <button key={s} className={`pill pill-${s === 'played' ? 'played' : s === 'playing' ? 'playing' : 'want'}${addStatus === s ? ' active' : ''}`} onClick={() => setAddStatus(s)}>
                     {s === 'want_to_play' ? 'Want to Play' : s.charAt(0).toUpperCase() + s.slice(1)}
                   </button>
                 ))}
               </div>
-              <div className="flex gap-3 justify-end">
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
                 <button className="btn btn-outline" onClick={() => { setAddModal(false); setSelectedGame(null); }}>Cancel</button>
                 <button className="btn btn-primary" onClick={handleAddGame}>Save</button>
               </div>
@@ -263,26 +263,26 @@ export default function Profile() {
 
         {/* Journal Modal */}
         <Modal open={journalModal} onClose={() => { setJournalModal(false); setSelectedGame(null); }}>
-          <h3 className="mb-4">Write in Journal</h3>
-          <div className="flex gap-2 mb-4">
+          <h3 style={{ marginBottom: 16 }}>Write in Journal</h3>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
             <input className="input" placeholder="Search for a game..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
             <button className="btn btn-primary" onClick={handleSearch}>Search</button>
           </div>
           {searchResults.length > 0 && !selectedGame && (
-            <div className="max-h-[12.5rem] overflow-y-auto mb-4">
+            <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 16 }}>
               {searchResults.slice(0, 10).map((g) => (
-                <div key={g.id} onClick={() => setSelectedGame(g)} className="px-3 py-2 cursor-pointer rounded-md flex items-center gap-2 mb-1">
-                  {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} className="w-6 h-8 rounded object-cover" alt="" />}
-                  <span className="text-sm">{g.name}</span>
+                <div key={g.id} onClick={() => setSelectedGame(g)} style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} style={{ width: 24, height: 32, borderRadius: 4, objectFit: 'cover' }} alt="" />}
+                  <span style={{ fontSize: 14 }}>{g.name}</span>
                 </div>
               ))}
             </div>
           )}
           {selectedGame && (
             <>
-              <div className="text-sm mb-3">Game: <strong>{selectedGame.name}</strong></div>
-              <textarea className="input resize-y mb-4" rows={5} placeholder="What moment made you smile? Made you cry?" value={journalContent} onChange={(e) => setJournalContent(e.target.value)} />
-              <div className="flex gap-3 justify-end">
+              <div style={{ fontSize: 14, marginBottom: 12 }}>Game: <strong>{selectedGame.name}</strong></div>
+              <textarea className="input" rows={5} placeholder="What moment made you smile? Made you cry?" value={journalContent} onChange={(e) => setJournalContent(e.target.value)} style={{ resize: 'vertical', marginBottom: 16 }} />
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
                 <button className="btn btn-outline" onClick={() => { setJournalModal(false); setSelectedGame(null); }}>Cancel</button>
                 <button className="btn btn-primary" onClick={handleCreateJournal}>Post</button>
               </div>

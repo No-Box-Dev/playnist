@@ -1,223 +1,221 @@
-@layer components {
-  /* Profile banner */
-  .profile-banner {
-    height: 12.5rem;
-    background: url('/images/banner-placeholder.avif') center / cover no-repeat;
-    position: relative;
-    overflow: hidden;
-  }
-  .profile-banner-edit {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    background: var(--color-cream);
-    border: 2.5px solid var(--color-red);
-    border-radius: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 0;
-    transition: background 0.2s;
-  }
-  .profile-banner-edit:hover {
-    background: #f5e6c8;
-  }
-  .profile-banner-edit img {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  /* Profile Info — avatar left, stats+edit right */
-  .profile-info {
-    display: flex;
-    align-items: flex-end;
-    gap: 1.5rem;
-    padding: 0 2rem;
-    margin-top: -3.125rem;
-    margin-bottom: 1rem;
-  }
-  .profile-avatar-wrap { position: relative; flex-shrink: 0; }
-  .profile-avatar {
-    width: 6.875rem;
-    height: 6.875rem;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid var(--color-yellow);
-    background: var(--color-cream);
-  }
-  .profile-edit-avatar {
-    position: absolute;
-    top: -0.25rem;
-    right: -0.5rem;
-    width: 2.25rem;
-    height: 2.25rem;
-    background: var(--color-cream);
-    border: 2.5px solid var(--color-red);
-    border-radius: 0.625rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 0;
-    transition: background 0.2s;
-  }
-  .profile-edit-avatar:hover {
-    background: #f5e6c8;
-  }
-  .profile-edit-avatar img {
-    width: 1rem;
-    height: 1rem;
-  }
-  .profile-right {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 1.5rem;
-    padding-bottom: 0.5rem;
-  }
-  .profile-stats-row { display: flex; gap: 1.5rem; }
-  .profile-stat {
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    color: var(--color-gray);
-  }
-  .profile-stat strong {
-    color: var(--color-gray-dark);
-    margin-right: 0.25rem;
-  }
-  .profile-edit-btn {
-    font-size: 0.75rem;
-    padding: 0.5rem 1rem;
-    letter-spacing: 0.0625rem;
-  }
-
-  /* Username */
-  .profile-name {
-    font-family: var(--font-heading);
-    font-size: 2rem;
-    color: var(--color-gray-dark);
-    padding: 0 2rem;
-    margin-bottom: 1.5rem;
-  }
-
-  /* Tabs — LIBRARY / JOURNAL as wide buttons */
-  .profile-tabs {
-    display: flex;
-    gap: 0.75rem;
-    padding: 0 2rem;
-    margin-bottom: 1.5rem;
-  }
-  .profile-tab {
-    flex: 1;
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    letter-spacing: 0.125rem;
-    padding: 1rem;
-    text-align: center;
-    cursor: pointer;
-    border: 2.5px solid var(--color-red);
-    border-radius: 0.625rem;
-    background: var(--color-cream);
-    color: var(--color-gray-dark);
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-  .profile-tab.active {
-    background: var(--color-red);
-    border-color: var(--color-red);
-    color: var(--color-cream);
-  }
-  .profile-tab-icon {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  /* Collections section */
-  .profile-section { padding: 0 2rem; }
-  .collections-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-  }
-  .collections-title {
-    font-family: var(--font-heading);
-    font-size: 1.375rem;
-    color: var(--color-gray-dark);
-  }
-  .collections-add-btn {
-    font-size: 0.75rem;
-    padding: 0.5rem 1rem;
-    letter-spacing: 0.0625rem;
-  }
-  .library-filters {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-  }
-
-  /* Empty state */
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1.5rem;
-    border: 2px dashed var(--color-orange);
-    border-radius: 0.75rem;
-  }
-  .empty-state-emoji { font-size: 2.5rem; margin-bottom: 0.75rem; }
-  .empty-state-title {
-    font-family: var(--font-heading);
-    font-size: 1.125rem;
-    color: var(--color-gray-dark);
-    margin-bottom: 0.5rem;
-  }
-  .empty-state-text {
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    color: var(--color-gray);
-    margin-bottom: 1rem;
-  }
-  .btn-orange {
-    background: var(--color-orange);
-    color: var(--color-cream);
-    border: none;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.0625rem;
-    padding: 0.625rem 1.5rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-  }
-  .btn-orange:hover { background: var(--color-orange-dark); }
-
-  /* Journal entries */
-  .journal-entry {
-    display: flex;
-    gap: 0.75rem;
-    padding: 1rem;
-    background: var(--color-white);
-    border: 1px solid var(--color-gray-border);
-    border-radius: 0.75rem;
-    margin-bottom: 0.75rem;
-    align-items: flex-start;
-  }
-  .journal-entry img { width: 3rem; height: 4rem; border-radius: 0.375rem; object-fit: cover; flex-shrink: 0; }
-  .journal-game-name { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.25rem; }
-  .journal-text { font-size: 0.875rem; color: var(--color-gray-medium); line-height: 1.6; }
-  .journal-delete { background: none; border: none; cursor: pointer; font-size: 1.125rem; opacity: 0.4; flex-shrink: 0; }
-  .journal-delete:hover { opacity: 1; }
+/* Profile banner */
+.profile-banner {
+  height: 200px;
+  background: url('/images/banner-placeholder.avif') center / cover no-repeat;
+  position: relative;
+  overflow: hidden;
 }
+.profile-banner-edit {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  background: var(--color-cream);
+  border: 2.5px solid var(--color-red);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.profile-banner-edit:hover {
+  background: #f5e6c8;
+}
+.profile-banner-edit img {
+  width: 18px;
+  height: 18px;
+}
+
+/* Profile Info — avatar left, stats+edit right */
+.profile-info {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  padding: 0 32px;
+  margin-top: -50px;
+  margin-bottom: 16px;
+}
+.profile-avatar-wrap { position: relative; flex-shrink: 0; }
+.profile-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--color-yellow);
+  background: var(--color-cream);
+}
+.profile-edit-avatar {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  width: 36px;
+  height: 36px;
+  background: var(--color-cream);
+  border: 2.5px solid var(--color-red);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.profile-edit-avatar:hover {
+  background: #f5e6c8;
+}
+.profile-edit-avatar img {
+  width: 16px;
+  height: 16px;
+}
+.profile-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+  padding-bottom: 8px;
+}
+.profile-stats-row { display: flex; gap: 24px; }
+.profile-stat {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-gray);
+}
+.profile-stat strong {
+  color: var(--color-gray-dark);
+  margin-right: 4px;
+}
+.profile-edit-btn {
+  font-size: 12px !important;
+  padding: 8px 16px !important;
+  letter-spacing: 1px;
+}
+
+/* Username */
+.profile-name {
+  font-family: var(--font-heading);
+  font-size: 32px;
+  color: var(--color-gray-dark);
+  padding: 0 32px;
+  margin-bottom: 24px;
+}
+
+/* Tabs — LIBRARY / JOURNAL as wide buttons */
+.profile-tabs {
+  display: flex;
+  gap: 12px;
+  padding: 0 32px;
+  margin-bottom: 24px;
+}
+.profile-tab {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 2px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  border: 2.5px solid var(--color-red);
+  border-radius: 10px;
+  background: var(--color-cream);
+  color: var(--color-gray-dark);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.profile-tab.active {
+  background: var(--color-red);
+  border-color: var(--color-red);
+  color: var(--color-cream);
+}
+.profile-tab-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Collections section */
+.profile-section { padding: 0 32px; }
+.collections-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.collections-title {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  color: var(--color-gray-dark);
+}
+.collections-add-btn {
+  font-size: 12px !important;
+  padding: 8px 16px !important;
+  letter-spacing: 1px;
+}
+.library-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  border: 2px dashed var(--color-orange);
+  border-radius: 12px;
+}
+.empty-state-emoji { font-size: 40px; margin-bottom: 12px; }
+.empty-state-title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  color: var(--color-gray-dark);
+  margin-bottom: 8px;
+}
+.empty-state-text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-gray);
+  margin-bottom: 16px;
+}
+.btn-orange {
+  background: var(--color-orange);
+  color: var(--color-cream);
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.btn-orange:hover { background: var(--color-orange-dark); }
+
+/* Journal entries */
+.journal-entry {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+.journal-entry img { width: 48px; height: 64px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+.journal-game-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.journal-text { font-size: 14px; color: var(--color-gray-medium); line-height: 1.6; }
+.journal-delete { background: none; border: none; cursor: pointer; font-size: 18px; opacity: 0.4; flex-shrink: 0; }
+.journal-delete:hover { opacity: 1; }
 
 @media (max-width: 768px) {
   .profile-info { flex-direction: column; align-items: center; }
-  .profile-right { justify-content: center; padding-top: 0.75rem; }
-  .profile-tabs { padding: 0 1rem; }
-  .profile-section { padding: 0 1rem; }
-  .profile-name { padding: 0 1rem; text-align: center; }
+  .profile-right { justify-content: center; padding-top: 12px; }
+  .profile-tabs { padding: 0 16px; }
+  .profile-section { padding: 0 16px; }
+  .profile-name { padding: 0 16px; text-align: center; }
 }
