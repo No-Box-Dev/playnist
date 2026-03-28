@@ -3,7 +3,7 @@ import { imageUrl } from '../api';
 import type { Game } from '../types';
 
 function coverUrl(imageId: string) {
-  return imageUrl(imageId, 't_cover_small_2x');
+  return imageUrl(imageId, 't_cover_big_2x');
 }
 
 interface GameCardProps {

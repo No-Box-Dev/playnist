@@ -70,7 +70,7 @@ export default function GamePage() {
       <Header />
       <main className="main-content">
         {/* Back button */}
-        <button className="game-back-btn" onClick={() => navigate(-1)}>
+        <button className="game-back-btn" onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/dashboard')}>
           <span className="game-back-arrow">&larr;</span> BACK
         </button>
 
@@ -159,7 +159,7 @@ export default function GamePage() {
               {game.similar_games.slice(0, 4).map((sg) => (
                 <div key={sg.id || sg.name} className="game-card" style={{ aspectRatio: '2/3' }} onClick={() => { if (sg.id) navigate(`/game/${sg.id}`); }}>
                   {sg.cover?.image_id ? (
-                    <img src={imageUrl(sg.cover.image_id, 't_cover_small_2x')} alt={sg.name} loading="lazy" />
+                    <img src={imageUrl(sg.cover.image_id, 't_cover_big_2x')} alt={sg.name} loading="lazy" />
                   ) : (
                     <div style={{ width: '100%', height: '100%', background: 'var(--color-gray-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, padding: 8, textAlign: 'center' }}>{sg.name}</div>
                   )}

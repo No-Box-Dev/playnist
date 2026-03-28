@@ -19,7 +19,7 @@ export default function ResetPassword() {
     setError('');
     if (!password || !confirmPw) { setError('Please fill in both fields'); return; }
     if (password !== confirmPw) { setError('Passwords do not match'); return; }
-    if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
+    if (password.length < 8) { setError('Password must be at least 8 characters'); return; }
     try {
       await resetPassword(token, password);
       setShowSuccess(true);
@@ -27,6 +27,19 @@ export default function ResetPassword() {
       setError(err instanceof Error ? err.message : 'Reset failed');
     }
   };
+
+  if (!token) {
+    return (
+      <div className="reset-page">
+        <div className="reset-card">
+          <div className="reset-logo"><img src="/images/logo.png" alt="Playnist" /></div>
+          <h1 className="reset-title">Invalid Link</h1>
+          <p className="reset-subtitle">This password reset link is invalid or has expired.</p>
+          <div className="reset-back"><Link to="/">Back to Sign In</Link></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="reset-page">

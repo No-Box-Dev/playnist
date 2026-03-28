@@ -164,7 +164,7 @@ export default function Profile() {
                     return (
                       <div key={item.id} className="game-card" onClick={() => navigate(`/game/${item.igdb_game_id}`)}>
                         {imageId ? (
-                          <img src={imageUrl(imageId, 't_cover_small_2x')} alt={game?.name} loading="lazy" />
+                          <img src={imageUrl(imageId, 't_cover_big_2x')} alt={game?.name} loading="lazy" />
                         ) : (
                           <div style={{ width: '100%', height: '100%', background: 'var(--color-gray-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, padding: 8 }}>
                             {game?.name || 'Loading...'}
@@ -198,7 +198,7 @@ export default function Profile() {
                 return (
                   <div key={j.id} className="journal-entry">
                     {game?.cover?.image_id ? (
-                      <img src={imageUrl(game.cover.image_id, 't_cover_small')} alt={game.name} />
+                      <img src={imageUrl(game.cover.image_id, 't_cover_big_2x')} alt={game.name} />
                     ) : (
                       <div style={{ width: 48, height: 64, background: 'var(--color-gray-bg)', borderRadius: 6, flexShrink: 0 }} />
                     )}

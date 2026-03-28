@@ -57,7 +57,7 @@ export default function Dashboard() {
           <div className="ambassador-card-v2">
             {spotlightGame?.cover?.image_id && (
               <div className="ambassador-game-cover" onClick={() => navigate(`/game/${spotlightGame.id}`)}>
-                <img src={imageUrl(spotlightGame.cover.image_id, 't_cover_big')} alt={spotlightGame.name} />
+                <img src={imageUrl(spotlightGame.cover.image_id, 't_cover_big_2x')} alt={spotlightGame.name} />
                 <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAdd(spotlightGame); }}>+</button>
               </div>
             )}
