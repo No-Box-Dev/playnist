@@ -157,7 +157,7 @@
   height: 28px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.6);
-  color: var(--color-white);
+  color: var(--color-cream);
   border: none;
   cursor: pointer;
   font-size: 18px;
@@ -308,7 +308,7 @@
   height: 40px;
   border-radius: 10px;
   background: var(--color-red);
-  color: var(--color-white);
+  color: var(--color-cream);
   border: none;
   cursor: pointer;
   font-size: 22px;
@@ -338,7 +338,7 @@
 
 .ob-continue {
   background: var(--color-red);
-  color: var(--color-white);
+  color: var(--color-cream);
   border: none;
   border-radius: 12px;
   padding: 14px 48px;

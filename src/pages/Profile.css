@@ -1,13 +1,7 @@
-/* Banner with sunburst pattern matching Figma */
+/* Profile banner */
 .profile-banner {
   height: 200px;
-  background:
-    repeating-conic-gradient(
-      from 0deg at 0% 100%,
-      rgba(255,255,255,0.08) 0deg 5deg,
-      transparent 5deg 10deg
-    ),
-    linear-gradient(135deg, var(--color-terra-cotta) 0%, var(--color-peach) 40%, var(--color-terra-cotta-lightest) 70%, var(--color-cream) 100%);
+  background: url('/images/banner-placeholder.avif') center / cover no-repeat;
   position: relative;
   overflow: hidden;
 }
@@ -15,16 +9,24 @@
   position: absolute;
   top: 16px;
   right: 16px;
-  width: 32px;
-  height: 32px;
-  background: var(--color-white);
-  border: 1px solid var(--color-gray-border);
-  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  background: var(--color-cream);
+  border: 2.5px solid var(--color-red);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 14px;
+  padding: 0;
+  transition: background 0.2s;
+}
+.profile-banner-edit:hover {
+  background: #f5e6c8;
+}
+.profile-banner-edit img {
+  width: 18px;
+  height: 18px;
 }
 
 /* Profile Info — avatar left, stats+edit right */
@@ -47,18 +49,26 @@
 }
 .profile-edit-avatar {
   position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 28px;
-  height: 28px;
-  background: var(--color-red);
-  border-radius: 6px;
-  color: var(--color-white);
-  font-size: 14px;
+  top: -4px;
+  right: -8px;
+  width: 36px;
+  height: 36px;
+  background: var(--color-cream);
+  border: 2.5px solid var(--color-red);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.profile-edit-avatar:hover {
+  background: #f5e6c8;
+}
+.profile-edit-avatar img {
+  width: 16px;
+  height: 16px;
 }
 .profile-right {
   flex: 1;
@@ -96,7 +106,7 @@
 /* Tabs — LIBRARY / JOURNAL as wide buttons */
 .profile-tabs {
   display: flex;
-  gap: 0;
+  gap: 12px;
   padding: 0 32px;
   margin-bottom: 24px;
 }
@@ -104,21 +114,28 @@
   flex: 1;
   font-family: var(--font-mono);
   font-size: 13px;
-  letter-spacing: 1px;
-  padding: 14px;
+  letter-spacing: 2px;
+  padding: 16px;
   text-align: center;
   cursor: pointer;
-  border: 2px solid var(--color-gray-border);
-  background: var(--color-white);
-  color: var(--color-gray);
+  border: 2.5px solid var(--color-red);
+  border-radius: 10px;
+  background: var(--color-cream);
+  color: var(--color-gray-dark);
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-.profile-tab:first-child { border-radius: 8px 0 0 8px; }
-.profile-tab:last-child { border-radius: 0 8px 8px 0; }
 .profile-tab.active {
   background: var(--color-red);
   border-color: var(--color-red);
-  color: var(--color-white);
+  color: var(--color-cream);
+}
+.profile-tab-icon {
+  width: 18px;
+  height: 18px;
 }
 
 /* Collections section */
@@ -167,7 +184,7 @@
 }
 .btn-orange {
   background: var(--color-orange);
-  color: var(--color-white);
+  color: var(--color-cream);
   border: none;
   font-family: var(--font-mono);
   font-size: 12px;
