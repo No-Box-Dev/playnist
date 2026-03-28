@@ -218,6 +218,6 @@ export function getRandomCarouselCovers(): string[][] {
   const cols: string[][] = [[], [], []];
   shuffled.forEach((id, i) => cols[i % 3].push(id));
   return cols.map((col) =>
-    col.map((id) => imageUrl(id, 't_cover_small_2x'))
+    col.map((id) => imageUrl(id, 't_cover_big_2x'))
   );
 }

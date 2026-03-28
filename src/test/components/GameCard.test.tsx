@@ -35,7 +35,7 @@ describe('GameCard', () => {
 
     const img = screen.getByAltText('Test Game') as HTMLImageElement;
     expect(img).toBeInTheDocument();
-    expect(img.src).toBe('https://playnist-api.jasper-414.workers.dev/img/abc123/t_cover_small_2x');
+    expect(img.src).toBe('https://playnist-api.jasper-414.workers.dev/img/abc123/t_cover_big_2x');
   });
 
   it('shows fallback when no cover', () => {

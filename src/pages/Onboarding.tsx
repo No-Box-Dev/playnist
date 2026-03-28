@@ -71,7 +71,7 @@ function GameSearchCard({ question, color, onSelect }: GameSearchCardProps) {
       <div className="ob-game-card__cover">
         {selected?.cover_image_id && (
           <>
-            <img src={imageUrl(selected.cover_image_id, 't_cover_big')} alt={selected.name} />
+            <img src={imageUrl(selected.cover_image_id, 't_cover_big_2x')} alt={selected.name} />
             <button className="ob-game-card__remove" onClick={() => { setSelected(null); onSelect?.(false); }}>&times;</button>
           </>
         )}

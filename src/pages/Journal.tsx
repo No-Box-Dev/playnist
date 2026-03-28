@@ -111,7 +111,7 @@ export default function Journal() {
                 >
                   <div className="journal-card-top">
                     {game?.cover?.image_id ? (
-                      <img className="journal-card-cover" src={imageUrl(game.cover.image_id, 't_cover_small')} alt={game.name} />
+                      <img className="journal-card-cover" src={imageUrl(game.cover.image_id, 't_cover_big_2x')} alt={game.name} />
                     ) : (
                       <div className="journal-card-cover-placeholder" />
                     )}
