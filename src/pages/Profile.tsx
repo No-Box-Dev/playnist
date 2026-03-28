@@ -107,14 +107,14 @@ export default function Profile() {
       <main className="main-area">
         {/* Sunburst Banner */}
         <div className="profile-banner">
-          {isOwn && <button className="profile-banner-edit"><img src="/images/icon-edit.svg" alt="Edit" /></button>}
+          {isOwn && <button className="profile-banner-edit" aria-label="Edit banner"><img src="/images/icon-edit.svg" alt="" /></button>}
         </div>
 
         {/* Profile Info — avatar left, stats+edit right */}
         <div className="profile-info">
           <div className="profile-avatar-wrap">
             <img className="profile-avatar" src={getAvatarUrl(profileId, isOwn ? user?.avatar_url : undefined)} alt="Avatar" />
-            {isOwn && <button className="profile-edit-avatar"><img src="/images/icon-edit.svg" alt="Edit avatar" /></button>}
+            {isOwn && <button className="profile-edit-avatar" aria-label="Change profile picture"><img src="/images/icon-edit.svg" alt="" /></button>}
           </div>
           <div className="profile-right">
             <div className="profile-stats-row">

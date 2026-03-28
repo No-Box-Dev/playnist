@@ -71,7 +71,7 @@ export default function GamePage() {
       <main className="main-content">
         {/* Back button */}
         <button className="game-back-btn" onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/dashboard')}>
-          <span className="game-back-arrow">&larr;</span> BACK
+          <span className="game-back-arrow" aria-hidden="true">&larr;</span> BACK
         </button>
 
         {/* Hero: text left, cover right */}
