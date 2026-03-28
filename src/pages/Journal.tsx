@@ -130,8 +130,8 @@ export default function Journal() {
         )}
 
         <Modal open={writeModal} onClose={closeModal}>
-          <h3 style={{ marginBottom: 16 }}>Write in Journal</h3>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+          <h3 className="mb-4">Write in Journal</h3>
+          <div className="flex gap-2 mb-4">
             <input
               className="input"
               placeholder="Search for a game..."
@@ -142,31 +142,30 @@ export default function Journal() {
             <button className="btn btn-primary" onClick={handleSearch}>Search</button>
           </div>
           {searchResults.length > 0 && !selectedGame && (
-            <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 16 }}>
+            <div className="max-h-[12.5rem] overflow-y-auto mb-4">
               {searchResults.slice(0, 10).map((g) => (
                 <div
                   key={g.id}
                   onClick={() => setSelectedGame(g)}
-                  style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}
+                  className="px-3 py-2 cursor-pointer rounded-md flex items-center gap-2 mb-1"
                 >
-                  {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} style={{ width: 24, height: 32, borderRadius: 4, objectFit: 'cover' }} alt="" />}
-                  <span style={{ fontSize: 14 }}>{g.name}</span>
+                  {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} className="w-6 h-8 rounded object-cover" alt="" />}
+                  <span className="text-sm">{g.name}</span>
                 </div>
               ))}
             </div>
           )}
           {selectedGame && (
             <>
-              <div style={{ fontSize: 14, marginBottom: 12 }}>Game: <strong>{selectedGame.name}</strong></div>
+              <div className="text-sm mb-3">Game: <strong>{selectedGame.name}</strong></div>
               <textarea
-                className="input"
+                className="input resize-y mb-4"
                 rows={5}
                 placeholder="What moment made you smile? Made you cry? Made you frustrated?"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                style={{ resize: 'vertical', marginBottom: 16 }}
               />
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <div className="flex gap-3 justify-end">
                 <button className="btn btn-outline" onClick={closeModal}>Cancel</button>
                 <button className="btn btn-primary" onClick={handleCreate}>Post</button>
               </div>

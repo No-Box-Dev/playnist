@@ -141,7 +141,7 @@ export default function GamePage() {
 
         {/* Screenshots */}
         {game.screenshots && game.screenshots.length > 0 && (
-          <section style={{ marginBottom: 48 }}>
+          <section className="mb-12">
             <h2 className="game-section-title">Screenshots</h2>
             <div className="game-screenshots">
               {game.screenshots.slice(0, 4).map((s) => (
@@ -153,15 +153,15 @@ export default function GamePage() {
 
         {/* Similar Games */}
         {game.similar_games && game.similar_games.length > 0 && (
-          <section style={{ marginBottom: 48 }}>
+          <section className="mb-12">
             <h2 className="game-section-title">Similar Games</h2>
             <div className="game-grid-4">
               {game.similar_games.slice(0, 4).map((sg) => (
-                <div key={sg.id || sg.name} className="game-card" style={{ aspectRatio: '2/3' }} onClick={() => { if (sg.id) navigate(`/game/${sg.id}`); }}>
+                <div key={sg.id || sg.name} className="game-card aspect-[2/3]" onClick={() => { if (sg.id) navigate(`/game/${sg.id}`); }}>
                   {sg.cover?.image_id ? (
                     <img src={imageUrl(sg.cover.image_id, 't_cover_big_2x')} alt={sg.name} loading="lazy" />
                   ) : (
-                    <div style={{ width: '100%', height: '100%', background: 'var(--color-gray-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, padding: 8, textAlign: 'center' }}>{sg.name}</div>
+                    <div className="w-full h-full bg-[var(--color-gray-bg)] flex items-center justify-center text-xs p-2 text-center">{sg.name}</div>
                   )}
                 </div>
               ))}
@@ -171,16 +171,16 @@ export default function GamePage() {
 
         {/* Add to Collection Modal */}
         <Modal open={addModal} onClose={() => setAddModal(false)}>
-          <div style={{ textAlign: 'center' }}>
-            <h3 style={{ marginBottom: 16 }}>Add "{game.name}" to Collection</h3>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 24 }}>
+          <div className="text-center">
+            <h3 className="mb-4">Add "{game.name}" to Collection</h3>
+            <div className="flex gap-2 justify-center mb-6">
               {(['played', 'playing', 'want_to_play'] as const).map((s) => (
                 <button key={s} className={`pill pill-${s === 'played' ? 'played' : s === 'playing' ? 'playing' : 'want'}${addStatus === s ? ' active' : ''}`} onClick={() => setAddStatus(s)}>
                   {s === 'want_to_play' ? 'Want to Play' : s.charAt(0).toUpperCase() + s.slice(1)}
                 </button>
               ))}
             </div>
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+            <div className="flex gap-3 justify-center">
               <button className="btn btn-outline" onClick={() => setAddModal(false)}>Cancel</button>
               <button className="btn btn-primary" onClick={handleAdd}>Save</button>
             </div>
@@ -189,9 +189,9 @@ export default function GamePage() {
 
         {/* Journal Modal */}
         <Modal open={journalModal} onClose={() => setJournalModal(false)}>
-          <h3 style={{ marginBottom: 16 }}>Write about "{game.name}"</h3>
-          <textarea className="input" rows={5} placeholder="What moment made you smile? Made you cry?" value={journalContent} onChange={(e) => setJournalContent(e.target.value)} style={{ resize: 'vertical', marginBottom: 16 }} />
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+          <h3 className="mb-4">Write about "{game.name}"</h3>
+          <textarea className="input resize-y mb-4" rows={5} placeholder="What moment made you smile? Made you cry?" value={journalContent} onChange={(e) => setJournalContent(e.target.value)} />
+          <div className="flex gap-3 justify-end">
             <button className="btn btn-outline" onClick={() => setJournalModal(false)}>Cancel</button>
             <button className="btn btn-primary" onClick={handleJournal}>Post</button>
           </div>
