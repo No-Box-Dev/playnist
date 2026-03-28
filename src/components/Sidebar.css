@@ -32,7 +32,7 @@
     background: var(--color-cream);
   }
 
-  .sidebar-item svg {
+  .sidebar-item > svg {
     width: 1.5rem;
     height: 1.5rem;
   }
