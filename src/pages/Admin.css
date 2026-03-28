@@ -40,7 +40,7 @@
 }
 .admin-tab.active {
   background: var(--color-gray-dark);
-  color: var(--color-white);
+  color: var(--color-cream);
   border-color: var(--color-gray-dark);
 }
 

@@ -101,14 +101,14 @@ export default function Profile() {
       <main className="main-area">
         {/* Sunburst Banner */}
         <div className="profile-banner">
-          {isOwn && <button className="profile-banner-edit">&#x270F;</button>}
+          {isOwn && <button className="profile-banner-edit"><img src="/images/icon-edit.svg" alt="Edit" /></button>}
         </div>
 
         {/* Profile Info — avatar left, stats+edit right */}
         <div className="profile-info">
           <div className="profile-avatar-wrap">
             <img className="profile-avatar" src={getAvatarUrl(profileId, isOwn ? user?.avatar_url : undefined)} alt="Avatar" />
-            {isOwn && <div className="profile-edit-avatar">&#x270F;</div>}
+            {isOwn && <button className="profile-edit-avatar"><img src="/images/icon-edit.svg" alt="Edit avatar" /></button>}
           </div>
           <div className="profile-right">
             <div className="profile-stats-row">
@@ -129,10 +129,12 @@ export default function Profile() {
         {/* Tabs — LIBRARY / JOURNAL */}
         <div className="profile-tabs">
           <button className={`profile-tab ${tab === 'library' ? 'active' : ''}`} onClick={() => setTab('library')}>
-            &#x1F3AE; LIBRARY
+            <svg width="16" height="18" viewBox="0 0 16 18" fill="none" className="profile-tab-icon"><path fillRule="evenodd" clipRule="evenodd" d="M0 5.75V16C0 17.648 1.882 18.589 3.2 17.6L6.8 14.9C7.511 14.367 8.489 14.367 9.2 14.9L12.8 17.6C14.118 18.589 16 17.648 16 16V5.75H0ZM0 4.25H16V2C16 .895 15.105 0 14 0H2C.895 0 0 .895 0 2V4.25Z" fill="currentColor"/></svg>
+            LIBRARY
           </button>
           <button className={`profile-tab ${tab === 'journal' ? 'active' : ''}`} onClick={() => setTab('journal')}>
-            &#x1F4DD; JOURNAL
+            <svg width="21" height="18" viewBox="0 0 21 18" fill="none" className="profile-tab-icon"><path fillRule="evenodd" clipRule="evenodd" d="M9.75 2.378C7.631.922 4.69.259 2.494.011 1.396-.113.5.804.5 1.935V13.2c0 1.131.896 2.048 1.994 2.172 2.195.248 5.137.911 7.256 2.367V2.378Zm1.5 15.361c2.119-1.456 5.06-2.119 7.256-2.367C19.604 15.248 20.5 14.331 20.5 13.2V1.935C20.5.804 19.604-.113 18.506.011c-2.195.248-5.137.911-7.256 2.367v15.361ZM2.759 5.14a.75.75 0 0 1 .856-.626c1.303.202 2.77.539 4.156 1.075a.75.75 0 1 1-.57 1.387c-1.259-.487-2.616-.802-3.844-.992a.75.75 0 0 1-.598-.844Zm.856 3.374a.75.75 0 0 0-.598.844.75.75 0 0 0 .627.856c.619.096 1.273.224 1.931.39a.75.75 0 1 0 .344-.89 16.3 16.3 0 0 0-2.304-.2Z" fill="currentColor"/></svg>
+            JOURNAL
           </button>
         </div>
 

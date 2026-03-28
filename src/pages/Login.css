@@ -13,7 +13,7 @@
 .auth-buttons .btn { flex: 1; min-height: 52px; font-size: 15px; letter-spacing: 1.5px; padding: 16px 32px; }
 
 /* Gray gradient button for form submit (signin/signup) */
-.btn-gray { background: #7a7a7a; color: var(--color-white); border: none; border-radius: 12px; }
+.btn-gray { background: #7a7a7a; color: var(--color-cream); border: none; border-radius: 12px; }
 .btn-gray:hover { background: #8a8a8a; }
 
 /* Form container */

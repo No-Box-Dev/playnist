@@ -64,7 +64,7 @@
   padding: 3px 8px;
   border-radius: 4px;
   background: var(--color-red);
-  color: var(--color-white);
+  color: var(--color-cream);
 }
 .btn-follow {
   font-family: var(--font-mono);
@@ -73,7 +73,7 @@
   border-radius: 6px;
   border: 2px solid var(--color-red);
   background: var(--color-red);
-  color: var(--color-white);
+  color: var(--color-cream);
   cursor: pointer;
   margin-left: auto;
 }
