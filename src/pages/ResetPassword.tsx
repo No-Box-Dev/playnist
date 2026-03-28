@@ -49,23 +49,23 @@ export default function ResetPassword() {
         </div>
         <h1 className="reset-title">Reset Password</h1>
         <p className="reset-subtitle">Enter your new password</p>
-        <form style={{ width: '100%' }} onSubmit={handleSubmit}>
-          <div className="form-group" style={{ width: '100%', marginBottom: 16 }}>
-            <label className="form-label" style={{ display: 'block', marginBottom: 6 }}>New Password</label>
+        <form className="w-full" onSubmit={handleSubmit}>
+          <div className="form-group mb-4 w-full">
+            <label className="form-label block mb-1.5">New Password</label>
             <div className="password-field">
               <input className="input" type={showPw1 ? 'text' : 'password'} placeholder="Enter new password" value={password} onChange={(e) => setPassword(e.target.value)} />
               <button type="button" className="password-toggle" onClick={() => setShowPw1(!showPw1)}>&#x1F441;</button>
             </div>
           </div>
-          <div className="form-group" style={{ width: '100%', marginBottom: 16 }}>
-            <label className="form-label" style={{ display: 'block', marginBottom: 6 }}>Repeat Password</label>
+          <div className="form-group mb-4 w-full">
+            <label className="form-label block mb-1.5">Repeat Password</label>
             <div className="password-field">
               <input className="input" type={showPw2 ? 'text' : 'password'} placeholder="Repeat new password" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)} />
               <button type="button" className="password-toggle" onClick={() => setShowPw2(!showPw2)}>&#x1F441;</button>
             </div>
           </div>
-          {error && <div className="field-error" style={{ marginBottom: 12 }}>{error}</div>}
-          <button className="btn btn-primary" type="submit" style={{ width: '100%' }}>CHANGE</button>
+          {error && <div className="field-error mb-3">{error}</div>}
+          <button className="btn btn-primary w-full" type="submit">CHANGE</button>
         </form>
         <div className="reset-back">
           <Link to="/">Back to Sign In</Link>
@@ -80,7 +80,7 @@ export default function ResetPassword() {
               <button className="close-x" onClick={() => setShowSuccess(false)}>&times;</button>
             </div>
             <div className="success-body">
-              <div style={{ fontSize: 48 }}>&#x2705;</div>
+              <div className="text-5xl">&#x2705;</div>
               <h3>Successful</h3>
               <p>Your password has been changed successfully</p>
               <div className="success-buttons">
