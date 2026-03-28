@@ -55,6 +55,10 @@ function checkRateLimit(key, maxRequests = 10, windowMs = 60000) {
   return false;
 }
 
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 // ─── Email (Postmark) ───
 
 const FROM_EMAIL = 'jasper@noboxdev.com';
@@ -90,7 +94,7 @@ function welcomeEmail(username) {
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 20px;">
       <h1 style="font-size: 28px; margin: 0 0 16px;">Welcome to Playnist!</h1>
       <p style="font-size: 16px; color: #444; line-height: 1.6;">
-        Hey <strong>${username}</strong>, you're in! 🎮
+        Hey <strong>${escapeHtml(username)}</strong>, you're in! 🎮
       </p>
       <p style="font-size: 16px; color: #444; line-height: 1.6;">
         Your game library is ready. Search for games you love, follow creators, and build your collection.
@@ -830,7 +834,8 @@ export default {
 
       return json({ error: 'Not found' }, 404);
     } catch (err) {
-      return json({ error: err.message }, 500);
+      console.error('[worker] Unhandled error:', err.message);
+      return json({ error: 'Internal server error' }, 500);
     }
   },
 };

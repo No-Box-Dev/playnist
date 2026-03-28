@@ -166,16 +166,17 @@ export default function Onboarding() {
   }, [step]);
 
   const toggleFollow = (userId: string) => {
+    const wasFollowed = followed.has(userId);
     setFollowed((prev) => {
       const next = new Set(prev);
-      if (next.has(userId)) {
-        next.delete(userId);
-      } else {
-        next.add(userId);
-        followUser(userId).catch(() => {});
-      }
+      if (wasFollowed) next.delete(userId); else next.add(userId);
       return next;
     });
+    if (!wasFollowed) {
+      followUser(userId).catch(() => {
+        setFollowed((prev) => { const next = new Set(prev); next.delete(userId); return next; });
+      });
+    }
   };
 
   return (
