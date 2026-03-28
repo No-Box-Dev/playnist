@@ -1,29 +1,32 @@
 const API_URL = import.meta.env.VITE_API_URL || 'https://playnist-api.jasper-414.workers.dev';
 
 // Token management
-let authToken: string | null = localStorage.getItem('playnist_token');
-
 export function setToken(token: string | null) {
-  authToken = token;
   if (token) localStorage.setItem('playnist_token', token);
   else localStorage.removeItem('playnist_token');
 }
 
 export function getStoredToken() {
-  return authToken;
+  return localStorage.getItem('playnist_token');
+}
+
+function stripHtmlTags(str: string): string {
+  return str.replace(/<[^>]*>/g, '');
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const token = localStorage.getItem('playnist_token');
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options?.headers as Record<string, string>),
   };
-  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const res = await fetch(`${API_URL}${path}`, { ...options, headers });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error((err as { error: string }).error || res.statusText);
+    const message = (err as { error: string }).error || res.statusText;
+    throw new Error(stripHtmlTags(message));
   }
   return res.json();
 }
@@ -96,8 +99,9 @@ export const unfollowUser = (userId: string) =>
 
 // Avatar upload
 export const uploadAvatar = async (file: File) => {
+  const token = localStorage.getItem('playnist_token');
   const headers: Record<string, string> = { 'Content-Type': file.type };
-  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   const res = await fetch(`${API_URL}/upload/avatar`, { method: 'POST', headers, body: await file.arrayBuffer() });
   if (!res.ok) throw new Error('Upload failed');
   return res.json() as Promise<{ avatar_url: string }>;

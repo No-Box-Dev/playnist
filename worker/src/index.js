@@ -25,10 +25,12 @@ async function hashPassword(password, salt) {
 async function verifyPassword(password, stored) {
   const [salt] = stored.split(':');
   const rehash = await hashPassword(password, salt);
-  // Constant-time comparison
-  if (rehash.length !== stored.length) return false;
-  let diff = 0;
-  for (let i = 0; i < rehash.length; i++) diff |= rehash.charCodeAt(i) ^ stored.charCodeAt(i);
+  // Constant-time comparison — always compare full strings, pad shorter one
+  const maxLen = Math.max(rehash.length, stored.length);
+  let diff = rehash.length ^ stored.length;
+  for (let i = 0; i < maxLen; i++) {
+    diff |= (rehash.charCodeAt(i) || 0) ^ (stored.charCodeAt(i) || 0);
+  }
   return diff === 0;
 }
 
