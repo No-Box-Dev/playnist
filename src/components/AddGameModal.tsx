@@ -19,11 +19,12 @@ export default function AddGameModal({ open, onClose, onAdded }: AddGameModalPro
 
   useEffect(() => {
     if (!query || query.length < 1) { setResults([]); return; }
+    let cancelled = false;
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      searchGames(query).then((r) => setResults((r as Game[]).slice(0, 5))).catch(() => setResults([]));
+      searchGames(query).then((r) => { if (!cancelled) setResults((r as Game[]).slice(0, 5)); }).catch(() => { if (!cancelled) setResults([]); });
     }, 150);
-    return () => clearTimeout(debounceRef.current);
+    return () => { cancelled = true; clearTimeout(debounceRef.current); };
   }, [query]);
 
   const handleSave = async () => {

@@ -26,6 +26,7 @@ export default function Profile() {
   const [collection, setCollection] = useState<CollectionItem[]>([]);
   const [journals, setJournals] = useState<Journal[]>([]);
   const [gameCache, setGameCache] = useState<Record<number, Game>>({});
+  const [loading, setLoading] = useState(true);
   const [addModal, setAddModal] = useState(false);
   const [journalModal, setJournalModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,14 +36,19 @@ export default function Profile() {
   const [journalContent, setJournalContent] = useState('');
 
   useEffect(() => {
-    getUserCollection(profileId, filter || undefined).then((c) => setCollection(c as CollectionItem[]));
-  }, [profileId, filter]);
-
-  useEffect(() => {
-    if (tab === 'journal') {
-      getUserJournals(profileId).then((j) => setJournals(j as Journal[]));
-    }
-  }, [profileId, tab]);
+    let cancelled = false;
+    setLoading(true);
+    const collectionPromise = getUserCollection(profileId, filter || undefined).then((c) => {
+      if (!cancelled) setCollection(c as CollectionItem[]);
+    });
+    const journalPromise = tab === 'journal'
+      ? getUserJournals(profileId).then((j) => { if (!cancelled) setJournals(j as Journal[]); })
+      : Promise.resolve();
+    Promise.all([collectionPromise, journalPromise]).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [profileId, filter, tab]);
 
   useEffect(() => {
     const allIds = [
@@ -151,7 +157,9 @@ export default function Profile() {
               <button className={`pill pill-want ${filter === 'want_to_play' ? 'active' : ''}`} onClick={() => setFilter(filter === 'want_to_play' ? null : 'want_to_play')}>Want to play {wantCount}</button>
             </div>
             <div className="library-content">
-              {collection.length === 0 ? (
+              {loading ? (
+                <div className="empty-state"><div className="empty-state-title">Loading...</div></div>
+              ) : collection.length === 0 ? (
                 <div className="empty-state">
                   <div className="empty-state-emoji">&#x1F4E6;</div>
                   <div className="empty-state-title">YOUR LIBRARY IS EMPTY</div>
@@ -187,7 +195,9 @@ export default function Profile() {
             {isOwn && (
               <button className="btn btn-primary" style={{ marginBottom: 16 }} onClick={() => setJournalModal(true)}>+ Write in Journal</button>
             )}
-            {journals.length === 0 ? (
+            {loading ? (
+              <div className="empty-state"><div className="empty-state-title">Loading...</div></div>
+            ) : journals.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-state-emoji">&#x1F4DD;</div>
                 <div className="empty-state-title">YOUR JOURNAL IS EMPTY</div>
@@ -208,7 +218,7 @@ export default function Profile() {
                       <div className="journal-game-name">{game?.name || 'Game'}</div>
                       <p className="journal-text">{j.content}</p>
                     </div>
-                    {isOwn && <button className="journal-delete" onClick={() => handleDeleteJournal(j.id)}>&#x1F5D1;</button>}
+                    {isOwn && <button className="journal-delete" aria-label="Delete journal entry" onClick={() => handleDeleteJournal(j.id)}>&#x1F5D1;</button>}
                   </div>
                 );
               })

@@ -10,9 +10,9 @@ export default function Header() {
   const [addGameOpen, setAddGameOpen] = useState(false);
 
   useEffect(() => {
-    getUnreadCount().then((r) => setUnread(r.count)).catch(() => {});
+    getUnreadCount().then((r) => setUnread(r.count)).catch((e) => console.error('[notifications]', e));
     const interval = setInterval(() => {
-      getUnreadCount().then((r) => setUnread(r.count)).catch(() => {});
+      getUnreadCount().then((r) => setUnread(r.count)).catch((e) => console.error('[notifications]', e));
     }, 30000);
     return () => clearInterval(interval);
   }, []);

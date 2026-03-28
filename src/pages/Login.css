@@ -72,6 +72,11 @@
 .cover-grid-scroll-3 { animation: gridScrollUp 50s linear infinite; }
 @keyframes gridScrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
 @keyframes gridScrollDown { 0% { transform: translateY(-50%); } 100% { transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .cover-grid-scroll-1,
+  .cover-grid-scroll-2,
+  .cover-grid-scroll-3 { animation: none; }
+}
 
 @media (max-width: 768px) {
   .cover-grid-side { display: none; }
