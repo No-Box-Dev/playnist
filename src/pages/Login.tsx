@@ -163,7 +163,7 @@ export default function Login() {
               <button className={`signup-tab ${signupStep === 'password' ? 'active' : signupStep === 'username' ? 'done' : ''}`} disabled={!form.signupEmail} onClick={() => form.signupEmail && setSignupStep('password')}>Password</button>
               <button className={`signup-tab ${signupStep === 'username' ? 'active' : ''}`} disabled={!form.signupEmail || !form.signupPassword} onClick={() => form.signupEmail && form.signupPassword && setSignupStep('username')}>Username</button>
             </div>
-            <div className="auth-form" style={{ gap: 16 }}>
+            <div className="auth-form gap-4">
               {signupStep === 'email' && (
                 <div className="form-group">
                   <label className="form-label" htmlFor="signup-email">Email</label>
