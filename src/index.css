@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=DM+Sans&family=Inter:wght@400;700&family=Inter+Tight:wght@400;500&family=Figtree&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
 /* ─── Design Tokens (single source of truth) ─── */
 
@@ -183,7 +183,7 @@
   .btn-outline { background: var(--color-cream); color: var(--color-red); border: 2px solid var(--color-red); }
   .btn-outline:hover { background: var(--color-peach); }
   .btn-green { background: var(--color-green); color: var(--color-cream); border-color: var(--color-green); }
-  .btn-orange { background: var(--color-orange); color: var(--color-cream); border-color: var(--color-orange); }
+  .btn-orange { background: var(--color-orange); color: var(--color-dark-gray); border-color: var(--color-orange); }
 
   /* Filter Pills */
   .pill {
@@ -310,7 +310,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 100;
+    z-index: var(--z-modal);
   }
   .modal {
     background: var(--color-cream);
