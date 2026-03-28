@@ -23,7 +23,7 @@ export default function GameCard({ game, onAdd }: GameCardProps) {
       {imageId ? (
         <img src={coverUrl(imageId)} alt={game.name} loading="lazy" />
       ) : (
-        <div className="flex h-full w-full items-center justify-center rounded-lg bg-[var(--color-gray-bg)] p-2 text-center text-xs text-[var(--color-gray)]">
+        <div className="flex h-full w-full items-center justify-center bg-[var(--color-gray-bg)] p-2 text-center text-xs text-[var(--color-gray)]">
           {game.name}
         </div>
       )}
