@@ -17,14 +17,13 @@ export default function GameCard({ game, onAdd }: GameCardProps) {
 
   return (
     <div
-      className="game-card"
-      style={{ aspectRatio: '2/3' }}
+      className="game-card aspect-[2/3]"
       onClick={() => navigate(`/game/${game.id}`)}
     >
       {imageId ? (
         <img src={coverUrl(imageId)} alt={game.name} loading="lazy" />
       ) : (
-        <div style={{ width: '100%', height: '100%', background: 'var(--color-gray-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: 'var(--color-gray)', padding: 8, textAlign: 'center' }}>
+        <div className="flex h-full w-full items-center justify-center bg-[var(--color-gray-bg)] p-2 text-center text-xs text-[var(--color-gray)]">
           {game.name}
         </div>
       )}
