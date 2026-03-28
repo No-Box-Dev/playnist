@@ -1,82 +1,80 @@
-@layer components {
-  .discover-search-section {
-    margin-bottom: 1rem;
-  }
+.discover-search-section {
+  margin-bottom: 1rem;
+}
 
-  .discover-search-wrap {
-    position: relative;
-    width: 100%;
-    max-width: 30rem;
-  }
+.discover-search-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 30rem;
+}
 
-  .discover-search-icon {
-    position: absolute;
-    left: 0.875rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--color-gray);
-    pointer-events: none;
-  }
+.discover-search-icon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-gray);
+  pointer-events: none;
+}
 
-  .discover-search-input {
-    width: 100%;
-    padding: 0.75rem 0.875rem 0.75rem 2.625rem;
-    border: 1px solid var(--color-gray-border);
-    border-radius: 0.625rem;
-    background: var(--color-white);
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    color: var(--color-gray-dark);
-    outline: none;
-    transition: border-color 0.2s;
-  }
+.discover-search-input {
+  width: 100%;
+  padding: 0.75rem 0.875rem 0.75rem 2.625rem;
+  border: 1px solid var(--color-gray-border);
+  border-radius: 0.625rem;
+  background: var(--color-white);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-gray-dark);
+  outline: none;
+  transition: border-color 0.2s;
+}
 
-  .discover-search-input::placeholder {
-    color: var(--color-gray-lighter);
-  }
+.discover-search-input::placeholder {
+  color: var(--color-gray-lighter);
+}
 
-  .discover-search-input:focus {
-    border-color: var(--color-red);
-  }
+.discover-search-input:focus {
+  border-color: var(--color-red);
+}
 
-  .discover-categories {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
-  }
+.discover-categories {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
 
-  .discover-pill {
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    padding: 0.375rem 1rem;
-    border-radius: 1.25rem;
-    cursor: pointer;
-    border: 2px solid var(--color-gray-border);
-    background: var(--color-cream);
-    color: var(--color-gray);
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
+.discover-pill {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  padding: 0.375rem 1rem;
+  border-radius: 1.25rem;
+  cursor: pointer;
+  border: 2px solid var(--color-gray-border);
+  background: var(--color-cream);
+  color: var(--color-gray);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
 
-  .discover-pill:hover {
-    border-color: var(--color-gray);
-    color: var(--color-gray-dark);
-  }
+.discover-pill:hover {
+  border-color: var(--color-gray);
+  color: var(--color-gray-dark);
+}
 
-  .discover-pill.active {
-    background: var(--color-red);
-    border-color: var(--color-red);
-    color: var(--color-cream);
-  }
+.discover-pill.active {
+  background: var(--color-red);
+  border-color: var(--color-red);
+  color: var(--color-cream);
+}
 
-  .discover-empty {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    color: var(--color-gray);
-    padding: 2rem 0;
-    text-align: center;
-  }
+.discover-empty {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-gray);
+  padding: 2rem 0;
+  text-align: center;
 }
 
 @media (max-width: 768px) {
