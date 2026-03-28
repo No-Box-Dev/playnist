@@ -54,14 +54,14 @@ export default function ResetPassword() {
             <label className="form-label block mb-1.5">New Password</label>
             <div className="password-field">
               <input className="input" type={showPw1 ? 'text' : 'password'} placeholder="Enter new password" value={password} onChange={(e) => setPassword(e.target.value)} />
-              <button type="button" className="password-toggle" onClick={() => setShowPw1(!showPw1)}>&#x1F441;</button>
+              <button type="button" className="password-toggle" onClick={() => setShowPw1(!showPw1)} aria-label="Toggle password visibility">&#x1F441;</button>
             </div>
           </div>
           <div className="form-group mb-4 w-full">
             <label className="form-label block mb-1.5">Repeat Password</label>
             <div className="password-field">
               <input className="input" type={showPw2 ? 'text' : 'password'} placeholder="Repeat new password" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)} />
-              <button type="button" className="password-toggle" onClick={() => setShowPw2(!showPw2)}>&#x1F441;</button>
+              <button type="button" className="password-toggle" onClick={() => setShowPw2(!showPw2)} aria-label="Toggle password visibility">&#x1F441;</button>
             </div>
           </div>
           {error && <div className="field-error mb-3">{error}</div>}

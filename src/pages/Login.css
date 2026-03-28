@@ -60,8 +60,8 @@
 
   /* Game cover grid — right side */
   .cover-grid-side { display: flex; flex-direction: row; overflow: hidden; flex: 0 0 50%; width: 50%; gap: 0.625rem; padding: 0.625rem; }
-  .cover-grid-column { flex: 1; min-width: 0; height: 100vh; overflow: hidden; position: relative; }
-  .cover-grid-scroll { display: flex; flex-direction: column; gap: 0.625rem; }
+  .cover-grid-column { flex: 1; min-width: 0; height: 100dvh; overflow: hidden; position: relative; }
+  .cover-grid-scroll { display: flex; flex-direction: column; gap: 0.625rem; will-change: transform; }
   .cover-grid-card { width: 100%; aspect-ratio: 3/4; border-radius: 1rem; border: 3px solid var(--color-red); background: linear-gradient(160deg, var(--color-peach) 0%, var(--color-terra-cotta-lightest) 40%, var(--color-cream) 100%); overflow: hidden; position: relative; flex-shrink: 0; }
   .cover-grid-card:nth-child(5n+2) { border-color: var(--color-terra-cotta); }
   .cover-grid-card:nth-child(7n+3) { border-color: var(--color-green); }
