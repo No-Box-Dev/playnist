@@ -124,16 +124,16 @@ export default function Discover() {
         {/* Add to Collection Modal */}
         <Modal open={!!addModal} onClose={() => setAddModal(null)}>
           {addModal && (
-            <div style={{ textAlign: 'center' }}>
-              <h3 style={{ marginBottom: 16 }}>Add "{addModal.name}" to Collection</h3>
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 24, flexWrap: 'wrap' }}>
+            <div className="text-center">
+              <h3 className="mb-4">Add "{addModal.name}" to Collection</h3>
+              <div className="flex gap-2 justify-center mb-6 flex-wrap">
                 {(['played', 'playing', 'want_to_play'] as const).map((s) => (
                   <button key={s} className={`pill pill-${s === 'played' ? 'played' : s === 'playing' ? 'playing' : 'want'}${addStatus === s ? ' active' : ''}`} onClick={() => setAddStatus(s)}>
                     {s === 'want_to_play' ? 'Want to Play' : s.charAt(0).toUpperCase() + s.slice(1)}
                   </button>
                 ))}
               </div>
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+              <div className="flex gap-3 justify-center">
                 <button className="btn btn-outline" onClick={() => setAddModal(null)}>Cancel</button>
                 <button className="btn btn-primary" onClick={confirmAdd}>Save</button>
               </div>

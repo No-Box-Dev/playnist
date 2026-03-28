@@ -102,7 +102,7 @@ export default function Dashboard() {
             <img className="ambassador-avatar-sm" src="/images/user-icon.png" alt="Ambassador" />
             <div>
               <span className="ambassador-name-v2">Emma Nicole</span>
-              <span className="badge-ambassador-sm" style={{ marginLeft: 8 }}>Ambassador</span>
+              <span className="badge-ambassador-sm ml-2">Ambassador</span>
             </div>
             <button className="btn-follow">Follow</button>
             <span className="ambassador-picks-label">Favourite games</span>
@@ -133,9 +133,9 @@ export default function Dashboard() {
         {/* Add Game Modal */}
         <Modal open={!!addModal} onClose={() => setAddModal(null)}>
           {addModal && (
-            <div style={{ textAlign: 'center' }}>
-              <h3 style={{ marginBottom: 16 }}>Add "{addModal.name}" to Collection</h3>
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 24 }}>
+            <div className="text-center">
+              <h3 className="mb-4">Add "{addModal.name}" to Collection</h3>
+              <div className="flex gap-2 justify-center mb-6">
                 {(['played', 'playing', 'want_to_play'] as const).map((s) => (
                   <button
                     key={s}
@@ -146,7 +146,7 @@ export default function Dashboard() {
                   </button>
                 ))}
               </div>
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+              <div className="flex gap-3 justify-center">
                 <button className="btn btn-outline" onClick={() => setAddModal(null)}>Cancel</button>
                 <button className="btn btn-primary" onClick={confirmAdd}>Save</button>
               </div>
