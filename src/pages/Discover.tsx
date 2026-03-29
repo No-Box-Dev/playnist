@@ -16,6 +16,7 @@ export default function Discover() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [addModal, setAddModal] = useState<Game | null>(null);
   const [addStatus, setAddStatus] = useState('played');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     getPublicPageSections('discover').then((s) => {
@@ -37,7 +38,7 @@ export default function Discover() {
           });
         }
       });
-    });
+    }).finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -103,7 +104,7 @@ export default function Discover() {
               </div>
             )}
           </section>
-        ) : sections.length === 0 ? (
+        ) : isLoading ? (
           /* Skeleton loading state */
           <>
             {[1, 2, 3].map((i) => (

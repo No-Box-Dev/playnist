@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import GameCard from '../components/GameCard';
 import Modal from '../components/Modal';
-import { getTrending, getNew, addToCollection, imageUrl, getUser, getUserJournals, getUserCollection, getGame, getGamesBatch } from '../api';
+import { getTrending, getNew, addToCollection, imageUrl, getAmbassadors, getUserJournals, getUserCollection, getGame, getGamesBatch } from '../api';
 import type { Game, User } from '../types';
 import './Dashboard.css';
 
@@ -22,35 +22,41 @@ export default function Dashboard() {
   const [picksAmbassador, setPicksAmbassador] = useState<User | null>(null);
   const navigate = useNavigate();
 
-  const SPOTLIGHT_ID = 'a782b1db-bf44-4d63-98eb-e2a6691ff974'; // SkyeVault
-  const PICKS_ID = 'c78b7519-17a1-4c4b-9f94-4b1957a26b4e'; // PixelNova
-
   useEffect(() => {
     getTrending().then((g) => {
       const all = g as Game[];
       setTrending(all.slice(0, 4));
       setRainyDay(all.slice(4, 8));
-    });
-    getNew().then((g) => setNewGames((g as Game[]).slice(0, 5)));
+    }).catch(() => {});
+    getNew().then((g) => setNewGames((g as Game[]).slice(0, 5))).catch(() => {});
 
-    // Fetch ambassador spotlight data (SkyeVault)
-    getUser(SPOTLIGHT_ID).then((u) => setSpotlightAmbassador(u as User));
-    getUserJournals(SPOTLIGHT_ID).then((journals) => {
-      const j = (journals as { content: string; igdb_game_id: number }[])[0];
-      if (j) {
-        setSpotlightJournal(j);
-        getGame(j.igdb_game_id).then((g) => setSpotlightGame(g as Game));
-      }
-    });
+    // Fetch ambassadors dynamically, then load spotlight + picks data
+    getAmbassadors().then((ambassadors) => {
+      const list = ambassadors as User[];
+      const spotlightUser = list[0];
+      const picksUser = list[1] || list[0];
 
-    // Fetch ambassador picks data (PixelNova)
-    getUser(PICKS_ID).then((u) => setPicksAmbassador(u as User));
-    getUserCollection(PICKS_ID).then((items) => {
-      const gameIds = (items as { igdb_game_id: number }[]).map((i) => i.igdb_game_id).slice(0, 4);
-      if (gameIds.length) {
-        getGamesBatch(gameIds).then((games) => setAmbassadorPicks(games as Game[]));
+      if (spotlightUser) {
+        setSpotlightAmbassador(spotlightUser);
+        getUserJournals(spotlightUser.id).then((journals) => {
+          const j = (journals as { content: string; igdb_game_id: number }[])[0];
+          if (j) {
+            setSpotlightJournal(j);
+            getGame(j.igdb_game_id).then((g) => setSpotlightGame(g as Game)).catch(() => {});
+          }
+        }).catch(() => {});
       }
-    });
+
+      if (picksUser) {
+        setPicksAmbassador(picksUser);
+        getUserCollection(picksUser.id).then((items) => {
+          const gameIds = (items as { igdb_game_id: number }[]).map((i) => i.igdb_game_id).slice(0, 4);
+          if (gameIds.length) {
+            getGamesBatch(gameIds).then((games) => setAmbassadorPicks(games as Game[])).catch(() => {});
+          }
+        }).catch(() => {});
+      }
+    }).catch(() => {});
   }, []);
 
   const handleAdd = (game: Game) => setAddModal(game);
@@ -85,8 +91,8 @@ export default function Dashboard() {
               {spotlightGame.cover?.image_id && (
                 <div className="ambassador-game-cover" onClick={() => navigate(`/game/${spotlightGame.id}`)}>
                   <img src={imageUrl(spotlightGame.cover.image_id, 't_cover_big_2x')} alt={spotlightGame.name} ref={(img) => { if (img?.complete) img.classList.add('loaded'); }} onLoad={(e) => e.currentTarget.classList.add('loaded')} />
-                  <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAdd(spotlightGame); }}>
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3v14M3 10h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
+                  <button className="add-btn" aria-label={`Add ${spotlightGame.name} to collection`} onClick={(e) => { e.stopPropagation(); handleAdd(spotlightGame); }}>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3v14M3 10h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
                   </button>
                 </div>
               )}

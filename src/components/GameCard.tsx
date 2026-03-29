@@ -35,9 +35,10 @@ export default function GameCard({ game, onAdd }: GameCardProps) {
       {onAdd && (
         <button
           className="add-btn"
+          aria-label={`Add ${game.name} to collection`}
           onClick={(e) => { e.stopPropagation(); onAdd(game); }}
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3v14M3 10h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3v14M3 10h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
         </button>
       )}
     </div>

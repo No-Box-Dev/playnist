@@ -543,6 +543,16 @@ export default {
         return json(games);
       }
 
+      // ── Ambassadors (public) ──
+      if (path === '/ambassadors' && method === 'GET') {
+        const { results } = await env.DB.prepare(
+          `SELECT id, username, email, bio, avatar_url, is_ambassador, onboarding_step, created_at FROM users
+           WHERE is_ambassador = 1
+           ORDER BY created_at ASC`
+        ).all();
+        return json(results);
+      }
+
       // ── Suggested users (for onboarding) ──
       if (path === '/users/suggested' && method === 'GET') {
         const currentUser = await getUser(env, request);

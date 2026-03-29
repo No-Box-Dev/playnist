@@ -263,7 +263,8 @@ a { color: inherit; text-decoration: none; }
 .reaction-btn {
   background: none;
   border: none;
-  padding: 0;
+  padding: 0.25rem 0.5rem;
+  min-height: 2.75rem;
   font-size: 0.875rem;
   cursor: pointer;
   display: flex;
@@ -337,8 +338,9 @@ a { color: inherit; text-decoration: none; }
   padding: 2rem 2.5rem;
   max-width: 30rem;
   width: 90%;
+  max-height: calc(100dvh - 3rem);
+  overflow-y: auto;
   position: relative;
-  overflow: visible;
 }
 .modal-close {
   position: absolute;

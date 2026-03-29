@@ -266,44 +266,33 @@ export default function Profile() {
         </Modal>
 
         {/* Journal Modal */}
-        <Modal open={journalModal} onClose={() => { setJournalModal(false); setSelectedGame(null); }}>
+        <Modal open={journalModal} onClose={() => { setJournalModal(false); setSelectedGame(null); setSearchQuery(''); setSearchResults([]); setJournalContent(''); }}>
           <div className="journal-modal">
             <h2 className="journal-modal-title">WRITE IN JOURNAL</h2>
             <p className="journal-modal-subtitle">Your journal is not just for reviews, but for your experiences</p>
 
-            <div className="journal-modal-row">
-              <div className="journal-modal-field">
-                <label className="journal-modal-label">Game name</label>
-                <div className="journal-modal-search-wrap">
-                  <input
-                    className="input"
-                    placeholder="Start searching game name"
-                    value={selectedGame ? selectedGame.name : searchQuery}
-                    onChange={(e) => { setSelectedGame(null); setSearchQuery(e.target.value); }}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                  <svg className="journal-modal-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M16 16l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            <div className="journal-modal-field">
+              <label className="journal-modal-label">Game name</label>
+              <div className="journal-modal-search-wrap">
+                <input
+                  className="input"
+                  placeholder="Start searching game name"
+                  value={selectedGame ? selectedGame.name : searchQuery}
+                  onChange={(e) => { setSelectedGame(null); setSearchQuery(e.target.value); }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                />
+                <svg className="journal-modal-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M16 16l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+              </div>
+              {searchResults.length > 0 && !selectedGame && (
+                <div className="journal-modal-results">
+                  {searchResults.slice(0, 10).map((g) => (
+                    <div key={g.id} className="journal-modal-result" onClick={() => setSelectedGame(g)}>
+                      {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} alt="" />}
+                      <span>{g.name}</span>
+                    </div>
+                  ))}
                 </div>
-                {searchResults.length > 0 && !selectedGame && (
-                  <div className="journal-modal-results">
-                    {searchResults.slice(0, 10).map((g) => (
-                      <div key={g.id} className="journal-modal-result" onClick={() => setSelectedGame(g)}>
-                        {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} alt="" />}
-                        <span>{g.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="journal-modal-field">
-                <label className="journal-modal-label">Select category</label>
-                <select className="input journal-modal-select">
-                  <option value="" disabled selected>Choose an option...</option>
-                  <option value="review">Review</option>
-                  <option value="experience">Experience</option>
-                  <option value="memory">Memory</option>
-                </select>
-              </div>
+              )}
             </div>
 
             <div className="journal-modal-field">
@@ -318,7 +307,7 @@ export default function Profile() {
             </div>
 
             <div className="journal-modal-actions">
-              <button className="btn btn-outline journal-modal-btn" onClick={() => { setJournalModal(false); setSelectedGame(null); }}>CANCEL</button>
+              <button className="btn btn-outline journal-modal-btn" onClick={() => { setJournalModal(false); setSelectedGame(null); setSearchQuery(''); setSearchResults([]); setJournalContent(''); }}>CANCEL</button>
               <button className="btn btn-primary journal-modal-btn" onClick={handleCreateJournal}>POST</button>
             </div>
           </div>

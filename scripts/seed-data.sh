@@ -10,7 +10,7 @@ echo "=== Creating 6 Ambassador Accounts ==="
 echo "Creating SkyeVault..."
 R1=$(curl -s -X POST "$API/auth/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email":"skye.vault@playnist.test","password":"TestPass123!","username":"SkyeVault","bio":"RPG enthusiast and speedrunner. If it has a level-up system, I have played it."}')
+  -d '{"email":"skye.vault@playnist.test","password":"${AMBASSADOR_PASSWORD:-TestPass123!}","username":"SkyeVault","bio":"RPG enthusiast and speedrunner. If it has a level-up system, I have played it."}')
 T1=$(echo "$R1" | jq -r '.token')
 U1=$(echo "$R1" | jq -r '.user.id')
 echo "  Token: ${T1:0:20}... ID: $U1"
@@ -19,7 +19,7 @@ echo "  Token: ${T1:0:20}... ID: $U1"
 echo "Creating PixelNova..."
 R2=$(curl -s -X POST "$API/auth/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email":"pixel.nova@playnist.test","password":"TestPass123!","username":"PixelNova","bio":"Indie game curator and retro collector. Finding hidden gems since 2008."}')
+  -d '{"email":"pixel.nova@playnist.test","password":"${AMBASSADOR_PASSWORD:-TestPass123!}","username":"PixelNova","bio":"Indie game curator and retro collector. Finding hidden gems since 2008."}')
 T2=$(echo "$R2" | jq -r '.token')
 U2=$(echo "$R2" | jq -r '.user.id')
 echo "  Token: ${T2:0:20}... ID: $U2"
@@ -28,7 +28,7 @@ echo "  Token: ${T2:0:20}... ID: $U2"
 echo "Creating LunaPlays..."
 R3=$(curl -s -X POST "$API/auth/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email":"luna.plays@playnist.test","password":"TestPass123!","username":"LunaPlays","bio":"Story-driven game lover. I cry at every ending and I am not ashamed."}')
+  -d '{"email":"luna.plays@playnist.test","password":"${AMBASSADOR_PASSWORD:-TestPass123!}","username":"LunaPlays","bio":"Story-driven game lover. I cry at every ending and I am not ashamed."}')
 T3=$(echo "$R3" | jq -r '.token')
 U3=$(echo "$R3" | jq -r '.user.id')
 echo "  Token: ${T3:0:20}... ID: $U3"
@@ -37,7 +37,7 @@ echo "  Token: ${T3:0:20}... ID: $U3"
 echo "Creating ZenithGG..."
 R4=$(curl -s -X POST "$API/auth/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email":"zenith.gg@playnist.test","password":"TestPass123!","username":"ZenithGG","bio":"Competitive gamer turned chill collector. Documenting every boss fight."}')
+  -d '{"email":"zenith.gg@playnist.test","password":"${AMBASSADOR_PASSWORD:-TestPass123!}","username":"ZenithGG","bio":"Competitive gamer turned chill collector. Documenting every boss fight."}')
 T4=$(echo "$R4" | jq -r '.token')
 U4=$(echo "$R4" | jq -r '.user.id')
 echo "  Token: ${T4:0:20}... ID: $U4"
@@ -46,7 +46,7 @@ echo "  Token: ${T4:0:20}... ID: $U4"
 echo "Creating EmberQuest..."
 R5=$(curl -s -X POST "$API/auth/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email":"ember.quest@playnist.test","password":"TestPass123!","username":"EmberQuest","bio":"Open-world explorer. 200+ hours in every Bethesda game. No fast travel."}')
+  -d '{"email":"ember.quest@playnist.test","password":"${AMBASSADOR_PASSWORD:-TestPass123!}","username":"EmberQuest","bio":"Open-world explorer. 200+ hours in every Bethesda game. No fast travel."}')
 T5=$(echo "$R5" | jq -r '.token')
 U5=$(echo "$R5" | jq -r '.user.id')
 echo "  Token: ${T5:0:20}... ID: $U5"
@@ -55,7 +55,7 @@ echo "  Token: ${T5:0:20}... ID: $U5"
 echo "Creating NightOwlGames..."
 R6=$(curl -s -X POST "$API/auth/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email":"nightowl@playnist.test","password":"TestPass123!","username":"NightOwlGames","bio":"Horror and survival specialist. Playing in the dark is the only way."}')
+  -d '{"email":"nightowl@playnist.test","password":"${AMBASSADOR_PASSWORD:-TestPass123!}","username":"NightOwlGames","bio":"Horror and survival specialist. Playing in the dark is the only way."}')
 T6=$(echo "$R6" | jq -r '.token')
 U6=$(echo "$R6" | jq -r '.user.id')
 echo "  Token: ${T6:0:20}... ID: $U6"
@@ -190,7 +190,8 @@ echo "NightOwlGames:  $U6"
 echo ""
 echo "=== Now add journal posts to YOUR account ==="
 echo "Enter your auth token (from localStorage 'playnist_token'):"
-read -r MY_TOKEN
+read -rs MY_TOKEN
+echo ""
 
 if [ -n "$MY_TOKEN" ]; then
   echo "Adding journal posts to your account..."
