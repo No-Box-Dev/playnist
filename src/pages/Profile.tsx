@@ -6,8 +6,8 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import Modal from '../components/Modal';
 import { useAuth } from '../hooks/useAuth';
-import { getUserCollection, getUserJournals, getGamesBatch, addToCollection, createJournal, deleteJournal, searchGames, imageUrl } from '../api';
-import type { CollectionItem, Journal, Game } from '../types';
+import { getUserCollection, getUserJournals, getGamesBatch, addToCollection, createJournal, deleteJournal, searchGames, imageUrl, getUser } from '../api';
+import type { CollectionItem, Journal, Game, User } from '../types';
 import './Profile.css';
 import './Journal.css';
 
@@ -15,8 +15,9 @@ export default function Profile() {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const profileId = id || user?.id || 'dev-user-001';
-  const isOwn = !id || id === user?.id;
+  const isOwn = !id || id === user?.id || id === user?.username;
+  const [profileUser, setProfileUser] = useState<User | null>(null);
+  const profileId = profileUser?.id || user?.id || '';
 
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab') === 'journal' ? 'journal' : 'library';
@@ -36,7 +37,19 @@ export default function Profile() {
   const [addStatus, setAddStatus] = useState('played');
   const [journalContent, setJournalContent] = useState('');
 
+  // Fetch profile user data when viewing someone else's profile
   useEffect(() => {
+    if (id && !isOwn) {
+      getUser(id).then((u) => setProfileUser(u as User)).catch(() => {});
+    } else {
+      setProfileUser(null);
+    }
+  }, [id, isOwn]);
+
+  const displayUser = isOwn ? user : profileUser;
+
+  useEffect(() => {
+    if (!profileId) return;
     let cancelled = false;
     setLoading(true);
     const collectionPromise = getUserCollection(profileId, filter || undefined).then((c) => {
@@ -114,7 +127,7 @@ export default function Profile() {
         {/* Profile Info — avatar left, stats+edit right */}
         <div className="profile-info">
           <div className="profile-avatar-wrap">
-            <img className="profile-avatar" src={getAvatarUrl(profileId, isOwn ? user?.avatar_url : undefined)} alt="Avatar" />
+            <img className="profile-avatar" src={getAvatarUrl(profileId, displayUser?.avatar_url)} alt="Avatar" />
             {isOwn && <button className="profile-edit-avatar"><img src="/images/icon-edit.svg" alt="Edit avatar" /></button>}
           </div>
           <div className="profile-right">
@@ -131,7 +144,7 @@ export default function Profile() {
         </div>
 
         {/* Username */}
-        <h1 className="profile-name">{user?.username || 'User'}</h1>
+        <h1 className="profile-name">{displayUser?.username || 'User'}</h1>
 
         {/* Tabs — LIBRARY / JOURNAL */}
         <div className="profile-tabs">

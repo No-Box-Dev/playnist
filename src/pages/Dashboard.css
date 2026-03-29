@@ -103,6 +103,14 @@
   cursor: pointer;
 }
 .btn-follow:hover { opacity: 0.9; }
+.btn-follow.following {
+  background: var(--color-cream);
+  color: var(--color-red);
+  border: 2px solid var(--color-red);
+  padding: calc(0.375rem - 2px) calc(1rem - 2px);
+}
+.ambassador-clickable { cursor: pointer; }
+.ambassador-clickable:hover { opacity: 0.8; }
 .ambassador-quote-v2 {
   font-family: var(--font-body);
   font-size: 0.875rem;

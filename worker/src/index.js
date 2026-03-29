@@ -180,6 +180,12 @@ async function getUser(env, request) {
     .bind(session.user_id).first();
 }
 
+async function resolveUserId(env, identifier) {
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(identifier)) return identifier;
+  const u = await env.DB.prepare('SELECT id FROM users WHERE username = ?').bind(identifier).first();
+  return u ? u.id : null;
+}
+
 async function parseJsonBody(request) {
   try {
     return await request.json();
@@ -568,14 +574,19 @@ export default {
       // ── Users ──
       const userMatch = path.match(/^\/users\/([^/]+)$/);
       if (userMatch && method === 'GET') {
-        const user = await env.DB.prepare('SELECT id, username, email, bio, avatar_url, is_ambassador, onboarding_step, created_at FROM users WHERE id = ?').bind(userMatch[1]).first();
+        const identifier = userMatch[1];
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(identifier);
+        const user = isUuid
+          ? await env.DB.prepare('SELECT id, username, email, bio, avatar_url, is_ambassador, onboarding_step, created_at FROM users WHERE id = ?').bind(identifier).first()
+          : await env.DB.prepare('SELECT id, username, email, bio, avatar_url, is_ambassador, onboarding_step, created_at FROM users WHERE username = ?').bind(identifier).first();
         if (!user) return json({ error: 'User not found' }, 404);
         return json(user);
       }
 
       const userCollectionMatch = path.match(/^\/users\/([^/]+)\/collection$/);
       if (userCollectionMatch && method === 'GET') {
-        const userId = userCollectionMatch[1];
+        const userId = await resolveUserId(env, userCollectionMatch[1]);
+        if (!userId) return json({ error: 'User not found' }, 404);
         const status = url.searchParams.get('status');
         let query = 'SELECT * FROM user_collections WHERE user_id = ?';
         const params = [userId];
@@ -587,25 +598,31 @@ export default {
 
       const userJournalsMatch = path.match(/^\/users\/([^/]+)\/journals$/);
       if (userJournalsMatch && method === 'GET') {
+        const userId = await resolveUserId(env, userJournalsMatch[1]);
+        if (!userId) return json({ error: 'User not found' }, 404);
         const { results } = await env.DB.prepare(
           'SELECT * FROM user_journals WHERE user_id = ? ORDER BY created_at DESC'
-        ).bind(userJournalsMatch[1]).all();
+        ).bind(userId).all();
         return json(results);
       }
 
       const userFollowersMatch = path.match(/^\/users\/([^/]+)\/followers$/);
       if (userFollowersMatch && method === 'GET') {
+        const userId = await resolveUserId(env, userFollowersMatch[1]);
+        if (!userId) return json({ error: 'User not found' }, 404);
         const { results } = await env.DB.prepare(
           `SELECT u.id, u.username, u.avatar_url, u.is_ambassador FROM user_follows f JOIN users u ON u.id = f.follower_id WHERE f.following_id = ?`
-        ).bind(userFollowersMatch[1]).all();
+        ).bind(userId).all();
         return json(results);
       }
 
       const userFollowingMatch = path.match(/^\/users\/([^/]+)\/following$/);
       if (userFollowingMatch && method === 'GET') {
+        const userId = await resolveUserId(env, userFollowingMatch[1]);
+        if (!userId) return json({ error: 'User not found' }, 404);
         const { results } = await env.DB.prepare(
           `SELECT u.id, u.username, u.avatar_url, u.is_ambassador FROM user_follows f JOIN users u ON u.id = f.following_id WHERE f.follower_id = ?`
-        ).bind(userFollowingMatch[1]).all();
+        ).bind(userId).all();
         return json(results);
       }
 
