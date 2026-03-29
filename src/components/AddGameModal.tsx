@@ -23,7 +23,7 @@ export default function AddGameModal({ open, onClose, onAdded }: AddGameModalPro
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       searchGames(query).then((r) => { if (!cancelled) setResults((r as Game[]).slice(0, 5)); }).catch(() => { if (!cancelled) setResults([]); });
-    }, 150);
+    }, 200);
     return () => { cancelled = true; clearTimeout(debounceRef.current); };
   }, [query]);
 

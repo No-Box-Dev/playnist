@@ -37,18 +37,22 @@ export default function Journal() {
     });
   }, [journals]);
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    try {
-      const results = await searchGames(searchQuery);
-      setSearchResults(results as Game[]);
-    } catch {
-      setSearchResults([]);
-    }
-  };
+  // Auto-search games as user types (200ms debounce)
+  useEffect(() => {
+    if (!searchQuery.trim()) { setSearchResults([]); return; }
+    const timeout = setTimeout(() => {
+      searchGames(searchQuery).then((r) => setSearchResults(r as Game[])).catch(() => setSearchResults([]));
+    }, 200);
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
+
+  const [journalError, setJournalError] = useState('');
 
   const handleCreate = async () => {
-    if (!selectedGame || !content.trim() || !userId) return;
+    setJournalError('');
+    if (!selectedGame) { setJournalError('Please select a game first'); return; }
+    if (!content.trim()) { setJournalError('Please write something'); return; }
+    if (!userId) return;
     try {
       await createJournal(selectedGame.id, content);
       setWriteModal(false);
@@ -56,9 +60,10 @@ export default function Journal() {
       setContent('');
       setSearchQuery('');
       setSearchResults([]);
+      setJournalError('');
       getUserJournals(userId).then((j) => setJournals(j as JournalType[])).catch(() => {});
-    } catch {
-      // TODO: surface error feedback
+    } catch (err) {
+      setJournalError(err instanceof Error ? err.message : 'Failed to save journal entry');
     }
   };
 
@@ -145,7 +150,6 @@ export default function Journal() {
                   placeholder="Start searching game name"
                   value={selectedGame ? selectedGame.name : searchQuery}
                   onChange={(e) => { setSelectedGame(null); setSearchQuery(e.target.value); }}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
                 <svg className="journal-modal-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M16 16l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
               </div>
@@ -172,9 +176,10 @@ export default function Journal() {
               />
             </div>
 
+            {journalError && <div className="field-error">{journalError}</div>}
             <div className="journal-modal-actions">
               <button className="btn btn-outline journal-modal-btn" onClick={closeModal}>CANCEL</button>
-              <button className="btn btn-primary journal-modal-btn" onClick={handleCreate}>POST</button>
+              <button className="btn btn-primary journal-modal-btn" onClick={handleCreate} disabled={!selectedGame || !content.trim()}>POST</button>
             </div>
           </div>
         </Modal>

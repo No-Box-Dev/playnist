@@ -5,7 +5,8 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import GameCard from '../components/GameCard';
 import Modal from '../components/Modal';
-import { getTrending, getNew, addToCollection, imageUrl, getAmbassadors, getUserJournals, getUserCollection, getGame, getGamesBatch } from '../api';
+import { getTrending, getNew, addToCollection, imageUrl, getAmbassadors, getUserJournals, getUserCollection, getGame, getGamesBatch, followUser, unfollowUser, getUserFollowing } from '../api';
+import { useAuth } from '../hooks/useAuth';
 import type { Game, User } from '../types';
 import './Dashboard.css';
 
@@ -20,7 +21,9 @@ export default function Dashboard() {
   const [spotlightJournal, setSpotlightJournal] = useState<{ content: string; igdb_game_id: number } | null>(null);
   const [spotlightGame, setSpotlightGame] = useState<Game | null>(null);
   const [picksAmbassador, setPicksAmbassador] = useState<User | null>(null);
+  const [following, setFollowing] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     getTrending().then((g) => {
@@ -57,7 +60,26 @@ export default function Dashboard() {
         }).catch(() => {});
       }
     }).catch(() => {});
-  }, []);
+
+    // Fetch who the current user follows
+    if (user?.id) {
+      getUserFollowing(user.id).then((f) => {
+        setFollowing(new Set((f as { id: string }[]).map((u) => u.id)));
+      }).catch(() => {});
+    }
+  }, [user?.id]);
+
+  const handleFollow = async (userId: string) => {
+    try {
+      if (following.has(userId)) {
+        await unfollowUser(userId);
+        setFollowing((prev) => { const next = new Set(prev); next.delete(userId); return next; });
+      } else {
+        await followUser(userId);
+        setFollowing((prev) => new Set(prev).add(userId));
+      }
+    } catch { /* ignore */ }
+  };
 
   const handleAdd = (game: Game) => setAddModal(game);
 
@@ -98,11 +120,13 @@ export default function Dashboard() {
               )}
               <div className="ambassador-info">
                 <div className="ambassador-header">
-                  <img className="ambassador-avatar-sm" src={spotlightAmbassador.avatar_url || '/images/user-icon.png'} alt={spotlightAmbassador.username} />
+                  <img className="ambassador-avatar-sm ambassador-clickable" src={spotlightAmbassador.avatar_url || '/images/user-icon.png'} alt={spotlightAmbassador.username} onClick={() => navigate(`/profile/${spotlightAmbassador.username}`)} />
                   <div>
                     <div className="ambassador-name-row">
-                      <span className="ambassador-name-v2">{spotlightAmbassador.username}</span>
-                      <button className="btn-follow">Follow</button>
+                      <span className="ambassador-name-v2 ambassador-clickable" onClick={() => navigate(`/profile/${spotlightAmbassador.username}`)}>{spotlightAmbassador.username}</span>
+                      <button className={`btn-follow${following.has(spotlightAmbassador.id) ? ' following' : ''}`} onClick={() => handleFollow(spotlightAmbassador.id)}>
+                        {following.has(spotlightAmbassador.id) ? 'Following' : 'Follow'}
+                      </button>
                     </div>
                     <span className="badge-ambassador-sm">Ambassador</span>
                   </div>
@@ -142,11 +166,13 @@ export default function Dashboard() {
           <div className="ambassador-picks-card">
             {picksAmbassador && (
               <div className="ambassador-picks-header">
-                <img className="ambassador-avatar-sm" src={picksAmbassador.avatar_url || '/images/user-icon.png'} alt={picksAmbassador.username} />
+                <img className="ambassador-avatar-sm ambassador-clickable" src={picksAmbassador.avatar_url || '/images/user-icon.png'} alt={picksAmbassador.username} onClick={() => navigate(`/profile/${picksAmbassador.username}`)} />
                 <div>
                   <div className="ambassador-name-row">
-                    <span className="ambassador-name-v2">{picksAmbassador.username}</span>
-                    <button className="btn-follow">Follow</button>
+                    <span className="ambassador-name-v2 ambassador-clickable" onClick={() => navigate(`/profile/${picksAmbassador.username}`)}>{picksAmbassador.username}</span>
+                    <button className={`btn-follow${following.has(picksAmbassador.id) ? ' following' : ''}`} onClick={() => handleFollow(picksAmbassador.id)}>
+                      {following.has(picksAmbassador.id) ? 'Following' : 'Follow'}
+                    </button>
                   </div>
                   <span className="badge-ambassador-sm">Ambassador</span>
                 </div>

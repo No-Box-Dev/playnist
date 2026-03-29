@@ -332,9 +332,21 @@
 .ob-footer {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 24px;
   margin-top: 24px;
   flex-shrink: 0;
 }
+.ob-skip {
+  background: none;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-gray);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.ob-skip:hover { color: var(--color-gray-dark); }
 
 .ob-continue {
   background: var(--color-red);

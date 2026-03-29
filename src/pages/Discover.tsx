@@ -45,7 +45,7 @@ export default function Discover() {
     if (!searchQuery.trim()) { setSearchResults([]); return; }
     const timeout = setTimeout(() => {
       searchGames(searchQuery).then((g) => setSearchResults(g as Game[]));
-    }, 400);
+    }, 200);
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 

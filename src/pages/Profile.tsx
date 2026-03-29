@@ -6,8 +6,8 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import Modal from '../components/Modal';
 import { useAuth } from '../hooks/useAuth';
-import { getUserCollection, getUserJournals, getGamesBatch, addToCollection, createJournal, deleteJournal, searchGames, imageUrl } from '../api';
-import type { CollectionItem, Journal, Game } from '../types';
+import { getUserCollection, getUserJournals, getGamesBatch, addToCollection, createJournal, deleteJournal, searchGames, imageUrl, getUser } from '../api';
+import type { CollectionItem, Journal, Game, User } from '../types';
 import './Profile.css';
 import './Journal.css';
 
@@ -15,8 +15,9 @@ export default function Profile() {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const profileId = id || user?.id || 'dev-user-001';
-  const isOwn = !id || id === user?.id;
+  const isOwn = !id || id === user?.id || id === user?.username;
+  const [profileUser, setProfileUser] = useState<User | null>(null);
+  const profileId = profileUser?.id || user?.id || '';
 
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab') === 'journal' ? 'journal' : 'library';
@@ -36,7 +37,21 @@ export default function Profile() {
   const [addStatus, setAddStatus] = useState('played');
   const [journalContent, setJournalContent] = useState('');
 
+  // Fetch profile user data when viewing someone else's profile
   useEffect(() => {
+    if (id && !isOwn) {
+      getUser(id).then((u) => setProfileUser(u as User)).catch((err) => {
+        if (err instanceof Error && err.message.includes('not found')) navigate('/dashboard');
+      });
+    } else {
+      setProfileUser(null);
+    }
+  }, [id, isOwn]);
+
+  const displayUser = isOwn ? user : profileUser;
+
+  useEffect(() => {
+    if (!profileId) return;
     let cancelled = false;
     setLoading(true);
     const collectionPromise = getUserCollection(profileId, filter || undefined).then((c) => {
@@ -65,11 +80,14 @@ export default function Profile() {
     });
   }, [collection, journals]);
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    const results = await searchGames(searchQuery);
-    setSearchResults(results as Game[]);
-  };
+  // Auto-search games as user types (200ms debounce)
+  useEffect(() => {
+    if (!searchQuery.trim()) { setSearchResults([]); return; }
+    const timeout = setTimeout(() => {
+      searchGames(searchQuery).then((r) => setSearchResults(r as Game[])).catch(() => setSearchResults([]));
+    }, 200);
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
 
   const handleAddGame = async () => {
     if (!selectedGame) return;
@@ -86,15 +104,24 @@ export default function Profile() {
     setJournals((prev) => prev.filter((j) => j.id !== journalId));
   };
 
+  const [journalError, setJournalError] = useState('');
+
   const handleCreateJournal = async () => {
-    if (!selectedGame || !journalContent.trim()) return;
-    await createJournal(selectedGame.id, journalContent);
-    setJournalModal(false);
-    setSelectedGame(null);
-    setJournalContent('');
-    setSearchQuery('');
-    setSearchResults([]);
-    getUserJournals(profileId).then((j) => setJournals(j as Journal[]));
+    setJournalError('');
+    if (!selectedGame) { setJournalError('Please select a game first'); return; }
+    if (!journalContent.trim()) { setJournalError('Please write something'); return; }
+    try {
+      await createJournal(selectedGame.id, journalContent);
+      setJournalModal(false);
+      setSelectedGame(null);
+      setJournalContent('');
+      setSearchQuery('');
+      setSearchResults([]);
+      setJournalError('');
+      getUserJournals(profileId).then((j) => setJournals(j as Journal[]));
+    } catch (err) {
+      setJournalError(err instanceof Error ? err.message : 'Failed to save journal entry');
+    }
   };
 
   const playedCount = collection.filter((c) => c.status === 'played').length;
@@ -114,7 +141,7 @@ export default function Profile() {
         {/* Profile Info — avatar left, stats+edit right */}
         <div className="profile-info">
           <div className="profile-avatar-wrap">
-            <img className="profile-avatar" src={getAvatarUrl(profileId, isOwn ? user?.avatar_url : undefined)} alt="Avatar" />
+            <img className="profile-avatar" src={getAvatarUrl(profileId, displayUser?.avatar_url)} alt="Avatar" />
             {isOwn && <button className="profile-edit-avatar"><img src="/images/icon-edit.svg" alt="Edit avatar" /></button>}
           </div>
           <div className="profile-right">
@@ -131,7 +158,7 @@ export default function Profile() {
         </div>
 
         {/* Username */}
-        <h1 className="profile-name">{user?.username || 'User'}</h1>
+        <h1 className="profile-name">{displayUser?.username || 'User'}</h1>
 
         {/* Tabs — LIBRARY / JOURNAL */}
         <div className="profile-tabs">
@@ -231,11 +258,10 @@ export default function Profile() {
         )}
 
         {/* Add Game Modal */}
-        <Modal open={addModal} onClose={() => { setAddModal(false); setSelectedGame(null); setSearchResults([]); }}>
+        <Modal open={addModal} onClose={() => { setAddModal(false); setSelectedGame(null); setSearchQuery(''); setSearchResults([]); }}>
           <h3 style={{ marginBottom: 16 }}>Add a Game</h3>
           <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-            <input className="input" placeholder="Search for a game..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-            <button className="btn btn-primary" onClick={handleSearch}>Search</button>
+            <input className="input" placeholder="Search for a game..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           {searchResults.length > 0 && (
             <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 16 }}>
@@ -279,7 +305,6 @@ export default function Profile() {
                   placeholder="Start searching game name"
                   value={selectedGame ? selectedGame.name : searchQuery}
                   onChange={(e) => { setSelectedGame(null); setSearchQuery(e.target.value); }}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
                 <svg className="journal-modal-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M16 16l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
               </div>
@@ -306,9 +331,10 @@ export default function Profile() {
               />
             </div>
 
+            {journalError && <div className="field-error">{journalError}</div>}
             <div className="journal-modal-actions">
-              <button className="btn btn-outline journal-modal-btn" onClick={() => { setJournalModal(false); setSelectedGame(null); setSearchQuery(''); setSearchResults([]); setJournalContent(''); }}>CANCEL</button>
-              <button className="btn btn-primary journal-modal-btn" onClick={handleCreateJournal}>POST</button>
+              <button className="btn btn-outline journal-modal-btn" onClick={() => { setJournalModal(false); setSelectedGame(null); setSearchQuery(''); setSearchResults([]); setJournalContent(''); setJournalError(''); }}>CANCEL</button>
+              <button className="btn btn-primary journal-modal-btn" onClick={handleCreateJournal} disabled={!selectedGame || !journalContent.trim()}>POST</button>
             </div>
           </div>
         </Modal>

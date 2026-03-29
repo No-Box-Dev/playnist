@@ -34,10 +34,13 @@ export default function Search() {
     setLoading(false);
   };
 
+  // Auto-search on typing with 200ms debounce
   useEffect(() => {
-    if (initialQuery) handleSearch(initialQuery);
+    if (!query.trim()) { setResults([]); setSearched(false); return; }
+    const timeout = setTimeout(() => handleSearch(query), 200);
+    return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [query]);
 
   const handleAdd = (game: Game) => setAddModal(game);
 
