@@ -16,6 +16,7 @@ export default function Discover() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [addModal, setAddModal] = useState<Game | null>(null);
   const [addStatus, setAddStatus] = useState('played');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     getPublicPageSections('discover').then((s) => {
@@ -37,7 +38,7 @@ export default function Discover() {
           });
         }
       });
-    });
+    }).finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -103,18 +104,32 @@ export default function Discover() {
               </div>
             )}
           </section>
+        ) : isLoading ? (
+          /* Skeleton loading state */
+          <>
+            {[1, 2, 3].map((i) => (
+              <section key={i} className="section">
+                <div className="skeleton-title" />
+                <div className="game-grid">
+                  {[1, 2, 3, 4, 5].map((j) => <div key={j} className="skeleton-card" />)}
+                </div>
+              </section>
+            ))}
+          </>
         ) : (
           /* Render CMS sections dynamically */
           sections.filter((s) => s.section_type === 'game_grid').map((section) => {
             const games = gameData[section.id] || [];
             const columns = (section.config.columns as number) || 5;
             const filtered = filterByCategory(games);
-            if (filtered.length === 0) return null;
             return (
               <section key={section.id} className="section">
                 <h2 className="section-header">{section.title}</h2>
                 <div className={columns === 4 ? 'game-grid-4' : 'game-grid'}>
-                  {filtered.map((g) => <GameCard key={g.id} game={g} onAdd={handleAdd} />)}
+                  {filtered.length > 0
+                    ? filtered.map((g) => <GameCard key={g.id} game={g} onAdd={handleAdd} />)
+                    : Array.from({ length: columns }, (_, j) => <div key={j} className="skeleton-card" />)
+                  }
                 </div>
               </section>
             );
@@ -124,9 +139,9 @@ export default function Discover() {
         {/* Add to Collection Modal */}
         <Modal open={!!addModal} onClose={() => setAddModal(null)}>
           {addModal && (
-            <div className="text-center">
-              <h3 className="mb-4">Add "{addModal.name}" to Collection</h3>
-              <div className="flex gap-2 justify-center mb-6 flex-wrap">
+            <div className="flex flex-col items-center gap-6 py-6">
+              <h3 className="text-lg text-center">Add "{addModal.name}" to Collection</h3>
+              <div className="flex gap-3 justify-center flex-wrap">
                 {(['played', 'playing', 'want_to_play'] as const).map((s) => (
                   <button key={s} className={`pill pill-${s === 'played' ? 'played' : s === 'playing' ? 'playing' : 'want'}${addStatus === s ? ' active' : ''}`} onClick={() => setAddStatus(s)}>
                     {s === 'want_to_play' ? 'Want to Play' : s.charAt(0).toUpperCase() + s.slice(1)}

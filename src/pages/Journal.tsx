@@ -85,8 +85,11 @@ export default function Journal() {
       <Header />
       <main className="main-content">
         <div className="journal-page-header">
-          <h2 className="section-header">Your Journal</h2>
-          <button className="btn btn-primary" onClick={() => setWriteModal(true)}>+ Write Entry</button>
+          <div className="journal-title-row">
+            <img src="/images/icon-journal.svg" alt="" className="journal-title-icon" />
+            <h2 className="section-header">Journal</h2>
+          </div>
+          <button className="btn btn-primary" onClick={() => setWriteModal(true)}>ADD NEW JOURNAL +</button>
         </div>
 
         {journals.length === 0 ? (
@@ -130,48 +133,50 @@ export default function Journal() {
         )}
 
         <Modal open={writeModal} onClose={closeModal}>
-          <h3 style={{ marginBottom: 16 }}>Write in Journal</h3>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-            <input
-              className="input"
-              placeholder="Search for a game..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            />
-            <button className="btn btn-primary" onClick={handleSearch}>Search</button>
-          </div>
-          {searchResults.length > 0 && !selectedGame && (
-            <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 16 }}>
-              {searchResults.slice(0, 10).map((g) => (
-                <div
-                  key={g.id}
-                  onClick={() => setSelectedGame(g)}
-                  style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}
-                >
-                  {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} style={{ width: 24, height: 32, borderRadius: 4, objectFit: 'cover' }} alt="" />}
-                  <span style={{ fontSize: 14 }}>{g.name}</span>
+          <div className="journal-modal">
+            <h2 className="journal-modal-title">WRITE IN JOURNAL</h2>
+            <p className="journal-modal-subtitle">Your journal is not just for reviews, but for your experiences</p>
+
+            <div className="journal-modal-field">
+              <label className="journal-modal-label">Game name</label>
+              <div className="journal-modal-search-wrap">
+                <input
+                  className="input"
+                  placeholder="Start searching game name"
+                  value={selectedGame ? selectedGame.name : searchQuery}
+                  onChange={(e) => { setSelectedGame(null); setSearchQuery(e.target.value); }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                />
+                <svg className="journal-modal-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M16 16l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+              </div>
+              {searchResults.length > 0 && !selectedGame && (
+                <div className="journal-modal-results">
+                  {searchResults.slice(0, 10).map((g) => (
+                    <div key={g.id} className="journal-modal-result" onClick={() => setSelectedGame(g)}>
+                      {g.cover?.image_id && <img src={imageUrl(g.cover.image_id, 't_thumb')} alt="" />}
+                      <span>{g.name}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-          )}
-          {selectedGame && (
-            <>
-              <div style={{ fontSize: 14, marginBottom: 12 }}>Game: <strong>{selectedGame.name}</strong></div>
+
+            <div className="journal-modal-field">
+              <label className="journal-modal-label">Write in Journal</label>
               <textarea
-                className="input"
-                rows={5}
+                className="input journal-modal-textarea"
+                rows={8}
                 placeholder="What moment made you smile? Made you cry? Made you frustrated?"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                style={{ resize: 'vertical', marginBottom: 16 }}
               />
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-                <button className="btn btn-outline" onClick={closeModal}>Cancel</button>
-                <button className="btn btn-primary" onClick={handleCreate}>Post</button>
-              </div>
-            </>
-          )}
+            </div>
+
+            <div className="journal-modal-actions">
+              <button className="btn btn-outline journal-modal-btn" onClick={closeModal}>CANCEL</button>
+              <button className="btn btn-primary journal-modal-btn" onClick={handleCreate}>POST</button>
+            </div>
+          </div>
         </Modal>
       </main>
       <BottomNav />

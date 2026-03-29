@@ -1,22 +1,20 @@
-@layer components {
-  .search-bar {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-  }
-  .search-input {
-    flex: 1;
-  }
-  .search-count {
-    font-size: 0.875rem;
-    color: var(--color-gray);
-    margin-bottom: 1rem;
-  }
-  .search-status {
-    font-size: 0.875rem;
-    color: var(--color-gray);
-    padding: 1.5rem 0;
-  }
+.search-bar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+.search-input {
+  flex: 1;
+}
+.search-count {
+  font-size: 0.875rem;
+  color: var(--color-gray);
+  margin-bottom: 1rem;
+}
+.search-status {
+  font-size: 0.875rem;
+  color: var(--color-gray);
+  padding: 1.5rem 0;
 }
 
 @media (max-width: 480px) {
