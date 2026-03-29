@@ -70,13 +70,15 @@ export default function Dashboard() {
   }, [user?.id]);
 
   const handleFollow = async (userId: string) => {
-    if (following.has(userId)) {
-      await unfollowUser(userId).catch(() => {});
-      setFollowing((prev) => { const next = new Set(prev); next.delete(userId); return next; });
-    } else {
-      await followUser(userId).catch(() => {});
-      setFollowing((prev) => new Set(prev).add(userId));
-    }
+    try {
+      if (following.has(userId)) {
+        await unfollowUser(userId);
+        setFollowing((prev) => { const next = new Set(prev); next.delete(userId); return next; });
+      } else {
+        await followUser(userId);
+        setFollowing((prev) => new Set(prev).add(userId));
+      }
+    } catch { /* ignore */ }
   };
 
   const handleAdd = (game: Game) => setAddModal(game);

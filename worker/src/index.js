@@ -222,6 +222,7 @@ function buildFtsQuery(query) {
   const raw = query.toLowerCase().trim();
   if (!raw) return null;
   const terms = raw.split(/\s+/).filter(Boolean);
+  const sanitized = terms.map(t => t.replace(/[^a-z0-9'-]/g, '')).filter(Boolean);
 
   // Check if query starts with a known abbreviation (e.g. "gta 5" → "grand theft auto 5")
   const expanded = ABBREVIATIONS[terms[0]];
@@ -245,21 +246,21 @@ function buildFtsQuery(query) {
   }
 
   // Build FTS5 query: all terms required, last term gets prefix wildcard
-  const ftsTerms = terms.map((t, i) => {
+  const ftsTerms = sanitized.map((t, i) => {
     const escaped = t.replace(/"/g, '');
-    return i === terms.length - 1 ? `"${escaped}"*` : `"${escaped}"`;
+    return i === sanitized.length - 1 ? `"${escaped}"*` : `"${escaped}"`;
   });
 
   // Also build variant with number↔roman substitution
-  const altTerms = terms.map(t => NUM_TO_ROMAN[t] || ROMAN_TO_NUM[t] || t);
-  const hasVariant = altTerms.some((t, i) => t !== terms[i]);
+  const altTerms = sanitized.map(t => NUM_TO_ROMAN[t] || ROMAN_TO_NUM[t] || t);
+  const hasVariant = altTerms.some((t, i) => t !== sanitized[i]);
 
   const altFtsTerms = hasVariant ? altTerms.map((t, i) => {
     const escaped = t.replace(/"/g, '');
     return i === altTerms.length - 1 ? `"${escaped}"*` : `"${escaped}"`;
   }) : null;
 
-  return { primary: ftsTerms.join(' '), alt: altFtsTerms ? altFtsTerms.join(' ') : null, likeTerms: terms, altLikeTerms: hasVariant ? altTerms : null };
+  return { primary: ftsTerms.join(' '), alt: altFtsTerms ? altFtsTerms.join(' ') : null, likeTerms: sanitized, altLikeTerms: hasVariant ? altTerms : null };
 }
 
 async function dbSearchGames(env, query) {
@@ -291,7 +292,7 @@ async function dbSearchGames(env, query) {
   }
 
   // Run LIKE fallback when FTS returned few results OR query has number↔roman substitution
-  if (allResults.length < 5 || parsed.alt) {
+  if (allResults.length < 5 || (parsed.alt && allResults.length < 20)) {
     // Try both original and substituted terms via LIKE
     for (const terms of [parsed.likeTerms, parsed.altLikeTerms].filter(Boolean)) {
       const whereClauses = terms.map(() => `LOWER(g.name) LIKE ?`);
@@ -679,9 +680,8 @@ export default {
       if (userMatch && method === 'GET') {
         const identifier = userMatch[1];
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(identifier);
-        const user = isUuid
-          ? await env.DB.prepare('SELECT id, username, email, bio, avatar_url, is_ambassador, onboarding_step, created_at FROM users WHERE id = ?').bind(identifier).first()
-          : await env.DB.prepare('SELECT id, username, email, bio, avatar_url, is_ambassador, onboarding_step, created_at FROM users WHERE username = ?').bind(identifier).first();
+        const column = isUuid ? 'id' : 'username';
+        const user = await env.DB.prepare(`SELECT id, username, email, bio, avatar_url, is_ambassador, onboarding_step, created_at FROM users WHERE ${column} = ?`).bind(identifier).first();
         if (!user) return json({ error: 'User not found' }, 404);
         return json(user);
       }

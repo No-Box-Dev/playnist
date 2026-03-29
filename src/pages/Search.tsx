@@ -42,11 +42,6 @@ export default function Search() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  useEffect(() => {
-    if (initialQuery) handleSearch(initialQuery);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const handleAdd = (game: Game) => setAddModal(game);
 
   const confirmAdd = async () => {

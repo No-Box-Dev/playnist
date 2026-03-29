@@ -40,7 +40,7 @@ export default function Profile() {
   // Fetch profile user data when viewing someone else's profile
   useEffect(() => {
     if (id && !isOwn) {
-      getUser(id).then((u) => setProfileUser(u as User)).catch(() => {});
+      getUser(id).then((u) => setProfileUser(u as User)).catch(() => navigate('/dashboard'));
     } else {
       setProfileUser(null);
     }
