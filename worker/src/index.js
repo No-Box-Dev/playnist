@@ -180,8 +180,10 @@ async function getUser(env, request) {
     .bind(session.user_id).first();
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 async function resolveUserId(env, identifier) {
-  if (/^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(identifier)) return identifier;
+  if (UUID_RE.test(identifier)) return identifier;
   const u = await env.DB.prepare('SELECT id FROM users WHERE username = ?').bind(identifier).first();
   return u ? u.id : null;
 }
@@ -214,7 +216,7 @@ const ABBREVIATIONS = {
   'ac': 'assassins creed', 're': 'resident evil', 'ds': 'dark souls',
   'dmc': 'devil may cry', 'bg': 'baldurs gate', 'dos': 'divinity original sin',
   'csgo': 'counter strike', 'cs': 'counter strike', 'pubg': 'playerunknowns battlegrounds',
-  'ssbu': 'super smash bros', 'ssb': 'super smash bros', 'botw': 'breath of the wild',
+  'ssbu': 'super smash bros', 'ssb': 'super smash bros',
   'xcom': 'x-com', 'civ': 'civilization', 'mtg': 'magic the gathering',
 };
 
@@ -679,8 +681,7 @@ export default {
       const userMatch = path.match(/^\/users\/([^/]+)$/);
       if (userMatch && method === 'GET') {
         const identifier = userMatch[1];
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(identifier);
-        const column = isUuid ? 'id' : 'username';
+        const column = UUID_RE.test(identifier) ? 'id' : 'username';
         const user = await env.DB.prepare(`SELECT id, username, email, bio, avatar_url, is_ambassador, onboarding_step, created_at FROM users WHERE ${column} = ?`).bind(identifier).first();
         if (!user) return json({ error: 'User not found' }, 404);
         return json(user);

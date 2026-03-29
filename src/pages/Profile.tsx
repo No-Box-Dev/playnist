@@ -40,7 +40,9 @@ export default function Profile() {
   // Fetch profile user data when viewing someone else's profile
   useEffect(() => {
     if (id && !isOwn) {
-      getUser(id).then((u) => setProfileUser(u as User)).catch(() => navigate('/dashboard'));
+      getUser(id).then((u) => setProfileUser(u as User)).catch((err) => {
+        if (err instanceof Error && err.message.includes('not found')) navigate('/dashboard');
+      });
     } else {
       setProfileUser(null);
     }
@@ -256,7 +258,7 @@ export default function Profile() {
         )}
 
         {/* Add Game Modal */}
-        <Modal open={addModal} onClose={() => { setAddModal(false); setSelectedGame(null); setSearchResults([]); }}>
+        <Modal open={addModal} onClose={() => { setAddModal(false); setSelectedGame(null); setSearchQuery(''); setSearchResults([]); }}>
           <h3 style={{ marginBottom: 16 }}>Add a Game</h3>
           <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
             <input className="input" placeholder="Search for a game..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
