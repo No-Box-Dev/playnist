@@ -200,17 +200,120 @@ function sessionCookie(token, maxAge = 60 * 60 * 24 * 30) {
 
 // ─── D1 game queries ───
 
+// Number ↔ Roman numeral substitutions
+const NUM_TO_ROMAN = { '2': 'ii', '3': 'iii', '4': 'iv', '5': 'v', '6': 'vi', '7': 'vii', '8': 'viii', '9': 'ix', '10': 'x' };
+const ROMAN_TO_NUM = Object.fromEntries(Object.entries(NUM_TO_ROMAN).map(([k, v]) => [v, k]));
+
+// Common game abbreviation expansions
+const ABBREVIATIONS = {
+  'gta': 'grand theft auto', 'cod': 'call of duty', 'ff': 'final fantasy',
+  'lol': 'league of legends', 'wow': 'world of warcraft', 'botw': 'breath of the wild',
+  'totk': 'tears of the kingdom', 'rdr': 'red dead redemption', 'tlou': 'the last of us',
+  'mgs': 'metal gear solid', 'gow': 'god of war', 'nfs': 'need for speed',
+  'mk': 'mortal kombat', 'sf': 'street fighter', 'kh': 'kingdom hearts',
+  'ac': 'assassins creed', 're': 'resident evil', 'ds': 'dark souls',
+  'dmc': 'devil may cry', 'bg': 'baldurs gate', 'dos': 'divinity original sin',
+  'csgo': 'counter strike', 'cs': 'counter strike', 'pubg': 'playerunknowns battlegrounds',
+  'ssbu': 'super smash bros', 'ssb': 'super smash bros', 'botw': 'breath of the wild',
+  'xcom': 'x-com', 'civ': 'civilization', 'mtg': 'magic the gathering',
+};
+
+function buildFtsQuery(query) {
+  const raw = query.toLowerCase().trim();
+  if (!raw) return null;
+  const terms = raw.split(/\s+/).filter(Boolean);
+
+  // Check if query starts with a known abbreviation (e.g. "gta 5" → "grand theft auto 5")
+  const expanded = ABBREVIATIONS[terms[0]];
+  if (expanded) {
+    const expandedTerms = [...expanded.split(/\s+/), ...terms.slice(1)];
+    // Apply number→roman substitution on expanded terms too
+    const expAltTerms = expandedTerms.map(t => NUM_TO_ROMAN[t] || ROMAN_TO_NUM[t] || t);
+    const hasExpVariant = expAltTerms.some((t, i) => t !== expandedTerms[i]);
+
+    const makeFts = (ts) => ts.map((t, i) => {
+      const escaped = t.replace(/"/g, '');
+      return i === ts.length - 1 ? `"${escaped}"*` : `"${escaped}"`;
+    }).join(' ');
+
+    return {
+      primary: makeFts(expandedTerms),
+      alt: hasExpVariant ? makeFts(expAltTerms) : null,
+      likeTerms: expandedTerms,
+      altLikeTerms: hasExpVariant ? expAltTerms : null,
+    };
+  }
+
+  // Build FTS5 query: all terms required, last term gets prefix wildcard
+  const ftsTerms = terms.map((t, i) => {
+    const escaped = t.replace(/"/g, '');
+    return i === terms.length - 1 ? `"${escaped}"*` : `"${escaped}"`;
+  });
+
+  // Also build variant with number↔roman substitution
+  const altTerms = terms.map(t => NUM_TO_ROMAN[t] || ROMAN_TO_NUM[t] || t);
+  const hasVariant = altTerms.some((t, i) => t !== terms[i]);
+
+  const altFtsTerms = hasVariant ? altTerms.map((t, i) => {
+    const escaped = t.replace(/"/g, '');
+    return i === altTerms.length - 1 ? `"${escaped}"*` : `"${escaped}"`;
+  }) : null;
+
+  return { primary: ftsTerms.join(' '), alt: altFtsTerms ? altFtsTerms.join(' ') : null, likeTerms: terms, altLikeTerms: hasVariant ? altTerms : null };
+}
+
 async function dbSearchGames(env, query) {
-  const { results } = await env.DB.prepare(`
-    SELECT g.id, g.name, g.slug, g.summary, g.rating, g.first_release_date,
-           c.image_id AS cover_image_id
-    FROM games g
-    LEFT JOIN covers c ON c.game = g.id
-    WHERE g.name LIKE ?
-    ORDER BY g.rating_count DESC, g.rating DESC
-    LIMIT 20
-  `).bind(`%${query}%`).all();
-  return results.map(r => ({
+  const parsed = buildFtsQuery(query);
+  if (!parsed) return [];
+
+  const seen = new Set();
+  const allResults = [];
+
+  // Try FTS5 first (fast path)
+  for (const ftsQuery of [parsed.primary, parsed.alt].filter(Boolean)) {
+    try {
+      const { results } = await env.DB.prepare(`
+        SELECT g.id, g.name, g.slug, g.summary, g.rating, g.first_release_date,
+               c.image_id AS cover_image_id, rank
+        FROM games_fts fts
+        JOIN games g ON g.id = fts.rowid
+        LEFT JOIN covers c ON c.game = g.id
+        WHERE games_fts MATCH ?
+        ORDER BY rank, g.rating_count DESC
+        LIMIT 20
+      `).bind(ftsQuery).all();
+      for (const r of results) {
+        if (!seen.has(r.id)) { seen.add(r.id); allResults.push(r); }
+      }
+    } catch {
+      // FTS table might not exist yet — fall through to LIKE
+    }
+  }
+
+  // Run LIKE fallback when FTS returned few results OR query has number↔roman substitution
+  if (allResults.length < 5 || parsed.alt) {
+    // Try both original and substituted terms via LIKE
+    for (const terms of [parsed.likeTerms, parsed.altLikeTerms].filter(Boolean)) {
+      const whereClauses = terms.map(() => `LOWER(g.name) LIKE ?`);
+      const binds = terms.map(t => `%${t}%`);
+      try {
+        const { results } = await env.DB.prepare(`
+          SELECT g.id, g.name, g.slug, g.summary, g.rating, g.first_release_date,
+                 c.image_id AS cover_image_id
+          FROM games g
+          LEFT JOIN covers c ON c.game = g.id
+          WHERE ${whereClauses.join(' AND ')}
+          ORDER BY g.rating_count DESC, g.rating DESC
+          LIMIT 20
+        `).bind(...binds).all();
+        for (const r of results) {
+          if (!seen.has(r.id)) { seen.add(r.id); allResults.push(r); }
+        }
+      } catch { /* ignore */ }
+    }
+  }
+
+  return allResults.slice(0, 20).map(r => ({
     id: r.id, name: r.name, slug: r.slug, summary: r.summary,
     rating: r.rating, first_release_date: r.first_release_date,
     cover: r.cover_image_id ? { image_id: r.cover_image_id } : undefined,

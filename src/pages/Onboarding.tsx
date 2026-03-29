@@ -262,6 +262,10 @@ export default function Onboarding() {
           >
             {saving ? 'SAVING...' : step === 3 ? 'LET\'S GO!' : 'CONTINUE'}
           </button>
+          <button className="ob-skip" onClick={async () => {
+            await updateMe({ onboarding_step: 3 });
+            navigate('/dashboard');
+          }}>Skip for now</button>
         </div>
       </div>
     </div>

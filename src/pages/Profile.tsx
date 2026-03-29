@@ -78,11 +78,14 @@ export default function Profile() {
     });
   }, [collection, journals]);
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    const results = await searchGames(searchQuery);
-    setSearchResults(results as Game[]);
-  };
+  // Auto-search games as user types (200ms debounce)
+  useEffect(() => {
+    if (!searchQuery.trim()) { setSearchResults([]); return; }
+    const timeout = setTimeout(() => {
+      searchGames(searchQuery).then((r) => setSearchResults(r as Game[])).catch(() => setSearchResults([]));
+    }, 200);
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
 
   const handleAddGame = async () => {
     if (!selectedGame) return;
@@ -99,15 +102,24 @@ export default function Profile() {
     setJournals((prev) => prev.filter((j) => j.id !== journalId));
   };
 
+  const [journalError, setJournalError] = useState('');
+
   const handleCreateJournal = async () => {
-    if (!selectedGame || !journalContent.trim()) return;
-    await createJournal(selectedGame.id, journalContent);
-    setJournalModal(false);
-    setSelectedGame(null);
-    setJournalContent('');
-    setSearchQuery('');
-    setSearchResults([]);
-    getUserJournals(profileId).then((j) => setJournals(j as Journal[]));
+    setJournalError('');
+    if (!selectedGame) { setJournalError('Please select a game first'); return; }
+    if (!journalContent.trim()) { setJournalError('Please write something'); return; }
+    try {
+      await createJournal(selectedGame.id, journalContent);
+      setJournalModal(false);
+      setSelectedGame(null);
+      setJournalContent('');
+      setSearchQuery('');
+      setSearchResults([]);
+      setJournalError('');
+      getUserJournals(profileId).then((j) => setJournals(j as Journal[]));
+    } catch (err) {
+      setJournalError(err instanceof Error ? err.message : 'Failed to save journal entry');
+    }
   };
 
   const playedCount = collection.filter((c) => c.status === 'played').length;
@@ -247,8 +259,7 @@ export default function Profile() {
         <Modal open={addModal} onClose={() => { setAddModal(false); setSelectedGame(null); setSearchResults([]); }}>
           <h3 style={{ marginBottom: 16 }}>Add a Game</h3>
           <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-            <input className="input" placeholder="Search for a game..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-            <button className="btn btn-primary" onClick={handleSearch}>Search</button>
+            <input className="input" placeholder="Search for a game..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           {searchResults.length > 0 && (
             <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 16 }}>
@@ -292,7 +303,6 @@ export default function Profile() {
                   placeholder="Start searching game name"
                   value={selectedGame ? selectedGame.name : searchQuery}
                   onChange={(e) => { setSelectedGame(null); setSearchQuery(e.target.value); }}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
                 <svg className="journal-modal-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M16 16l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
               </div>
@@ -319,9 +329,10 @@ export default function Profile() {
               />
             </div>
 
+            {journalError && <div className="field-error">{journalError}</div>}
             <div className="journal-modal-actions">
-              <button className="btn btn-outline journal-modal-btn" onClick={() => { setJournalModal(false); setSelectedGame(null); setSearchQuery(''); setSearchResults([]); setJournalContent(''); }}>CANCEL</button>
-              <button className="btn btn-primary journal-modal-btn" onClick={handleCreateJournal}>POST</button>
+              <button className="btn btn-outline journal-modal-btn" onClick={() => { setJournalModal(false); setSelectedGame(null); setSearchQuery(''); setSearchResults([]); setJournalContent(''); setJournalError(''); }}>CANCEL</button>
+              <button className="btn btn-primary journal-modal-btn" onClick={handleCreateJournal} disabled={!selectedGame || !journalContent.trim()}>POST</button>
             </div>
           </div>
         </Modal>
