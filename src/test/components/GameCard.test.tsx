@@ -57,7 +57,7 @@ describe('GameCard', () => {
       </MemoryRouter>
     );
 
-    fireEvent.click(screen.getByText('+'));
+    fireEvent.click(screen.getByRole('button', { name: /add test game to collection/i }));
     expect(onAdd).toHaveBeenCalledWith(gameWithCover);
   });
 
@@ -68,7 +68,7 @@ describe('GameCard', () => {
       </MemoryRouter>
     );
 
-    expect(screen.queryByText('+')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /add/i })).not.toBeInTheDocument();
   });
 
   it('navigates to game page on click', () => {
@@ -90,7 +90,7 @@ describe('GameCard', () => {
       </MemoryRouter>
     );
 
-    fireEvent.click(screen.getByText('+'));
+    fireEvent.click(screen.getByRole('button', { name: /add test game to collection/i }));
     expect(onAdd).toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
